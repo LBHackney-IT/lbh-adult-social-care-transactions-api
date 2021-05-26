@@ -5,17 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
+
     [ApiController]
+
     //TODO: Rename to match the APIs endpoint
     [Route("api/v1/residents")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
+
     //TODO: rename class to match the API name
-    public class LBH.AdultSocialCare.Transactions.ApiController : BaseController
+    public class ApiController : BaseController
     {
+
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IGetByIdUseCase _getByIdUseCase;
-        public LBH.AdultSocialCare.Transactions.ApiController(IGetAllUseCase getAllUseCase, IGetByIdUseCase getByIdUseCase)
+
+        public ApiController(IGetAllUseCase getAllUseCase, IGetByIdUseCase getByIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -41,11 +46,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         /// <response code="404">No ? found for the specified ID</response>
         [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status200OK)]
         [HttpGet]
+
         //TODO: rename to match the identifier that will be used
         [Route("{yourId}")]
         public IActionResult ViewRecord(int yourId)
         {
             return Ok(_getByIdUseCase.Execute(yourId));
         }
+
     }
+
 }
