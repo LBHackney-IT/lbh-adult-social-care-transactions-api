@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using AutoMapper;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase;
@@ -35,6 +37,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
         }
 
         public IConfiguration Configuration { get; }
+
         private static List<ApiVersionDescription> _apiVersions { get; set; }
         //TODO update the below to the name of your API
         private const string ApiName = "Your API Name";
@@ -114,19 +117,20 @@ namespace LBH.AdultSocialCare.Transactions.Api
             ConfigureLogging(services, Configuration);
 
             ConfigureDbContext(services);
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            // services.ConfigureDynamoDB();
 
             RegisterGateways(services);
             RegisterUseCases(services);
         }
 
-        private static void ConfigureDbContext(IServiceCollection services)
+        private void ConfigureDbContext(IServiceCollection services)
         {
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+                                      Configuration.GetConnectionString("DatabaseConnectionString");
 
-            services.AddDbContext<DatabaseContext>(
-                opt => opt.UseNpgsql(connectionString).AddXRayInterceptor(true));
+            string assemblyName = Assembly.GetCallingAssembly().GetName().Name;
+
+            services.AddDbContext<DatabaseContext>(opt
+                => opt.UseNpgsql(connectionString, b => b.MigrationsAssembly(assemblyName)));
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -151,21 +155,30 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IExampleGateway, ExampleGateway>();
-
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            //services.AddScoped<IExampleGateway, DynamoDbGateway>();
+            services.AddScoped<IBillGateway, BillGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
-            services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (IServiceScope appScope = app.ApplicationServices.CreateScope())
+            {
+                DatabaseContext databaseContext = appScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+
+                // Run pending database migrations
+                if (databaseContext.Database.GetPendingMigrations().Any())
+                {
+                    // Perform migrations
+                    databaseContext.Database.Migrate();
+                }
+            }
+
+            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
             app.UseCorrelation();
 
             if (env.IsDevelopment())
@@ -177,27 +190,31 @@ namespace LBH.AdultSocialCare.Transactions.Api
                 app.UseHsts();
             }
 
+            // Configure extension methods to use auto mapper
+            IMapper mapper = app.ApplicationServices.GetService<IMapper>();
+            EntityToDomainFactory.Configure(mapper);
+
             // TODO
             // If you DON'T use the renaming script, PLEASE replace with your own API name manually
             app.UseXRay("base-api");
 
-
             //Get All ApiVersions,
-            var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
+            IApiVersionDescriptionProvider api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             _apiVersions = api.ApiVersionDescriptions.ToList();
 
-            //Swagger ui to view the swagger.json file
+            // Swagger ui to view the swagger.json file
             app.UseSwaggerUI(c =>
             {
-                foreach (var apiVersionDescription in _apiVersions)
+                foreach (ApiVersionDescription apiVersionDescription in _apiVersions)
                 {
-                    //Create a swagger endpoint for each swagger version
+                    // Create a swagger endpoint for each swagger version
                     c.SwaggerEndpoint($"{apiVersionDescription.GetFormattedApiVersion()}/swagger.json",
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
             app.UseSwagger();
             app.UseRouting();
+
             app.UseEndpoints(endpoints =>
             {
                 // SwaggerGen won't find controllers that are routed via this technique.
