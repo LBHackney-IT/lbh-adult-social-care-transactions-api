@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills
 {
-    public class BillStatus : BaseEntity
+    public class BillStatus
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
 
         public string StatusName { get; set; }
