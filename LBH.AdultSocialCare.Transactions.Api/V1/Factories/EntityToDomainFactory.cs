@@ -24,6 +24,31 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<BillDomain>(billEntity);
         }
 
+        public static IEnumerable<BillDomain> ToDomain(this List<Bill> billEntity)
+        {
+            return _mapper.Map<IEnumerable<BillDomain>>(billEntity);
+        }
+
+        public static BillFileDomain ToDomain(this BillFile billFileEntity)
+        {
+            return _mapper.Map<BillFileDomain>(billFileEntity);
+        }
+
+        public static BillItemDomain ToDomain(this BillItem billItemEntity)
+        {
+            return _mapper.Map<BillItemDomain>(billItemEntity);
+        }
+
+        public static IEnumerable<BillStatusDomain> ToDomain(this List<BillStatus> billStatusEntity)
+        {
+            return _mapper.Map<IEnumerable<BillStatusDomain>>(billStatusEntity);
+        }
+
+        public static IEnumerable<BillItemDomain> ToDomain(this List<BillItem> billItemEntity)
+        {
+            return _mapper.Map<IEnumerable<BillItemDomain>>(billItemEntity);
+        }
+
         #endregion Bill
     }
 }

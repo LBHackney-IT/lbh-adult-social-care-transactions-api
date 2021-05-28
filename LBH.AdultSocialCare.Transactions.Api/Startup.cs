@@ -8,8 +8,11 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.Versioning;
 using Microsoft.AspNetCore.Builder;
@@ -114,6 +117,9 @@ namespace LBH.AdultSocialCare.Transactions.Api
                     c.IncludeXmlComments(xmlPath);
             });
 
+            // Add auto mapper
+            services.AddAutoMapper(typeof(Startup));
+
             ConfigureLogging(services, Configuration);
 
             ConfigureDbContext(services);
@@ -156,11 +162,14 @@ namespace LBH.AdultSocialCare.Transactions.Api
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IBillGateway, BillGateway>();
+            services.AddScoped<IBillItemGateway, BillItemGateway>();
+            services.AddScoped<IBillFileGateway, BillFileGateway>();
+            services.AddScoped<IBillStatusGateway, BillStatusGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetAllUseCase, GetAllUseCase>();
+            services.AddScoped<ICreateBillAsyncUseCase, CreateBillAsyncUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -192,7 +201,10 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
             // Configure extension methods to use auto mapper
             IMapper mapper = app.ApplicationServices.GetService<IMapper>();
+            ApiToDomainFactory.Configure(mapper);
+            DomainToEntityFactory.Configure(mapper);
             EntityToDomainFactory.Configure(mapper);
+            ResponseFactory.Configure(mapper);
 
             // TODO
             // If you DON'T use the renaming script, PLEASE replace with your own API name manually
