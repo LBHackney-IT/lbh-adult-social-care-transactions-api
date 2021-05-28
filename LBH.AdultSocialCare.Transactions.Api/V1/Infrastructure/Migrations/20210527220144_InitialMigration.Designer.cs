@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LBH.AdultSocialCare.Transactions.Api.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210527143815_InitialMigration")]
+    [Migration("20210527220144_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,18 +160,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateUpdated")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("StatusName")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("BillStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            StatusName = "Outstanding"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            StatusName = "Paid"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            StatusName = "Overdue"
+                        });
                 });
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.Invoice", b =>
@@ -281,18 +292,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateUpdated")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("StatusName")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("InvoiceStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            StatusName = "Draft"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            StatusName = "Paid"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            StatusName = "Held"
+                        });
                 });
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PackageType", b =>

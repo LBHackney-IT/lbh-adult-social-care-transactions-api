@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -14,8 +14,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DateCreated = table.Column<DateTimeOffset>(nullable: false),
-                    DateUpdated = table.Column<DateTimeOffset>(nullable: false),
                     StatusName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -42,8 +40,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DateCreated = table.Column<DateTimeOffset>(nullable: false),
-                    DateUpdated = table.Column<DateTimeOffset>(nullable: false),
                     StatusName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -206,6 +202,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                         principalColumn: "InvoiceId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            //migrationBuilder.InsertData(
+            //    table: "BillStatuses",
+            //    columns: new[] { "Id", "StatusName" },
+            //    values: new object[,]
+            //    {
+            //        { 1, "Outstanding" },
+            //        { 2, "Paid" },
+            //        { 3, "Overdue" }
+            //    });
+
+            //migrationBuilder.InsertData(
+            //    table: "InvoiceStatuses",
+            //    columns: new[] { "Id", "StatusName" },
+            //    values: new object[,]
+            //    {
+            //        { 1, "Draft" },
+            //        { 2, "Paid" },
+            //        { 3, "Held" }
+            //    });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BillFiles_BillId",
