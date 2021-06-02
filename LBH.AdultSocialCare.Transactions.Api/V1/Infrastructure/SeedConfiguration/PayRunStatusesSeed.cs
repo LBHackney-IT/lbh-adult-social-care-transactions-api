@@ -1,6 +1,6 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunEntities;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

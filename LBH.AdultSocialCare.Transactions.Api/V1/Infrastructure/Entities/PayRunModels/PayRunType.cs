@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunEntities
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels
 {
     public class PayRunType
     {

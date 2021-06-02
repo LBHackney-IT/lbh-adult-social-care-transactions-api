@@ -6,3 +6,5 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "CA1814:Prefer jagged arrays over multidimensional", Justification = "<Pending>", Scope = "member", Target = "~M:LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations.InitialMigration.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)")]
+[assembly: SuppressMessage("Design", "CA1058:Types should not extend certain base types", Justification = "<Pending>", Scope = "type", Target = "~T:LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models.ValidationErrorCollection")]
+[assembly: SuppressMessage("Design", "CA1010:Generic interface should also be implemented", Justification = "<Pending>", Scope = "type", Target = "~T:LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models.ValidationErrorCollection")]

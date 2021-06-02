@@ -1,19 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
+using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +20,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -42,14 +40,21 @@ namespace LBH.AdultSocialCare.Transactions.Api
         public IConfiguration Configuration { get; }
 
         private static List<ApiVersionDescription> _apiVersions { get; set; }
+
         //TODO update the below to the name of your API
-        private const string ApiName = "Your API Name";
+        private const string ApiName = "Adult Social Care Transactions API";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMvc()
+                .AddMvc(config =>
+                {
+                    config.ReturnHttpNotAcceptable = true;
+                    config.Filters.Add(typeof(ApiExceptionFilter));
+                })
+                .AddNewtonsoftJson(x
+                    => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApiVersioning(o =>
             {
