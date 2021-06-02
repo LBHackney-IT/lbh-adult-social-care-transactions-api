@@ -29,6 +29,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
         public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
+        public DbSet<InvoiceItemPaymentStatus> InvoiceItemPaymentStatuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +44,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             modelBuilder.ApplyConfiguration(new InvoiceStatusSeed());
 
             modelBuilder.ApplyConfiguration(new InvoiceNumberSeed());
+            modelBuilder.ApplyConfiguration(new InvoiceItemPaymentStatusesSeed());
 
             #endregion Database Seeds
         }
