@@ -2,6 +2,7 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.CustomAttributes;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
@@ -25,6 +26,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -47,14 +50,18 @@ namespace LBH.AdultSocialCare.Transactions.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // services.AddScoped<ModelStateValidationFilterAttribute>();
             services
                 .AddMvc(config =>
                 {
                     config.ReturnHttpNotAcceptable = true;
                     config.Filters.Add(typeof(ApiExceptionFilter));
+                    // config.Filters.Add(typeof(ModelStateValidationFilterAttribute));
                 })
                 .AddNewtonsoftJson(x
                     => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .ConfigureApiBehaviorOptions(opt => opt.InvalidModelStateResponseFactory = (context => throw new InvalidModelStateException(context.ModelState.AllModelStateErrors(),
+                    "There are some validation errors. Please correct and try again")))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApiVersioning(o =>
             {
