@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
@@ -10,10 +5,14 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunEnti
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
-
     public class DatabaseContext : DbContext
     {
         //TODO: rename DatabaseContext to reflect the data source it is representing. eg. MosaicContext.
@@ -21,6 +20,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
+
         public DbSet<DatabaseEntity> DatabaseEntities { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<BillFile> BillFiles { get; set; }
@@ -33,6 +33,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<InvoiceItemPaymentStatus> InvoiceItemPaymentStatuses { get; set; }
         public DbSet<PayRun> PayRuns { get; set; }
         public DbSet<PayRunType> PayRunTypes { get; set; }
+        public DbSet<PayRunStatus> PayRunStatuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,9 +46,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 
             // Seed invoice status
             modelBuilder.ApplyConfiguration(new InvoiceStatusSeed());
-
             modelBuilder.ApplyConfiguration(new InvoiceNumberSeed());
             modelBuilder.ApplyConfiguration(new InvoiceItemPaymentStatusesSeed());
+
+            modelBuilder.ApplyConfiguration(new PayRunTypesSeed());
+            modelBuilder.ApplyConfiguration(new PayRunStatusesSeed());
 
             #endregion Database Seeds
         }
