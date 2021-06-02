@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunEntities
 {
     public class PayRunStatus
     {
-        public int PayRunStatusId { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public int PayRunStatusId { get; set; }
         public string StatusName { get; set; }
     }
 }
