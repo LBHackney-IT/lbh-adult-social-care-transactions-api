@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunEntities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -30,6 +31,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
         public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
         public DbSet<InvoiceItemPaymentStatus> InvoiceItemPaymentStatuses { get; set; }
+        public DbSet<PayRun> PayRuns { get; set; }
+        public DbSet<PayRunType> PayRunTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
