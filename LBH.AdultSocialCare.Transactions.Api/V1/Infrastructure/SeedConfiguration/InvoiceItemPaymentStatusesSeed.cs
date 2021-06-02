@@ -15,19 +15,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
                 {
                     StatusId = (int) InvoiceItemPaymentStatusEnum.NotStarted,
                     StatusName = InvoiceItemPaymentStatusEnum.NotStarted.ToDescription(),
-                    DisplayName = "Not Started"
+                    DisplayName = InvoiceItemPaymentStatusEnum.NotStarted.GetDisplayName()
                 },
                 new InvoiceItemPaymentStatus
                 {
                     StatusId = (int) InvoiceItemPaymentStatusEnum.Held,
                     StatusName = InvoiceItemPaymentStatusEnum.Held.ToDescription(),
-                    DisplayName = "Hold"
+                    DisplayName = InvoiceItemPaymentStatusEnum.Held.GetDisplayName()
                 },
                 new InvoiceItemPaymentStatus
                 {
                     StatusId = (int) InvoiceItemPaymentStatusEnum.Paid,
                     StatusName = InvoiceItemPaymentStatusEnum.Paid.ToDescription(),
-                    DisplayName = "Pay"
+                    DisplayName = InvoiceItemPaymentStatusEnum.Paid.GetDisplayName()
                 });
         }
     }

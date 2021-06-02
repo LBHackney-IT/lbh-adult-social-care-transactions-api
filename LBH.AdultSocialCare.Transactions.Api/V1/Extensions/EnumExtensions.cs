@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
@@ -34,6 +35,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions
             var attribute = GetText<DescriptionAttribute>(enumeration);
 
             return attribute.Description;
+        }
+
+        public static string GetDisplayName(this Enum enumeration)
+        {
+            var attribute = GetText<DisplayAttribute>(enumeration);
+
+            return attribute.GetName();
         }
 
         public static T GetText<T>(Enum enumeration) where T : Attribute
