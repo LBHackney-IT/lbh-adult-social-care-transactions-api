@@ -6,33 +6,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
 {
     public class Invoice : BaseEntity
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid InvoiceId { get; set; }
-
-        public int InvoiceStatusId { get; set; }
-
-        public Guid PayRunId { get; set; }
-
-        public Guid InvoiceNumber { get; set; }
-
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid InvoiceId { get; set; }
+        public string InvoiceNumber { get; set; }
+        public long SupplierId { get; set; }
         public int PackageTypeId { get; set; }
-
-        public int SupplierId { get; set; }
-
         public Guid ServiceUserId { get; set; }
-
-        public decimal TotalAmount { get; set; }
-
-        public int UserId { get; set; }
-
-        [ForeignKey(nameof(InvoiceStatusId))]
-        public InvoiceStatus InvoiceStatus { get; set; }
-
-        [ForeignKey(nameof(PackageTypeId))]
-        public PackageType PackageType { get; set; }
-
+        public DateTimeOffset DateInvoiced { get; set; }
+        public decimal TotalAmount { get; set; } // Total amount when invoice is being created
+        public float SupplierVATPercent { get; set; }
+        public int InvoiceStatusId { get; set; }
         public Guid CreatorId { get; set; }
-
         public Guid? UpdaterId { get; set; }
+
+        [ForeignKey(nameof(InvoiceStatusId))] public InvoiceStatus InvoiceStatus { get; set; }
+        [ForeignKey(nameof(PackageTypeId))] public PackageType PackageType { get; set; }
     }
 }
