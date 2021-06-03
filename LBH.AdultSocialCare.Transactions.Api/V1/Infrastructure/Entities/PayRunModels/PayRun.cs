@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,5 +19,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRun
         [ForeignKey(nameof(PayRunTypeId))] public PayRunType PayRunType { get; set; }
         [ForeignKey(nameof(PayRunSubTypeId))] public PayRunSubType PayRunSubType { get; set; }
         [ForeignKey(nameof(PayRunStatusId))] public PayRunStatus PayRunStatus { get; set; }
+        public virtual ICollection<PayRunItem> PayRunItems { get; set; }
     }
 }

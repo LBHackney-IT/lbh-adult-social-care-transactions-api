@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,5 +21,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
 
         [ForeignKey(nameof(InvoiceStatusId))] public InvoiceStatus InvoiceStatus { get; set; }
         [ForeignKey(nameof(PackageTypeId))] public PackageType PackageType { get; set; }
+        public virtual ICollection<InvoiceItem> InvoiceItems { get; set; }
     }
 }
