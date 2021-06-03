@@ -29,6 +29,9 @@ using System.Reflection;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.IPayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -185,11 +188,19 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IInvoiceGateway, InvoiceGateway>();
 
             #endregion
+
+
+            #region PayRuns
+
+            services.AddScoped<IPayRunGateway, PayRunGateway>();
+
+            #endregion
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<ICreateBillAsyncUseCase, CreateBillAsyncUseCase>();
+            services.AddScoped<IPayRunUseCase, PayRunUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
