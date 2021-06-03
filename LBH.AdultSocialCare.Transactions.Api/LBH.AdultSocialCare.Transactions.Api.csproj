@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <Folder Include="terraform\" />
-    <Folder Include="V1\Domain\InvoicesDomains\" />
+    <Folder Include="V1\Domain\BillsDomain\InvoicesDomains\" />
     <Folder Include="V1\UseCase\Interfaces\" />
   </ItemGroup>
 

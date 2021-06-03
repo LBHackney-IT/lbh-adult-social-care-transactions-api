@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain.InvoicesDomains
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
     public class InvoiceGateway : IInvoiceGateway
     {
@@ -36,6 +35,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain.InvoicesDom
                 .ToListAsync().ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
+        }
+
+        public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null)
+        {
+            var invoiceItems = await _dbContext.InvoiceItems.Where(ii =>
+                    (ii.DateCreated.Equals(null) || ii.DateCreated >= fromDate) &&
+                    ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
+                .ToListAsync().ConfigureAwait(false);
+
+            return _mapper.Map<IEnumerable<InvoiceItemMinimalDomain>>(invoiceItems);
         }
     }
 }

@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 {
@@ -29,6 +27,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<BillStatusDomain, BillStatusResponse>();
 
             #endregion Bill
+
+            #region Invoices
+
+            CreateMap<Invoice, InvoiceDomain>();
+            CreateMap<InvoiceItem, InvoiceItemMinimalDomain>();
+
+            #endregion Invoices
         }
     }
 }

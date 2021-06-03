@@ -28,6 +28,7 @@ using System.Linq;
 using System.Reflection;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -177,6 +178,13 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IBillItemGateway, BillItemGateway>();
             services.AddScoped<IBillFileGateway, BillFileGateway>();
             services.AddScoped<IBillStatusGateway, BillStatusGateway>();
+
+
+            #region Invoices
+
+            services.AddScoped<IInvoiceGateway, InvoiceGateway>();
+
+            #endregion
         }
 
         private static void RegisterUseCases(IServiceCollection services)

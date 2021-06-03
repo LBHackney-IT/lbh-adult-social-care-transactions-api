@@ -1,6 +1,6 @@
 using System;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain.InvoicesDomains
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
 {
     public class InvoiceDomain
     {
