@@ -25,16 +25,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
                 {
                     PayRunTypeId = (int) PayRunTypeEnum.HomeCare,
                     TypeName = PayRunTypeEnum.HomeCare.ToDescription()
-                },
-                new PayRunType
-                {
-                    PayRunTypeId = (int) PayRunTypeEnum.ResidentialReleaseHolds,
-                    TypeName = PayRunTypeEnum.ResidentialReleaseHolds.ToDescription()
-                },
-                new PayRunType
-                {
-                    PayRunTypeId = (int) PayRunTypeEnum.DirectPaymentsReleaseHolds,
-                    TypeName = PayRunTypeEnum.DirectPaymentsReleaseHolds.ToDescription()
                 });
         }
     }

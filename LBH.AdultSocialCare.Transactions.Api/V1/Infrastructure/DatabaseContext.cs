@@ -34,6 +34,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<PayRun> PayRuns { get; set; }
         public DbSet<PayRunType> PayRunTypes { get; set; }
         public DbSet<PayRunStatus> PayRunStatuses { get; set; }
+        public DbSet<PayRunSubType> PayRunSubTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +52,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 
             modelBuilder.ApplyConfiguration(new PayRunTypesSeed());
             modelBuilder.ApplyConfiguration(new PayRunStatusesSeed());
+            modelBuilder.ApplyConfiguration(new PayRunSubTypesSeed());
 
             #endregion Database Seeds
         }
