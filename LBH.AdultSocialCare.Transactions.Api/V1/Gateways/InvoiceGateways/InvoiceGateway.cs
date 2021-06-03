@@ -19,12 +19,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<InvoiceDomain>> GetInvoicesUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null)
+        public async Task<IEnumerable<InvoiceDomain>> GetInvoicesUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
             // Get unique invoice ids
             var invoiceIds = await _dbContext.InvoiceItems
                 .Where(ii =>
-                    (ii.DateCreated.Equals(null) || ii.DateCreated >= fromDate) &&
+                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
+                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
                     ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId)).Select(ii => ii.InvoiceId)
                 .Distinct().ToListAsync().ConfigureAwait(false);
 
@@ -37,10 +38,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
         }
 
-        public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null)
+        public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
             var invoiceItems = await _dbContext.InvoiceItems.Where(ii =>
-                    (ii.DateCreated.Equals(null) || ii.DateCreated >= fromDate) &&
+                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
+                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
                     ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
                 .ToListAsync().ConfigureAwait(false);
 

@@ -5,16 +5,28 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums
 {
     public enum InvoiceItemPaymentStatusEnum
     {
+        [Description("New")]
+        [Display(Name = "New")]
+        New = 1,
+
         [Description("Not Started")]
         [Display(Name = "Not Started")]
-        NotStarted = 1,
+        NotStarted = 2,
 
         [Description("Held")]
         [Display(Name = "Hold")]
-        Held = 2,
+        Held = 3,
 
         [Description("Paid")]
         [Display(Name = "Pay")]
-        Paid = 3,
+        Paid = 4,
+
+        [Description("Released")]
+        [Display(Name = "Release")]
+        Released = 5,
+
+        [Description("In New Pay Run")]
+        [Display(Name = "In New Pay Run")]
+        InNewPayRun = 6
     }
 }
