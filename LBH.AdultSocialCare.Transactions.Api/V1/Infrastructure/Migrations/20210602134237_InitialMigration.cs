@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace LBH.AdultSocialCare.Transactions.Api.Migrations
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 {
     public partial class InitialMigration : Migration
     {
@@ -35,6 +35,35 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InvoiceItemPaymentStatuses",
+                columns: table => new
+                {
+                    StatusId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StatusName = table.Column<string>(nullable: true),
+                    DisplayName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceItemPaymentStatuses", x => x.StatusId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InvoiceNumbers",
+                columns: table => new
+                {
+                    InvoiceNumberId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Prefix = table.Column<string>(nullable: true),
+                    CurrentInvoiceNumber = table.Column<long>(nullable: false),
+                    PostFix = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceNumbers", x => x.InvoiceNumberId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InvoiceStatuses",
                 columns: table => new
                 {
@@ -60,6 +89,32 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PackageType", x => x.PackageTypeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayRunStatuses",
+                columns: table => new
+                {
+                    PayRunStatusId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StatusName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayRunStatuses", x => x.PayRunStatusId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayRunTypes",
+                columns: table => new
+                {
+                    PayRunTypeId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TypeName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayRunTypes", x => x.PayRunTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -98,14 +153,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                     InvoiceId = table.Column<Guid>(nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(nullable: false),
                     DateUpdated = table.Column<DateTimeOffset>(nullable: false),
-                    InvoiceStatusId = table.Column<int>(nullable: false),
-                    PayRunId = table.Column<Guid>(nullable: false),
-                    InvoiceNumber = table.Column<Guid>(nullable: false),
+                    InvoiceNumber = table.Column<string>(nullable: true),
+                    SupplierId = table.Column<long>(nullable: false),
                     PackageTypeId = table.Column<int>(nullable: false),
-                    SupplierId = table.Column<int>(nullable: false),
                     ServiceUserId = table.Column<Guid>(nullable: false),
+                    DateInvoiced = table.Column<DateTimeOffset>(nullable: false),
                     TotalAmount = table.Column<decimal>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
+                    SupplierVATPercent = table.Column<float>(nullable: false),
+                    InvoiceStatusId = table.Column<int>(nullable: false),
                     CreatorId = table.Column<Guid>(nullable: false),
                     UpdaterId = table.Column<Guid>(nullable: true)
                 },
@@ -123,6 +178,38 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                         column: x => x.PackageTypeId,
                         principalTable: "PackageType",
                         principalColumn: "PackageTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayRuns",
+                columns: table => new
+                {
+                    PayRunId = table.Column<Guid>(nullable: false),
+                    DateCreated = table.Column<DateTimeOffset>(nullable: false),
+                    DateUpdated = table.Column<DateTimeOffset>(nullable: false),
+                    PayRunNumber = table.Column<long>(nullable: false),
+                    PayRunTypeId = table.Column<int>(nullable: false),
+                    PayRunStatusId = table.Column<int>(nullable: false),
+                    DateFrom = table.Column<DateTimeOffset>(nullable: false),
+                    DateTo = table.Column<DateTimeOffset>(nullable: false),
+                    CreatorId = table.Column<Guid>(nullable: false),
+                    UpdaterId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayRuns", x => x.PayRunId);
+                    table.ForeignKey(
+                        name: "FK_PayRuns_PayRunStatuses_PayRunStatusId",
+                        column: x => x.PayRunStatusId,
+                        principalTable: "PayRunStatuses",
+                        principalColumn: "PayRunStatusId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PayRuns_PayRunTypes_PayRunTypeId",
+                        column: x => x.PayRunTypeId,
+                        principalTable: "PayRunTypes",
+                        principalColumn: "PayRunTypeId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -182,13 +269,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                     DateCreated = table.Column<DateTimeOffset>(nullable: false),
                     DateUpdated = table.Column<DateTimeOffset>(nullable: false),
                     InvoiceId = table.Column<Guid>(nullable: false),
+                    InvoiceItemPaymentStatusId = table.Column<int>(nullable: false),
                     ItemName = table.Column<string>(nullable: true),
                     PricePerUnit = table.Column<decimal>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     SubTotal = table.Column<decimal>(nullable: false),
-                    Vat = table.Column<decimal>(nullable: false),
+                    VatAmount = table.Column<decimal>(nullable: false),
                     TotalPrice = table.Column<decimal>(nullable: false),
-                    LedgerId = table.Column<Guid>(nullable: false),
+                    SupplierReturnItemId = table.Column<Guid>(nullable: true),
                     CreatorId = table.Column<Guid>(nullable: false),
                     UpdaterId = table.Column<Guid>(nullable: true)
                 },
@@ -201,27 +289,69 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                         principalTable: "Invoices",
                         principalColumn: "InvoiceId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InvoiceItems_InvoiceItemPaymentStatuses_InvoiceItemPaymentS~",
+                        column: x => x.InvoiceItemPaymentStatusId,
+                        principalTable: "InvoiceItemPaymentStatuses",
+                        principalColumn: "StatusId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
-            //migrationBuilder.InsertData(
-            //    table: "BillStatuses",
-            //    columns: new[] { "Id", "StatusName" },
-            //    values: new object[,]
-            //    {
-            //        { 1, "Outstanding" },
-            //        { 2, "Paid" },
-            //        { 3, "Overdue" }
-            //    });
+            migrationBuilder.InsertData(
+                table: "BillStatuses",
+                columns: new[] { "Id", "StatusName" },
+                values: new object[,]
+                {
+                    { 1, "Outstanding" },
+                    { 2, "Paid" },
+                    { 3, "Overdue" }
+                });
 
-            //migrationBuilder.InsertData(
-            //    table: "InvoiceStatuses",
-            //    columns: new[] { "Id", "StatusName" },
-            //    values: new object[,]
-            //    {
-            //        { 1, "Draft" },
-            //        { 2, "Paid" },
-            //        { 3, "Held" }
-            //    });
+            migrationBuilder.InsertData(
+                table: "InvoiceItemPaymentStatuses",
+                columns: new[] { "StatusId", "DisplayName", "StatusName" },
+                values: new object[,]
+                {
+                    { 1, "Not Started", "Not Started" },
+                    { 2, "Hold", "Held" },
+                    { 3, "Pay", "Paid" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "InvoiceNumbers",
+                columns: new[] { "InvoiceNumberId", "CurrentInvoiceNumber", "PostFix", "Prefix" },
+                values: new object[] { 1, 1L, null, "INV" });
+
+            migrationBuilder.InsertData(
+                table: "InvoiceStatuses",
+                columns: new[] { "Id", "StatusName" },
+                values: new object[,]
+                {
+                    { 3, "Held" },
+                    { 2, "Paid" },
+                    { 1, "Draft" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PayRunStatuses",
+                columns: new[] { "PayRunStatusId", "StatusName" },
+                values: new object[,]
+                {
+                    { 1, "Draft" },
+                    { 2, "Approved" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PayRunTypes",
+                columns: new[] { "PayRunTypeId", "TypeName" },
+                values: new object[,]
+                {
+                    { 1, "Residential Recurring" },
+                    { 2, "Direct Payments" },
+                    { 3, "Home Care" },
+                    { 4, "Residential Release Holds" },
+                    { 5, "Direct Payments Release Holds" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BillFiles_BillId",
@@ -244,6 +374,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvoiceItems_InvoiceItemPaymentStatusId",
+                table: "InvoiceItems",
+                column: "InvoiceItemPaymentStatusId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invoices_InvoiceStatusId",
                 table: "Invoices",
                 column: "InvoiceStatusId");
@@ -252,6 +387,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 name: "IX_Invoices_PackageTypeId",
                 table: "Invoices",
                 column: "PackageTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayRuns_PayRunStatusId",
+                table: "PayRuns",
+                column: "PayRunStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayRuns_PayRunTypeId",
+                table: "PayRuns",
+                column: "PayRunTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -269,10 +414,25 @@ namespace LBH.AdultSocialCare.Transactions.Api.Migrations
                 name: "InvoiceItems");
 
             migrationBuilder.DropTable(
+                name: "InvoiceNumbers");
+
+            migrationBuilder.DropTable(
+                name: "PayRuns");
+
+            migrationBuilder.DropTable(
                 name: "Bills");
 
             migrationBuilder.DropTable(
                 name: "Invoices");
+
+            migrationBuilder.DropTable(
+                name: "InvoiceItemPaymentStatuses");
+
+            migrationBuilder.DropTable(
+                name: "PayRunStatuses");
+
+            migrationBuilder.DropTable(
+                name: "PayRunTypes");
 
             migrationBuilder.DropTable(
                 name: "BillStatuses");
