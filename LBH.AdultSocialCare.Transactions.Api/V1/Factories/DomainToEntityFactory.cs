@@ -33,7 +33,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 
         public static PayRun ToDb(this PayRunForCreationDomain payRunForCreationDomain)
         {
-            var payRunForCreation =  _mapper.Map<PayRun>(payRunForCreationDomain);
+            var payRunForCreation = _mapper.Map<PayRun>(payRunForCreationDomain);
             payRunForCreation.PayRunItems = payRunForCreationDomain.InvoiceItems.Select(ii => new PayRunItem
             {
                 PayRunId = payRunForCreation.PayRunId,
