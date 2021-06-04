@@ -1,7 +1,6 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunEntities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -10,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
