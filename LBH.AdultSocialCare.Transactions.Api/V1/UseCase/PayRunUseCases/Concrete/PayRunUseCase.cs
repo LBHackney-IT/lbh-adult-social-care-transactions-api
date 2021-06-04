@@ -2,8 +2,9 @@ using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.IPayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 InvoiceItems = invoiceItems
             };
 
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain).ConfigureAwait(false);
+            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateDirectPaymentsPayRunUseCase()
@@ -68,7 +69,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 InvoiceItems = invoiceItems
             };
 
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain).ConfigureAwait(false);
+            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateHomeCarePayRunUseCase()
@@ -93,7 +94,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 InvoiceItems = invoiceItems
             };
 
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain).ConfigureAwait(false);
+            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateResidentialReleaseHoldsPayRunUseCase()
@@ -119,7 +120,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 InvoiceItems = invoiceItems
             };
 
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain).ConfigureAwait(false);
+            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase()
@@ -145,7 +146,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 InvoiceItems = invoiceItems
             };
 
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain).ConfigureAwait(false);
+            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateNewPayRunUseCase(string payRunType)

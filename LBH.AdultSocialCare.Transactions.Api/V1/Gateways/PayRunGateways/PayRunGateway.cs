@@ -1,14 +1,15 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.IPayRunGateways
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
     public class PayRunGateway : IPayRunGateway
     {
@@ -33,9 +34,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.IPayRunGateways
             return lastPayRun?.DateTo ?? DateTimeOffset.Now.AddDays(-28);
         }
 
-        public async Task<Guid> CreateNewPayRun(PayRunForCreationDomain payRunForCreationDomain)
+        public async Task<Guid> CreateNewPayRun(PayRun payRunForCreation)
         {
-            var payRunForCreation = new PayRun();
             var entry = await _dbContext.PayRuns.AddAsync(payRunForCreation).ConfigureAwait(false);
             try
             {
@@ -45,7 +45,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.IPayRunGateways
             }
             catch (Exception)
             {
-                throw new DbSaveFailedException("Could not save day care package to database");
+                throw new DbSaveFailedException("Could not save pay run to database");
             }
         }
     }

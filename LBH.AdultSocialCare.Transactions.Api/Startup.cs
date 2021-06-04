@@ -29,7 +29,7 @@ using System.Reflection;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.IPayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 
