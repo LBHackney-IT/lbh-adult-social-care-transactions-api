@@ -200,7 +200,8 @@ namespace LBH.AdultSocialCare.Transactions.Api
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<ICreateBillAsyncUseCase, CreateBillAsyncUseCase>();
-            services.AddScoped<IPayRunUseCase, PayRunUseCase>();
+            services.AddScoped<ICreatePayRunUseCase, CreatePayRunUseCase>();
+            services.AddScoped<IGetPayRunSummaryListUseCase, GetPayRunSummaryListUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -42,7 +42,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 PayRunId = pr.PayRunId,
                 PayRunNumber = pr.PayRunNumber,
                 PayRunTypeId = pr.PayRunTypeId,
-                PayRunTypeName = pr.PayRunSubType.SubTypeName,
+                PayRunTypeName = pr.PayRunType.TypeName,
                 PayRunSubTypeId = pr.PayRunSubTypeId,
                 PayRunSubTypeName = pr.PayRunSubType.SubTypeName,
                 PayRunStatusId = pr.PayRunStatusId,

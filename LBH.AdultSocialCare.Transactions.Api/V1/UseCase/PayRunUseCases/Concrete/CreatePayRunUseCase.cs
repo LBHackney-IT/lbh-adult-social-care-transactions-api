@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete
 {
-    public class PayRunUseCase : IPayRunUseCase
+    public class CreatePayRunUseCase : ICreatePayRunUseCase
     {
         private readonly IInvoiceGateway _invoiceGateway;
         private readonly IPayRunGateway _payRunGateway;
 
-        public PayRunUseCase(IInvoiceGateway invoiceGateway, IPayRunGateway payRunGateway)
+        public CreatePayRunUseCase(IInvoiceGateway invoiceGateway, IPayRunGateway payRunGateway)
         {
             _invoiceGateway = invoiceGateway;
             _payRunGateway = payRunGateway;

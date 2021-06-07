@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -33,6 +35,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static BillResponse ToResponse(this BillDomain billDomain)
         {
             return _mapper.Map<BillResponse>(billDomain);
+        }
+
+        #endregion
+
+        #region PayRuns
+
+        public static IEnumerable<PayRunSummaryResponse> ToResponse(this IEnumerable<PayRunSummaryDomain> payRunSummaryDomains)
+        {
+            return _mapper.Map<IEnumerable<PayRunSummaryResponse>>(payRunSummaryDomains);
         }
 
         #endregion
