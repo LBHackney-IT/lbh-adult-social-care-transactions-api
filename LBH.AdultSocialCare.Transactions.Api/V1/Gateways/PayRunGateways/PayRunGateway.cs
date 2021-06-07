@@ -38,6 +38,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         public async Task<PagedList<PayRunSummaryDomain>> GetPayRunSummaryList(PayRunSummaryListParameters parameters)
         {
             var payRunList = await _dbContext.PayRuns
+                .FilterPayRunSummaryList(parameters.PayRunId, parameters.PayRunTypeId, parameters.PayRunSubTypeId,
+                    parameters.PayRunStatusId, parameters.DateFrom, parameters.DateTo)
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .Select(pr => new PayRunSummaryDomain
@@ -50,15 +52,25 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                     PayRunSubTypeName = pr.PayRunSubType.SubTypeName,
                     PayRunStatusId = pr.PayRunStatusId,
                     PayRunStatusName = pr.PayRunStatus.StatusName,
-                    TotalAmountPaid = pr.PayRunItems.Where(pri => pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Paid)).Sum(x => x.PaidAmount),
-                    TotalAmountHeld = pr.PayRunItems.Where(pri => pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held)).Sum(x => x.InvoiceItem.TotalPrice),
+                    TotalAmountPaid =
+                        pr.PayRunItems
+                            .Where(pri =>
+                                pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals(
+                                    (int) InvoiceItemPaymentStatusEnum.Paid)).Sum(x => x.PaidAmount),
+                    TotalAmountHeld =
+                        pr.PayRunItems
+                            .Where(pri =>
+                                pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals(
+                                    (int) InvoiceItemPaymentStatusEnum.Held)).Sum(x => x.InvoiceItem.TotalPrice),
                     DateFrom = pr.DateFrom,
                     DateTo = pr.DateTo,
                     DateCreated = pr.DateCreated
                 }).ToListAsync().ConfigureAwait(false);
 
-            var payRunCount =
-                await _dbContext.PayRuns.CountAsync().ConfigureAwait(false);
+            var payRunCount = await _dbContext.PayRuns
+                .FilterPayRunSummaryList(parameters.PayRunId, parameters.PayRunTypeId, parameters.PayRunSubTypeId,
+                    parameters.PayRunStatusId, parameters.DateFrom, parameters.DateTo)
+                .CountAsync().ConfigureAwait(false);
 
             return PagedList<PayRunSummaryDomain>.ToPagedList(payRunList, payRunCount, parameters.PageNumber, parameters.PageSize);
         }
