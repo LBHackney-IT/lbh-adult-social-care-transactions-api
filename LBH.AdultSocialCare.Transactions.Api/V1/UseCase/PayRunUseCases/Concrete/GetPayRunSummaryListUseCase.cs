@@ -1,8 +1,8 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete
@@ -16,10 +16,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             _payRunGateway = payRunGateway;
         }
 
-        public async Task<IEnumerable<PayRunSummaryResponse>> Execute()
+        public async Task<PagedPayRunSummaryResponse> Execute(PayRunSummaryListParameters parameters)
         {
-            var res = await _payRunGateway.GetPayRunSummaryList().ConfigureAwait(false);
-            return res.ToResponse();
+            var res = await _payRunGateway.GetPayRunSummaryList(parameters).ConfigureAwait(false);
+            return new PagedPayRunSummaryResponse
+            {
+                PagingMetaData = res.PagingMetaData,
+                Data = res.ToResponse()
+            };
         }
     }
 }
