@@ -1,6 +1,7 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
@@ -40,6 +41,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             #region Payruns
 
             CreateMap<PayRunForCreationDomain, PayRun>();
+            CreateMap<PayRunSummaryDomain, PayRunSummaryResponse>();
 
             #endregion Invoices
         }

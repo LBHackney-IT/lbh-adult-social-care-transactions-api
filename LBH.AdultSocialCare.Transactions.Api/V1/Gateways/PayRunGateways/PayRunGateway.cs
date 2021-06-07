@@ -1,13 +1,14 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
-using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -32,6 +33,27 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .ConfigureAwait(false);
 
             return lastPayRun?.DateTo ?? DateTimeOffset.Now.AddDays(-28);
+        }
+
+        public async Task<IEnumerable<PayRunSummaryDomain>> GetPayRunSummaryList()
+        {
+            var payRunList = await _dbContext.PayRuns.Select(pr => new PayRunSummaryDomain
+            {
+                PayRunId = pr.PayRunId,
+                PayRunNumber = pr.PayRunNumber,
+                PayRunTypeId = pr.PayRunTypeId,
+                PayRunTypeName = pr.PayRunSubType.SubTypeName,
+                PayRunSubTypeId = pr.PayRunSubTypeId,
+                PayRunSubTypeName = pr.PayRunSubType.SubTypeName,
+                PayRunStatusId = pr.PayRunStatusId,
+                PayRunStatusName = pr.PayRunStatus.StatusName,
+                TotalAmountPaid = pr.PayRunItems.Where(pri => pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int)InvoiceItemPaymentStatusEnum.Paid)).Sum(x => x.PaidAmount),
+                TotalAmountHeld = pr.PayRunItems.Where(pri => pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held)).Sum(x => x.InvoiceItem.TotalPrice),
+                DateFrom = pr.DateFrom,
+                DateTo = pr.DateTo,
+                DateCreated = pr.DateCreated
+            }).ToListAsync().ConfigureAwait(false);
+            return payRunList;
         }
 
         public async Task<Guid> CreateNewPayRun(PayRun payRunForCreation)
