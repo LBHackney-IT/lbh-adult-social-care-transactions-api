@@ -11,12 +11,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums
         DirectPayments = 2,
 
         [Description("Home Care")]
-        HomeCare = 3,
-
-        [Description("Residential Release Holds")]
-        ResidentialReleaseHolds = 4,
-
-        [Description("Direct Payments Release Holds")]
-        DirectPaymentsReleaseHolds = 5
+        HomeCare = 3
     }
 }

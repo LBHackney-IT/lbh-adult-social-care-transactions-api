@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices
 {
@@ -21,5 +23,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
 
         [ForeignKey((nameof(InvoiceId)))] public Invoice Invoice { get; set; }
         [ForeignKey((nameof(InvoiceItemPaymentStatusId)))] public InvoiceItemPaymentStatus InvoiceItemPaymentStatus { get; set; }
+        public virtual ICollection<PayRunItem> PayRunItems { get; set; }
     }
 }

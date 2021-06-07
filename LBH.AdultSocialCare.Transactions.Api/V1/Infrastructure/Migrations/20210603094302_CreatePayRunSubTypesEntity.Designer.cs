@@ -3,15 +3,17 @@ using System;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210603094302_CreatePayRunSubTypesEntity")]
+    partial class CreatePayRunSubTypesEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,38 +311,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         new
                         {
                             StatusId = 1,
-                            DisplayName = "New",
-                            StatusName = "New"
-                        },
-                        new
-                        {
-                            StatusId = 2,
                             DisplayName = "Not Started",
                             StatusName = "Not Started"
                         },
                         new
                         {
-                            StatusId = 3,
+                            StatusId = 2,
                             DisplayName = "Hold",
                             StatusName = "Held"
                         },
                         new
                         {
-                            StatusId = 4,
+                            StatusId = 3,
                             DisplayName = "Pay",
                             StatusName = "Paid"
-                        },
-                        new
-                        {
-                            StatusId = 5,
-                            DisplayName = "Release",
-                            StatusName = "Released"
-                        },
-                        new
-                        {
-                            StatusId = 6,
-                            DisplayName = "In New Pay Run",
-                            StatusName = "In New Pay Run"
                         });
                 });
 
@@ -471,39 +455,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasIndex("PayRunTypeId");
 
                     b.ToTable("PayRuns");
-                });
-
-            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunItem", b =>
-                {
-                    b.Property<Guid>("PayRunItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("InvoiceItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("PaidAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<Guid>("PayRunId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("RemainingBalance")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("PayRunItemId");
-
-                    b.HasIndex("InvoiceItemId");
-
-                    b.HasIndex("PayRunId");
-
-                    b.ToTable("PayRunItems");
                 });
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunStatus", b =>
@@ -644,7 +595,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.InvoiceItem", b =>
                 {
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.Invoice", "Invoice")
-                        .WithMany("InvoiceItems")
+                        .WithMany()
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -671,21 +622,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunType", "PayRunType")
                         .WithMany()
                         .HasForeignKey("PayRunTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunItem", b =>
-                {
-                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.InvoiceItem", "InvoiceItem")
-                        .WithMany("PayRunItems")
-                        .HasForeignKey("InvoiceItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRun", "PayRun")
-                        .WithMany("PayRunItems")
-                        .HasForeignKey("PayRunId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

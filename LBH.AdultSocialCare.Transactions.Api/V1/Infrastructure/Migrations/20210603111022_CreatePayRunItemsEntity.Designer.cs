@@ -3,15 +3,17 @@ using System;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210603111022_CreatePayRunItemsEntity")]
+    partial class CreatePayRunItemsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,38 +311,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         new
                         {
                             StatusId = 1,
-                            DisplayName = "New",
-                            StatusName = "New"
-                        },
-                        new
-                        {
-                            StatusId = 2,
                             DisplayName = "Not Started",
                             StatusName = "Not Started"
                         },
                         new
                         {
-                            StatusId = 3,
+                            StatusId = 2,
                             DisplayName = "Hold",
                             StatusName = "Held"
                         },
                         new
                         {
-                            StatusId = 4,
+                            StatusId = 3,
                             DisplayName = "Pay",
                             StatusName = "Paid"
-                        },
-                        new
-                        {
-                            StatusId = 5,
-                            DisplayName = "Release",
-                            StatusName = "Released"
-                        },
-                        new
-                        {
-                            StatusId = 6,
-                            DisplayName = "In New Pay Run",
-                            StatusName = "In New Pay Run"
                         });
                 });
 

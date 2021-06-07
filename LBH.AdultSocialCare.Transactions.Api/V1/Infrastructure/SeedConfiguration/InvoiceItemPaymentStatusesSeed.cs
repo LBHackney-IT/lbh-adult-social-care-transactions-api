@@ -13,6 +13,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
             builder.HasData(
                 new InvoiceItemPaymentStatus
                 {
+                    StatusId = (int) InvoiceItemPaymentStatusEnum.New,
+                    StatusName = InvoiceItemPaymentStatusEnum.New.ToDescription(),
+                    DisplayName = InvoiceItemPaymentStatusEnum.New.GetDisplayName()
+                }, new InvoiceItemPaymentStatus
+                {
                     StatusId = (int) InvoiceItemPaymentStatusEnum.NotStarted,
                     StatusName = InvoiceItemPaymentStatusEnum.NotStarted.ToDescription(),
                     DisplayName = InvoiceItemPaymentStatusEnum.NotStarted.GetDisplayName()
@@ -28,6 +33,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
                     StatusId = (int) InvoiceItemPaymentStatusEnum.Paid,
                     StatusName = InvoiceItemPaymentStatusEnum.Paid.ToDescription(),
                     DisplayName = InvoiceItemPaymentStatusEnum.Paid.GetDisplayName()
+                },
+                new InvoiceItemPaymentStatus
+                {
+                    StatusId = (int) InvoiceItemPaymentStatusEnum.Released,
+                    StatusName = InvoiceItemPaymentStatusEnum.Released.ToDescription(),
+                    DisplayName = InvoiceItemPaymentStatusEnum.Released.GetDisplayName()
+                },
+                new InvoiceItemPaymentStatus
+                {
+                    StatusId = (int) InvoiceItemPaymentStatusEnum.InNewPayRun,
+                    StatusName = InvoiceItemPaymentStatusEnum.InNewPayRun.ToDescription(),
+                    DisplayName = InvoiceItemPaymentStatusEnum.InNewPayRun.GetDisplayName()
                 });
         }
     }
