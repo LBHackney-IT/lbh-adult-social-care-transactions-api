@@ -21,12 +21,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly ICreatePayRunUseCase _createPayRunUseCase;
         private readonly IGetPayRunSummaryListUseCase _getPayRunSummaryListUseCase;
         private readonly IGetUniqueSuppliersInPayRunUseCase _getUniqueSuppliersInPayRunUseCase;
+        private readonly IGetReleasedHoldsCountUseCase _getReleasedHoldsCountUseCase;
 
-        public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase, IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase)
+        public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
+            IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
             _getUniqueSuppliersInPayRunUseCase = getUniqueSuppliersInPayRunUseCase;
+            _getReleasedHoldsCountUseCase = getReleasedHoldsCountUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -40,21 +43,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<PagedPayRunSummaryResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedPayRunSummaryResponse), StatusCodes.Status200OK)]
         [HttpGet("summary-list")]
-        public async Task<ActionResult<IEnumerable<PagedPayRunSummaryResponse>>> GetPayRunSummaryList([FromQuery] PayRunSummaryListParameters parameters)
+        public async Task<ActionResult<PagedPayRunSummaryResponse>> GetPayRunSummaryList([FromQuery] PayRunSummaryListParameters parameters)
         {
             var res = await _getPayRunSummaryListUseCase.Execute(parameters).ConfigureAwait(false);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(res.PagingMetaData));
             return Ok(res);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<PagedSupplierMinimalListResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedSupplierMinimalListResponse), StatusCodes.Status200OK)]
         [HttpGet("{payRunId}/unique-suppliers")]
-        public async Task<ActionResult<IEnumerable<PagedSupplierMinimalListResponse>>> GetUniqueSuppliersInPayRun(Guid payRunId, [FromQuery] SupplierListParameters parameters)
+        public async Task<ActionResult<PagedSupplierMinimalListResponse>> GetUniqueSuppliersInPayRun(Guid payRunId, [FromQuery] SupplierListParameters parameters)
         {
             var res = await _getUniqueSuppliersInPayRunUseCase.Execute(payRunId, parameters).ConfigureAwait(false);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(res.PagingMetaData));
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<ReleasedHoldsByTypeResponse>), StatusCodes.Status200OK)]
+        [HttpGet("released-holds-count")]
+        public async Task<ActionResult<IEnumerable<ReleasedHoldsByTypeResponse>>> GetReleasedHoldsCountByType([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
+        {
+            var res = await _getReleasedHoldsCountUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
             return Ok(res);
         }
     }

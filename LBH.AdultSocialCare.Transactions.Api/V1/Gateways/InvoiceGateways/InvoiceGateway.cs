@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -48,6 +50,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .ToListAsync().ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<InvoiceItemMinimalDomain>>(invoiceItems);
+        }
+
+        public async Task<IEnumerable<PayRunItemsPaymentsByTypeDomain>> GetInvoiceItemsCountUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null,
+            DateTimeOffset? toDate = null)
+        {
+            return await _dbContext.PayRunItems.Where(ii =>
+                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
+                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
+                    ii.InvoiceItem.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
+                .GroupBy(pri => pri.PayRun.PayRunType.TypeName)
+                .Select(pri => new PayRunItemsPaymentsByTypeDomain { Name = pri.Key, Value = pri.Count() })
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
 
         public async Task<DateTimeOffset?> GetMinDateOfReleasedInvoiceItem(int itemPaymentStatusId)
