@@ -4,9 +4,11 @@ using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -44,6 +46,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static IEnumerable<PayRunSummaryResponse> ToResponse(this IEnumerable<PayRunSummaryDomain> payRunSummaryDomains)
         {
             return _mapper.Map<IEnumerable<PayRunSummaryResponse>>(payRunSummaryDomains);
+        }
+
+        #endregion
+
+        #region Suppliers
+
+        public static IEnumerable<SupplierMinimalResponse> ToResponse(this IEnumerable<SupplierMinimalDomain> supplierMinimalDomains)
+        {
+            return _mapper.Map<IEnumerable<SupplierMinimalResponse>>(supplierMinimalDomains);
         }
 
         #endregion

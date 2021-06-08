@@ -1,6 +1,7 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
@@ -88,6 +89,36 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             {
                 throw new DbSaveFailedException("Could not save pay run to database");
             }
+        }
+
+        public async Task<PagedList<SupplierMinimalDomain>> GetUniqueSuppliersInPayRun(Guid payRunId, SupplierListParameters parameters)
+        {
+            var supplierList = await _dbContext.PayRunItems.Where(
+                    pr => pr.PayRunId.Equals(payRunId)
+                          && (parameters.SearchTerm == null || EF.Functions.Like(
+                              pr.InvoiceItem.Invoice.Supplier.SupplierName.ToLower(),
+                              $"%{parameters.SearchTerm.Trim().ToLower()}%"))
+                )
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .Select(ri => new
+                {
+                    ri.InvoiceItem.Invoice.Supplier.SupplierId, ri.InvoiceItem.Invoice.Supplier.SupplierName
+                }).Distinct()
+                .Select(ri => new SupplierMinimalDomain {SupplierId = ri.SupplierId, SupplierName = ri.SupplierName})
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            var supplierCount = await _dbContext.PayRunItems.Where(
+                    pr => pr.PayRunId.Equals(payRunId)
+                          && (parameters.SearchTerm == null || EF.Functions.Like(
+                              pr.InvoiceItem.Invoice.Supplier.SupplierName.ToLower(),
+                              $"%{parameters.SearchTerm.Trim().ToLower()}%"))
+                )
+                .CountAsync()
+                .ConfigureAwait(false);
+
+            return PagedList<SupplierMinimalDomain>.ToPagedList(supplierList, supplierCount, parameters.PageNumber, parameters.PageSize);
         }
     }
 }

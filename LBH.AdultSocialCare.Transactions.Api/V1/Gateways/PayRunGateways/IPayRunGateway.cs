@@ -3,6 +3,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunMode
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using System;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -13,5 +14,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<PagedList<PayRunSummaryDomain>> GetPayRunSummaryList(PayRunSummaryListParameters parameters);
 
         Task<Guid> CreateNewPayRun(PayRun payRunForCreation);
+        Task<PagedList<SupplierMinimalDomain>> GetUniqueSuppliersInPayRun(Guid payRunId, SupplierListParameters parameters);
     }
 }

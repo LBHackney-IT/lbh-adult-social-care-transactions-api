@@ -1,13 +1,18 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.CustomAttributes;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,12 +31,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -182,19 +181,17 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IBillFileGateway, BillFileGateway>();
             services.AddScoped<IBillStatusGateway, BillStatusGateway>();
 
-
             #region Invoices
 
             services.AddScoped<IInvoiceGateway, InvoiceGateway>();
 
-            #endregion
-
+            #endregion Invoices
 
             #region PayRuns
 
             services.AddScoped<IPayRunGateway, PayRunGateway>();
 
-            #endregion
+            #endregion PayRuns
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -202,6 +199,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<ICreateBillAsyncUseCase, CreateBillAsyncUseCase>();
             services.AddScoped<ICreatePayRunUseCase, CreatePayRunUseCase>();
             services.AddScoped<IGetPayRunSummaryListUseCase, GetPayRunSummaryListUseCase>();
+            services.AddScoped<IGetUniqueSuppliersInPayRunUseCase, GetUniqueSuppliersInPayRunUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
