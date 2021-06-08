@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
@@ -22,14 +23,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetPayRunSummaryListUseCase _getPayRunSummaryListUseCase;
         private readonly IGetUniqueSuppliersInPayRunUseCase _getUniqueSuppliersInPayRunUseCase;
         private readonly IGetReleasedHoldsCountUseCase _getReleasedHoldsCountUseCase;
+        private readonly IGetUniquePackageTypesInPayRunUseCase _getUniquePackageTypesInPayRunUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
-            IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase)
+            IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
+            IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
             _getUniqueSuppliersInPayRunUseCase = getUniqueSuppliersInPayRunUseCase;
             _getReleasedHoldsCountUseCase = getReleasedHoldsCountUseCase;
+            _getUniquePackageTypesInPayRunUseCase = getUniquePackageTypesInPayRunUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -58,6 +62,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         {
             var res = await _getUniqueSuppliersInPayRunUseCase.Execute(payRunId, parameters).ConfigureAwait(false);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(res.PagingMetaData));
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<PackageTypeResponse>), StatusCodes.Status200OK)]
+        [HttpGet("{payRunId}/unique-package-types")]
+        public async Task<ActionResult<IEnumerable<PackageTypeResponse>>> GetUniquePackageTypesInPayRun(Guid payRunId)
+        {
+            var res = await _getUniquePackageTypesInPayRunUseCase.Execute(payRunId).ConfigureAwait(false);
             return Ok(res);
         }
 

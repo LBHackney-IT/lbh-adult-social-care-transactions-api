@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 
@@ -55,6 +57,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static IEnumerable<SupplierMinimalResponse> ToResponse(this IEnumerable<SupplierMinimalDomain> supplierMinimalDomains)
         {
             return _mapper.Map<IEnumerable<SupplierMinimalResponse>>(supplierMinimalDomains);
+        }
+
+        #endregion
+
+        #region PackageTypes
+
+        public static IEnumerable<PackageTypeResponse> ToResponse(this IEnumerable<PackageTypeDomain> packageTypeDomains)
+        {
+            return _mapper.Map<IEnumerable<PackageTypeResponse>>(packageTypeDomains);
         }
 
         #endregion

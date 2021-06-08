@@ -1,5 +1,6 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
@@ -8,6 +9,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunMode
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -120,6 +122,23 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .ConfigureAwait(false);
 
             return PagedList<SupplierMinimalDomain>.ToPagedList(supplierList, supplierCount, parameters.PageNumber, parameters.PageSize);
+        }
+
+        public async Task<IEnumerable<PackageTypeDomain>> GetUniquePackageTypesInPayRun(Guid payRunId)
+        {
+            return await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
+                .Select(pr => new
+                {
+                    pr.InvoiceItem.Invoice.PackageType.PackageTypeId,
+                    pr.InvoiceItem.Invoice.PackageType.PackageTypeName
+                }).Distinct()
+                .Select(pr => new PackageTypeDomain
+                {
+                    PackageTypeId = pr.PackageTypeId,
+                    PackageTypeName = pr.PackageTypeName
+                })
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
     }
 }
