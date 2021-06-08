@@ -103,9 +103,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .Take(parameters.PageSize)
                 .Select(ri => new
                 {
-                    ri.InvoiceItem.Invoice.Supplier.SupplierId, ri.InvoiceItem.Invoice.Supplier.SupplierName
+                    ri.InvoiceItem.Invoice.Supplier.SupplierId,
+                    ri.InvoiceItem.Invoice.Supplier.SupplierName
                 }).Distinct()
-                .Select(ri => new SupplierMinimalDomain {SupplierId = ri.SupplierId, SupplierName = ri.SupplierName})
+                .Select(ri => new SupplierMinimalDomain { SupplierId = ri.SupplierId, SupplierName = ri.SupplierName })
                 .ToListAsync()
                 .ConfigureAwait(false);
 
