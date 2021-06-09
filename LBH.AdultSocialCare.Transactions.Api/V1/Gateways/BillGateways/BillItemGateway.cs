@@ -31,14 +31,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
             }
             catch (Exception)
             {
-                throw new DbSaveFailedException("Could not save supplier to database");
+                throw new DbSaveFailedException("Could not save bill item to database");
             }
         }
 
-        public async Task<IEnumerable<BillItemDomain>> GetBillItemList(Guid billId)
+        public async Task<IEnumerable<BillItemDomain>> GetBillItemList(long billId)
         {
             var billItem = await _databaseContext.BillItems
-                .Where(b => b.BillId.Equals(billId))
+                .Where(b => b.HackneySupplierBillId.Equals(billId))
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
             return billItem?.ToDomain();

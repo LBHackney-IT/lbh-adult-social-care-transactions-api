@@ -16,11 +16,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     [ApiVersion("1.0")]
     public class BillController : ControllerBase
     {
-        private readonly ICreateBillAsyncUseCase _createBillAsyncUseCase;
+        private readonly ICreateSupplierBillUseCase _createSupplierBillUseCase;
 
-        public BillController(ICreateBillAsyncUseCase createBillAsyncUseCase)
+        public BillController(ICreateSupplierBillUseCase createSupplierBillUseCase)
         {
-            _createBillAsyncUseCase = createBillAsyncUseCase;
+            _createSupplierBillUseCase = createSupplierBillUseCase;
         }
 
         [ProducesResponseType(typeof(BillResponse), StatusCodes.Status200OK)]
@@ -29,14 +29,22 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status422UnprocessableEntity)]
         [ProducesDefaultResponseType]
         [HttpPost]
-        // [ModelStateValidationFilter]
-        public async Task<ActionResult<BillResponse>> CreateBill(
+        public async Task<ActionResult<BillResponse>> CreateSupplierBill(
             [FromBody] BillCreationRequest billCreationRequest)
         {
-            var billForCreationDomain = billCreationRequest.ToDomain();
-            var billResponse =
-                await _createBillAsyncUseCase.ExecuteAsync(billForCreationDomain).ConfigureAwait(false);
-            return Ok(billResponse);
+            if (billCreationRequest == null)
+            {
+                return BadRequest("Object for creation cannot be null.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
+            var billDomain = billCreationRequest.ToDomain();
+            var result = await _createSupplierBillUseCase.ExecuteAsync(billDomain).ConfigureAwait(false);
+            return Ok(result);
         }
     }
 }
