@@ -6,8 +6,10 @@ using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -45,6 +47,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return payRunForCreation;
         }
 
+
+        #endregion
+
+        #region Supplier
+
+        public static SupplierCreditNote ToDb(this SupplierCreditNotesCreationDomain supplierCreditNotesCreationDomain)
+        {
+            return _mapper.Map<SupplierCreditNote>(supplierCreditNotesCreationDomain);
+        }
 
         #endregion
     }
