@@ -1,6 +1,7 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
@@ -39,6 +40,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 
             CreateMap<Invoice, InvoiceDomain>();
             CreateMap<InvoiceItem, InvoiceItemMinimalDomain>();
+            CreateMap<InvoiceItemMinimalDomain, InvoiceItemMinimalResponse>();
 
             #endregion Invoices
 
@@ -47,19 +49,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<PayRunForCreationDomain, PayRun>();
             CreateMap<PayRunSummaryDomain, PayRunSummaryResponse>();
 
-            #endregion Invoices
+            #endregion Payruns
 
             #region Suppliers
 
             CreateMap<SupplierMinimalDomain, SupplierMinimalResponse>();
 
-            #endregion
+            #endregion Suppliers
 
             #region PackageTypes
 
             CreateMap<PackageTypeDomain, PackageTypeResponse>();
 
-            #endregion
+            #endregion PackageTypes
         }
     }
 }

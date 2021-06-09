@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
@@ -24,16 +25,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetUniqueSuppliersInPayRunUseCase _getUniqueSuppliersInPayRunUseCase;
         private readonly IGetReleasedHoldsCountUseCase _getReleasedHoldsCountUseCase;
         private readonly IGetUniquePackageTypesInPayRunUseCase _getUniquePackageTypesInPayRunUseCase;
+        private readonly IGetReleasedHoldsUseCase _getReleasedHoldsUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
-            IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase)
+            IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
             _getUniqueSuppliersInPayRunUseCase = getUniqueSuppliersInPayRunUseCase;
             _getReleasedHoldsCountUseCase = getReleasedHoldsCountUseCase;
             _getUniquePackageTypesInPayRunUseCase = getUniquePackageTypesInPayRunUseCase;
+            _getReleasedHoldsUseCase = getReleasedHoldsUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -78,6 +81,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<IEnumerable<ReleasedHoldsByTypeResponse>>> GetReleasedHoldsCountByType([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
         {
             var res = await _getReleasedHoldsCountUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<InvoiceItemMinimalResponse>), StatusCodes.Status200OK)]
+        [HttpGet("released-holds")]
+        public async Task<ActionResult<IEnumerable<InvoiceItemMinimalResponse>>> GetReleasedHolds([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
+        {
+            var res = await _getReleasedHoldsUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
             return Ok(res);
         }
     }
