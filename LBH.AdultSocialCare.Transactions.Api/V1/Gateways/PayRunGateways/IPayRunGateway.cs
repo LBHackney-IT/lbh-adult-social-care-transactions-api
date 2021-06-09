@@ -6,6 +6,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -20,5 +21,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<PagedList<SupplierMinimalDomain>> GetUniqueSuppliersInPayRun(Guid payRunId, SupplierListParameters parameters);
 
         Task<IEnumerable<PackageTypeDomain>> GetUniquePackageTypesInPayRun(Guid payRunId);
+        Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId);
     }
 }

@@ -203,6 +203,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetReleasedHoldsCountUseCase, GetReleasedHoldsCountUseCase>();
             services.AddScoped<IGetUniquePackageTypesInPayRunUseCase, GetUniquePackageTypesInPayRunUseCase>();
             services.AddScoped<IGetReleasedHoldsUseCase, GetReleasedHoldsUseCase>();
+            services.AddScoped<IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase, GetUniqueInvoiceItemPaymentStatusInPayRunUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

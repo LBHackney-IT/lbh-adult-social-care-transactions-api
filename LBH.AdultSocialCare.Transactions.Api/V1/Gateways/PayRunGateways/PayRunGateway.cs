@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -136,6 +137,25 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 {
                     PackageTypeId = pr.PackageTypeId,
                     PackageTypeName = pr.PackageTypeName
+                })
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId)
+        {
+            return await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
+                .Select(pr => new
+                {
+                    pr.InvoiceItem.InvoiceItemPaymentStatus.StatusId,
+                    pr.InvoiceItem.InvoiceItemPaymentStatus.StatusName,
+                    pr.InvoiceItem.InvoiceItemPaymentStatus.DisplayName,
+                }).Distinct()
+                .Select(pr => new InvoiceItemPaymentStatusDomain
+                {
+                    StatusId = pr.StatusId,
+                    StatusName = pr.StatusName,
+                    DisplayName = pr.DisplayName
                 })
                 .ToListAsync()
                 .ConfigureAwait(false);

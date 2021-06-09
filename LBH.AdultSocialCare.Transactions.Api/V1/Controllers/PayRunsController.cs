@@ -26,10 +26,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetReleasedHoldsCountUseCase _getReleasedHoldsCountUseCase;
         private readonly IGetUniquePackageTypesInPayRunUseCase _getUniquePackageTypesInPayRunUseCase;
         private readonly IGetReleasedHoldsUseCase _getReleasedHoldsUseCase;
+        private readonly IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase _getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
-            IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase)
+            IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase,
+            IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -37,6 +39,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _getReleasedHoldsCountUseCase = getReleasedHoldsCountUseCase;
             _getUniquePackageTypesInPayRunUseCase = getUniquePackageTypesInPayRunUseCase;
             _getReleasedHoldsUseCase = getReleasedHoldsUseCase;
+            _getUniqueInvoiceItemPaymentStatusInPayRunUseCase = getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -89,6 +92,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<IEnumerable<InvoiceItemMinimalResponse>>> GetReleasedHolds([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
         {
             var res = await _getReleasedHoldsUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
+        [HttpGet("{payRunId}/unique-payment-statuses")]
+        public async Task<ActionResult<IEnumerable<InvoiceItemPaymentStatusResponse>>> GetUniqueInvoiceItemPaymentStatusInPayRun(Guid payRunId)
+        {
+            var res = await _getUniqueInvoiceItemPaymentStatusInPayRunUseCase.Execute(payRunId).ConfigureAwait(false);
             return Ok(res);
         }
     }

@@ -41,6 +41,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<Invoice, InvoiceDomain>();
             CreateMap<InvoiceItem, InvoiceItemMinimalDomain>();
             CreateMap<InvoiceItemMinimalDomain, InvoiceItemMinimalResponse>();
+            CreateMap<InvoiceItemPaymentStatusDomain, InvoiceItemPaymentStatusResponse>();
 
             #endregion Invoices
 
