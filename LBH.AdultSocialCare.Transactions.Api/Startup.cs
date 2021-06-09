@@ -30,8 +30,13 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -177,11 +182,15 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
         private static void RegisterGateways(IServiceCollection services)
         {
+            #region Bill
+
             services.AddScoped<IBillGateway, BillGateway>();
             services.AddScoped<IBillItemGateway, BillItemGateway>();
             services.AddScoped<IBillFileGateway, BillFileGateway>();
             services.AddScoped<IBillStatusGateway, BillStatusGateway>();
+            services.AddScoped<IBillPaymentGateway, BillPaymentGateway>();
 
+            #endregion
 
             #region Invoices
 
@@ -189,18 +198,27 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
             #endregion
 
-
             #region PayRuns
 
             services.AddScoped<IPayRunGateway, PayRunGateway>();
 
             #endregion
+
+            #region Supplier
+
+            services.AddScoped<ISupplierGateway, SupplierGateway>();
+
+            #endregion
+
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<ICreateBillAsyncUseCase, CreateBillAsyncUseCase>();
+            services.AddScoped<ICreateSupplierBillUseCase, CreateSupplierBillUseCase>();
             services.AddScoped<IPayRunUseCase, PayRunUseCase>();
+            services.AddScoped<IGetUserPendingInvoicesUseCase, GetUserPendingInvoicesUseCase>();
+            services.AddScoped<IGetSuppliersUseCase, GetSuppliersUseCase>();
+            services.AddScoped<ICreateSupplierCreditNoteUseCase, CreateSupplierCreditNoteUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

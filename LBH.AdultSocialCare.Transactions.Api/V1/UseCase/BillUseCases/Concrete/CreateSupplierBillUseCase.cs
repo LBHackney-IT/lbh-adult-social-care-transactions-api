@@ -10,11 +10,11 @@ using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete
 {
-    public class CreateBillAsyncUseCase : ICreateBillAsyncUseCase
+    public class CreateSupplierBillUseCase : ICreateSupplierBillUseCase
     {
         private readonly IBillGateway _billGateway;
 
-        public CreateBillAsyncUseCase(IBillGateway billGateway)
+        public CreateSupplierBillUseCase(IBillGateway billGateway)
         {
             _billGateway = billGateway;
         }
@@ -22,8 +22,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete
         public async Task<BillResponse> ExecuteAsync(BillCreationDomain billCreationDomains)
         {
             var billEntity = billCreationDomains.ToDb();
-            var res = await _billGateway.CreateBillAsync(billEntity).ConfigureAwait(false);
-            return res.ToResponse();
+            var id = await _billGateway.CreateBillAsync(billEntity).ConfigureAwait(false);
+            var bill = await _billGateway.GetBillAsync(id).ConfigureAwait(false);
+            return bill.ToResponse();
         }
     }
 }

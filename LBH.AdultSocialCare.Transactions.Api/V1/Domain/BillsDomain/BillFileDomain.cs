@@ -9,7 +9,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain
     {
         public int BillFileId { get; set; }
 
-        public Guid BillId { get; set; }
+        public long BillId { get; set; }
 
         public BillDomain Bill { get; set; }
 

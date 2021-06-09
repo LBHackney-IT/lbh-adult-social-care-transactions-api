@@ -7,18 +7,12 @@ using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills
 {
-    public class BillFile : BaseEntity
+    public class BillPayment
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int BillFileId { get; set; }
-
-        public long BillId { get; set; }
-
-        [ForeignKey((nameof(BillId)))]
-        public Bill Bill { get; set; }
-
-        public Uri FileUrl { get; set; }
-
-        public string OriginalFileName { get; set; }
+        public long BillPaymentId { get; set; }
+        public long BillItemId { get; set; }
+        public decimal PaidAmount { get; set; }
+        public decimal RemainingBalance { get; set; }
     }
 }

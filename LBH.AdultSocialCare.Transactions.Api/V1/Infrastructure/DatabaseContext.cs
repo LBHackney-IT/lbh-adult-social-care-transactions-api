@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
@@ -36,6 +37,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<PayRunType> PayRunTypes { get; set; }
         public DbSet<PayRunStatus> PayRunStatuses { get; set; }
         public DbSet<PayRunSubType> PayRunSubTypes { get; set; }
+        public DbSet<BillPayment> BillPayments { get; set; }
+        public DbSet<SupplierCreditNote> SupplierCreditNotes { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

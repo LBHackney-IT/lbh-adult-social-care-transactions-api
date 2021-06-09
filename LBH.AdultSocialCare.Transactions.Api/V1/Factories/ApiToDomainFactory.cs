@@ -22,5 +22,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             var res = _mapper.Map<BillCreationDomain>(billCreationRequest);
             return res;
         }
+
+        public static BillItemCreationDomain ToDomain(this BillItemCreationRequest billItemCreationRequest)
+        {
+            var res = _mapper.Map<BillItemCreationDomain>(billItemCreationRequest);
+            return res;
+        }
     }
 }

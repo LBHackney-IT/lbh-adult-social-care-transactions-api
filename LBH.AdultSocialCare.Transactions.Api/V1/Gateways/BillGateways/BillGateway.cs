@@ -21,7 +21,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
             _databaseContext = databaseContext;
         }
 
-        public async Task<BillDomain> CreateBillAsync(Bill bill)
+        public async Task<long> CreateBillAsync(Bill bill)
         {
             var entry = await _databaseContext.Bills.AddAsync(bill)
                 .ConfigureAwait(false);
@@ -29,22 +29,23 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
             {
                 await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
                 entry.Entity.BillStatus = await _databaseContext.BillStatuses
-                    .FirstOrDefaultAsync(item => item.Id == entry.Entity.BillStatusId)
+                    .FirstOrDefaultAsync(item => item.Id == entry.Entity.BillPaymentStatusId)
                     .ConfigureAwait(false);
-                return entry.Entity.ToDomain();
+                return entry.Entity.BillId;
             }
             catch (Exception ex)
             {
-                throw new DbSaveFailedException("Could not save supplier to database" + ex.Message);
+                throw new DbSaveFailedException("Could not save bill to database" + ex.Message);
             }
         }
 
-        public async Task<BillDomain> GetBillAsync(Guid billId)
+        public async Task<BillDomain> GetBillAsync(long billId)
         {
             var bill = await _databaseContext.Bills
                 .Where(b => b.BillId.Equals(billId))
                 .AsNoTracking()
                 .Include(b => b.BillStatus)
+                .Include(b => b.BillItems)
                 .SingleOrDefaultAsync().ConfigureAwait(false);
 
             if (bill == null)
