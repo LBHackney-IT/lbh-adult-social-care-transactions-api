@@ -1,5 +1,6 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
@@ -12,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -178,6 +178,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 })
                 .ToListAsync()
                 .ConfigureAwait(false);
+        }
+
+        public async Task<bool> ChangePayRunStatus(Guid payRunId, int newPayRunStatusId)
+        {
+            var payRun = await _dbContext.PayRuns.Where(p => p.PayRunId.Equals(payRunId)).SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+            if (payRun == null)
+            {
+                throw new EntityNotFoundException($"Pay run with id {payRunId} not found");
+            }
+
+            payRun.PayRunStatusId = newPayRunStatusId;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new DbSaveFailedException("Could not save pay run to database");
+            }
         }
     }
 }
