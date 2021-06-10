@@ -137,7 +137,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         {
             return await _dbContext.InvoiceItemPaymentStatuses.Select(x => new InvoiceItemPaymentStatusDomain
             {
-                StatusId = x.StatusId, StatusName = x.StatusName, DisplayName = x.DisplayName
+                StatusId = x.StatusId,
+                StatusName = x.StatusName,
+                DisplayName = x.DisplayName
             }).ToListAsync().ConfigureAwait(false);
         }
     }
