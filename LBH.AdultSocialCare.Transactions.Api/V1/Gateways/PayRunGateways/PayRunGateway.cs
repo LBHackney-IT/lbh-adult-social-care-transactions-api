@@ -199,7 +199,37 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
             catch (Exception)
             {
-                throw new DbSaveFailedException("Could not save pay run to database");
+                throw new DbSaveFailedException("Could not save pay run status change to database");
+            }
+        }
+
+        public async Task<bool> ReleaseHeldInvoiceItemPayment(Guid payRunId, Guid invoiceId, Guid invoiceItemId)
+        {
+            // Get the invoice item
+            var invoiceItem = await _dbContext.PayRunItems
+                .Where(pri =>
+                    pri.PayRunId.Equals(payRunId) && pri.InvoiceItem.InvoiceId.Equals(invoiceId) &&
+                    pri.InvoiceItemId.Equals(invoiceItemId))
+                .Select(pri => pri.InvoiceItem)
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (invoiceItem == null)
+            {
+                throw new EntityNotFoundException($"Invoice item with id {invoiceItemId} not found");
+            }
+
+            invoiceItem.InvoiceItemPaymentStatusId = (int) InvoiceItemPaymentStatusEnum.Released;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new DbSaveFailedException("Could not save release status to database");
             }
         }
     }

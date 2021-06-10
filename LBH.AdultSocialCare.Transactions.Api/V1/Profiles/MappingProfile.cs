@@ -3,6 +3,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
@@ -51,6 +52,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<PayRunForCreationDomain, PayRun>();
             CreateMap<PayRunSummaryDomain, PayRunSummaryResponse>();
             CreateMap<PayRunFlatDomain, PayRunFlatResponse>();
+            CreateMap<ReleaseHeldInvoiceItemRequest, ReleaseHeldInvoiceItemDomain>();
 
             #endregion Payruns
 

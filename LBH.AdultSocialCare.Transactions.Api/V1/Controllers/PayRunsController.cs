@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -29,12 +31,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase _getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
         private readonly IGetSinglePayRunDetailsUseCase _getSinglePayRunDetailsUseCase;
         private readonly IChangePayRunStatusUseCase _changePayRunStatusUseCase;
+        private readonly IReleaseHeldPaymentsUseCase _releaseHeldPaymentsUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
             IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase,
             IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
-            IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase)
+            IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase,
+            IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -45,6 +49,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _getUniqueInvoiceItemPaymentStatusInPayRunUseCase = getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
             _getSinglePayRunDetailsUseCase = getSinglePayRunDetailsUseCase;
             _changePayRunStatusUseCase = changePayRunStatusUseCase;
+            _releaseHeldPaymentsUseCase = releaseHeldPaymentsUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -137,6 +142,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<bool>> KickPayRunBackToDraft(Guid payRunId)
         {
             var res = await _changePayRunStatusUseCase.KickBackPayRunToDraft(payRunId).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpPut("release-held-invoice-items")]
+        public async Task<ActionResult<bool>> ReleaseHeldInvoiceItemPayment([FromBody] IEnumerable<ReleaseHeldInvoiceItemRequest> releaseHeldInvoiceItemRequests)
+        {
+            var res = await _releaseHeldPaymentsUseCase.ReleaseHeldInvoiceItemPaymentList(releaseHeldInvoiceItemRequests.ToDomain()).ConfigureAwait(false);
             return Ok(res);
         }
     }
