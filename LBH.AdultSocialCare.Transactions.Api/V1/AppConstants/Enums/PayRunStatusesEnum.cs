@@ -7,7 +7,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums
         [Description("Draft")]
         Draft = 1,
 
+        [Description("SubmittedForApproval")]
+        SubmittedForApproval = 2,
+
         [Description("Approved")]
-        Approved = 2,
+        Approved = 3,
     }
 }

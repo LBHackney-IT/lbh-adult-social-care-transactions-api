@@ -18,6 +18,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
                 },
                 new PayRunStatus
                 {
+                    PayRunStatusId = (int) PayRunStatusesEnum.SubmittedForApproval,
+                    StatusName = PayRunStatusesEnum.SubmittedForApproval.ToDescription()
+                },
+                new PayRunStatus
+                {
                     PayRunStatusId = (int) PayRunStatusesEnum.Approved,
                     StatusName = PayRunStatusesEnum.Approved.ToDescription()
                 });

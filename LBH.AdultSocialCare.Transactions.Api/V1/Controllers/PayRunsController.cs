@@ -28,12 +28,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetReleasedHoldsUseCase _getReleasedHoldsUseCase;
         private readonly IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase _getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
         private readonly IGetSinglePayRunDetailsUseCase _getSinglePayRunDetailsUseCase;
+        private readonly IChangePayRunStatusUseCase _changePayRunStatusUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
             IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase,
             IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
-            IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase)
+            IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -43,6 +44,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _getReleasedHoldsUseCase = getReleasedHoldsUseCase;
             _getUniqueInvoiceItemPaymentStatusInPayRunUseCase = getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
             _getSinglePayRunDetailsUseCase = getSinglePayRunDetailsUseCase;
+            _changePayRunStatusUseCase = changePayRunStatusUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -111,6 +113,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<PayRunDetailsResponse>> GetSinglePayRunDetails(Guid payRunId, [FromQuery] InvoiceListParameters parameters)
         {
             var res = await _getSinglePayRunDetailsUseCase.Execute(payRunId, parameters).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpGet("{payRunId}/status/submit-for-approval")]
+        public async Task<ActionResult<bool>> SubmitPayRunForApproval(Guid payRunId)
+        {
+            var res = await _changePayRunStatusUseCase.SubmitPayRunForApproval(payRunId).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpGet("{payRunId}/status/approve-pay-run")]
+        public async Task<ActionResult<bool>> ApprovePayRun(Guid payRunId)
+        {
+            var res = await _changePayRunStatusUseCase.ApprovePayRun(payRunId).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpGet("{payRunId}/status/kick-back-to-draft")]
+        public async Task<ActionResult<bool>> KickPayRunBackToDraft(Guid payRunId)
+        {
+            var res = await _changePayRunStatusUseCase.KickBackPayRunToDraft(payRunId).ConfigureAwait(false);
             return Ok(res);
         }
     }
