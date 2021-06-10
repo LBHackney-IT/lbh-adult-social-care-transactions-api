@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
@@ -10,6 +7,9 @@ using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -27,11 +27,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetUniquePackageTypesInPayRunUseCase _getUniquePackageTypesInPayRunUseCase;
         private readonly IGetReleasedHoldsUseCase _getReleasedHoldsUseCase;
         private readonly IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase _getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
+        private readonly IGetSinglePayRunDetailsUseCase _getSinglePayRunDetailsUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
             IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase,
-            IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase)
+            IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
+            IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -40,6 +42,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _getUniquePackageTypesInPayRunUseCase = getUniquePackageTypesInPayRunUseCase;
             _getReleasedHoldsUseCase = getReleasedHoldsUseCase;
             _getUniqueInvoiceItemPaymentStatusInPayRunUseCase = getUniqueInvoiceItemPaymentStatusInPayRunUseCase;
+            _getSinglePayRunDetailsUseCase = getSinglePayRunDetailsUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -100,6 +103,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<IEnumerable<InvoiceItemPaymentStatusResponse>>> GetUniqueInvoiceItemPaymentStatusInPayRun(Guid payRunId)
         {
             var res = await _getUniqueInvoiceItemPaymentStatusInPayRunUseCase.Execute(payRunId).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(PayRunDetailsResponse), StatusCodes.Status200OK)]
+        [HttpGet("{payRunId}/details")]
+        public async Task<ActionResult<PayRunDetailsResponse>> GetSinglePayRunDetails(Guid payRunId, [FromQuery] InvoiceListParameters parameters)
+        {
+            var res = await _getSinglePayRunDetailsUseCase.Execute(payRunId, parameters).ConfigureAwait(false);
             return Ok(res);
         }
     }

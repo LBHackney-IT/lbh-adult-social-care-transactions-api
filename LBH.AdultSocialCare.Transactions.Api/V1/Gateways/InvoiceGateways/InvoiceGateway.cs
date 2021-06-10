@@ -1,13 +1,15 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -39,6 +41,59 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .ToListAsync().ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
+        }
+
+        public async Task<PagedList<InvoiceDomain>> GetInvoicesInPayRun(Guid payRunId, InvoiceListParameters parameters)
+        {
+            // Get unique invoice ids
+            var invoiceIds = await _dbContext.PayRunItems
+                .Where(ii =>
+                    (parameters.DateFrom.Equals(null) || ii.InvoiceItem.Invoice.DateCreated >= parameters.DateFrom) &&
+                    (parameters.DateTo.Equals(null) || ii.InvoiceItem.Invoice.DateCreated <= parameters.DateTo) &&
+                    (parameters.SupplierId.Equals(null) ||
+                     ii.InvoiceItem.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
+                    (parameters.PackageTypeId.Equals(null) ||
+                     ii.InvoiceItem.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
+                    (parameters.InvoiceItemPaymentStatusId.Equals(null) ||
+                     ii.InvoiceItem.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)) &&
+                    ii.PayRunId.Equals(payRunId)
+                    && (parameters.SearchTerm == null || EF.Functions.Like(
+                        ii.InvoiceItem.Invoice.InvoiceNumber.ToLower(),
+                        $"%{parameters.SearchTerm.Trim().ToLower()}%"))).Select(ii => ii.InvoiceItem.InvoiceId)
+                .Distinct().ToListAsync().ConfigureAwait(false);
+
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId) && i.InvoiceItems.All(
+                    ii => parameters.InvoiceItemPaymentStatusId == null ||
+                          ii.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)))
+                .Include(ii =>
+                    ii.InvoiceItems)
+                /*.Select(i => new Invoice
+                {
+                    DateCreated = i.DateCreated,
+                    DateUpdated = i.DateUpdated,
+                    InvoiceId = i.InvoiceId,
+                    InvoiceNumber = i.InvoiceNumber,
+                    SupplierId = i.SupplierId,
+                    PackageTypeId = i.PackageTypeId,
+                    ServiceUserId = i.ServiceUserId,
+                    DateInvoiced = i.DateInvoiced,
+                    TotalAmount = i.TotalAmount,
+                    SupplierVATPercent = i.SupplierVATPercent,
+                    InvoiceStatusId = i.InvoiceStatusId,
+                    CreatorId = i.CreatorId,
+                    UpdaterId = i.UpdaterId,
+                    InvoiceItems = i.InvoiceItems.Where(item =>
+                        parameters.InvoiceItemPaymentStatusId == null ||
+                        item.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)).ToList()
+                })*/
+                .OrderBy(i => i.SupplierId)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return PagedList<InvoiceDomain>.ToPagedList(invoices.ToDomain(), invoiceIds.Count, parameters.PageNumber,
+                parameters.PageSize);
         }
 
         public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)

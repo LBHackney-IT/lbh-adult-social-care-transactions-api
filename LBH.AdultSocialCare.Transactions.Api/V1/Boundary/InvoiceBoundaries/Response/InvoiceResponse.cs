@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response
 {
-    public class InvoiceDomain
+    public class InvoiceResponse
     {
         public Guid InvoiceId { get; set; }
         public string InvoiceNumber { get; set; }
@@ -16,6 +16,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
         public int InvoiceStatusId { get; set; }
         public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
-        public IEnumerable<InvoiceItemMinimalDomain> InvoiceItems { get; set; }
+        public IEnumerable<InvoiceItemMinimalResponse> InvoiceItems { get; set; }
     }
 }

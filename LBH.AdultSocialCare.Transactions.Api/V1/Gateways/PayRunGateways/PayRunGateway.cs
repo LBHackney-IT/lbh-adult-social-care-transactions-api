@@ -79,6 +79,25 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             return PagedList<PayRunSummaryDomain>.ToPagedList(payRunList, payRunCount, parameters.PageNumber, parameters.PageSize);
         }
 
+        public async Task<PayRunFlatDomain> GetPayRunFlat(Guid payRunId)
+        {
+            return await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId))
+                .Select(pr => new PayRunFlatDomain
+                {
+                    PayRunId = pr.PayRunId,
+                    PayRunNumber = pr.PayRunNumber,
+                    PayRunTypeId = pr.PayRunTypeId,
+                    PayRunSubTypeId = pr.PayRunSubTypeId,
+                    PayRunStatusId = pr.PayRunStatusId,
+                    DateFrom = pr.DateFrom,
+                    DateTo = pr.DateTo,
+                    CreatorId = pr.CreatorId,
+                    UpdaterId = pr.UpdaterId
+                })
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+        }
+
         public async Task<Guid> CreateNewPayRun(PayRun payRunForCreation)
         {
             var entry = await _dbContext.PayRuns.AddAsync(payRunForCreation).ConfigureAwait(false);

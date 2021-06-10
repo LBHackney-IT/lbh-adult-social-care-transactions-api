@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -50,5 +52,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion Bill
+
+        #region Invoices
+
+        public static IEnumerable<InvoiceDomain> ToDomain(this IEnumerable<Invoice> invoices)
+        {
+            return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
+        }
+
+        #endregion
     }
 }

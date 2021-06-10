@@ -42,6 +42,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<InvoiceItem, InvoiceItemMinimalDomain>();
             CreateMap<InvoiceItemMinimalDomain, InvoiceItemMinimalResponse>();
             CreateMap<InvoiceItemPaymentStatusDomain, InvoiceItemPaymentStatusResponse>();
+            CreateMap<InvoiceDomain, InvoiceResponse>();
 
             #endregion Invoices
 
@@ -49,6 +50,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 
             CreateMap<PayRunForCreationDomain, PayRun>();
             CreateMap<PayRunSummaryDomain, PayRunSummaryResponse>();
+            CreateMap<PayRunFlatDomain, PayRunFlatResponse>();
 
             #endregion Payruns
 
