@@ -27,6 +27,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<BillItem> BillItems { get; set; }
         public DbSet<BillStatus> BillStatuses { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<DisputedInvoice> DisputedInvoices { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
@@ -40,6 +41,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region Model Config
+
+            modelBuilder.Entity<DisputedInvoice>(entity =>
+            {
+                entity.HasIndex(e => new { e.InvoiceId, e.InvoiceItemId })
+                    .IsUnique();
+            });
+
+            #endregion Model Config
+
             base.OnModelCreating(modelBuilder);
 
             #region Database Seeds
