@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.DepartmentBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
@@ -9,6 +10,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
@@ -92,6 +94,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static IEnumerable<InvoiceResponse> ToResponse(this IEnumerable<InvoiceDomain> invoiceDomains)
         {
             return _mapper.Map<IEnumerable<InvoiceResponse>>(invoiceDomains);
+        }
+
+        #endregion
+
+        #region Departments
+
+        public static IEnumerable<DepartmentResponse> ToResponse(this IEnumerable<DepartmentDomain> departmentDomains)
+        {
+            return _mapper.Map<IEnumerable<DepartmentResponse>>(departmentDomains);
         }
 
         #endregion

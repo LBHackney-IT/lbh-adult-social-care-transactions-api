@@ -31,6 +31,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.DepartmentGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.DepartmentUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.DepartmentUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 
@@ -194,6 +197,12 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IPayRunGateway, PayRunGateway>();
 
             #endregion PayRuns
+
+            #region Departments
+
+            services.AddScoped<IDepartmentGateway, DepartmentGateway>();
+
+            #endregion Departments
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -210,6 +219,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetInvoiceItemPaymentStatusesUseCase, GetInvoiceItemPaymentStatusesUseCase>();
             services.AddScoped<IChangePayRunStatusUseCase, ChangePayRunStatusUseCase>();
             services.AddScoped<IReleaseHeldPaymentsUseCase, ReleaseHeldPaymentsUseCase>();
+            services.AddScoped<IGetPaymentDepartmentsUseCase, GetPaymentDepartmentsUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
