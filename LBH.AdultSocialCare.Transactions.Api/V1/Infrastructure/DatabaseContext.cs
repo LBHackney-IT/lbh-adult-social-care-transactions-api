@@ -28,6 +28,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<BillStatus> BillStatuses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<DisputedInvoice> DisputedInvoices { get; set; }
+        public DbSet<DisputedInvoiceChat> DisputedInvoiceChats { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
