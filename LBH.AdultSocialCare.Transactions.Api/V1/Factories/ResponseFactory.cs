@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.DepartmentBoundaries.Response;
@@ -15,6 +13,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -40,12 +40,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #region Bill
+
         public static BillResponse ToResponse(this BillDomain billDomain)
         {
             return _mapper.Map<BillResponse>(billDomain);
         }
 
-        #endregion
+        #endregion Bill
 
         #region PayRuns
 
@@ -59,7 +60,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<PayRunFlatResponse>(payRunFlat);
         }
 
-        #endregion
+        #endregion PayRuns
 
         #region Suppliers
 
@@ -68,7 +69,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<SupplierMinimalResponse>>(supplierMinimalDomains);
         }
 
-        #endregion
+        #endregion Suppliers
 
         #region PackageTypes
 
@@ -77,7 +78,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<PackageTypeResponse>>(packageTypeDomains);
         }
 
-        #endregion
+        #endregion PackageTypes
 
         #region InvoiceItems
 
@@ -96,7 +97,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<InvoiceResponse>>(invoiceDomains);
         }
 
-        #endregion
+        #endregion InvoiceItems
 
         #region Departments
 
@@ -105,6 +106,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<DepartmentResponse>>(departmentDomains);
         }
 
-        #endregion
+        #endregion Departments
+
+        #region Invoices
+
+        public static DisputedInvoiceFlatResponse ToResponse(this DisputedInvoiceFlatDomain disputedInvoiceFlatDomain)
+        {
+            return _mapper.Map<DisputedInvoiceFlatResponse>(disputedInvoiceFlatDomain);
+        }
+
+        #endregion Invoices
     }
 }

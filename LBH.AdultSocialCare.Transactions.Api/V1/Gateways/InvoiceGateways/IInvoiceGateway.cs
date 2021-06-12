@@ -4,6 +4,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -22,5 +23,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         Task<DateTimeOffset?> GetMaxDateOfReleasedInvoiceItem(int itemPaymentStatusId);
 
         Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetInvoiceItemPaymentStatuses();
+
+        Task<DisputedInvoiceFlatDomain> CreateDisputedInvoice(DisputedInvoice newDisputedInvoice);
     }
 }

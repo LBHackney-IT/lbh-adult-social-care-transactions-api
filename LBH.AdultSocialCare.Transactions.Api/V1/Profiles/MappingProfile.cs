@@ -2,6 +2,7 @@ using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.DepartmentBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
@@ -47,6 +48,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<InvoiceItemMinimalDomain, InvoiceItemMinimalResponse>();
             CreateMap<InvoiceItemPaymentStatusDomain, InvoiceItemPaymentStatusResponse>();
             CreateMap<InvoiceDomain, InvoiceResponse>();
+            CreateMap<DisputedInvoiceForCreationRequest, DisputedInvoiceForCreationDomain>();
+            CreateMap<DisputedInvoiceForCreationDomain, DisputedInvoice>();
+            CreateMap<DisputedInvoice, DisputedInvoiceFlatDomain>();
+            CreateMap<DisputedInvoiceFlatDomain, DisputedInvoiceFlatResponse>();
 
             #endregion Invoices
 

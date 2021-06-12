@@ -1,8 +1,10 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -141,6 +143,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 StatusName = x.StatusName,
                 DisplayName = x.DisplayName
             }).ToListAsync().ConfigureAwait(false);
+        }
+
+        public async Task<DisputedInvoiceFlatDomain> CreateDisputedInvoice(DisputedInvoice newDisputedInvoice)
+        {
+            var entry = await _dbContext.DisputedInvoices.AddAsync(newDisputedInvoice).ConfigureAwait(false);
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return entry.Entity.ToDomain();
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                throw new DbSaveFailedException($"Could not save disputed invoice to DB: {dbUpdateException.InnerException?.Message}");
+            }
+            catch (Exception e)
+            {
+                // Console.WriteLine(e.GetType());
+                throw new DbSaveFailedException($"Could not save disputed invoice to DB: {e.InnerException?.Message}");
+            }
         }
     }
 }

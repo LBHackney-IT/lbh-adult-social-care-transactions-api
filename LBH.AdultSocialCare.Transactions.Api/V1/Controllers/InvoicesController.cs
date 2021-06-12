@@ -1,4 +1,7 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +18,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly IGetInvoiceItemPaymentStatusesUseCase _getInvoiceItemPaymentStatusesUseCase;
+        private readonly IInvoicesUseCase _invoicesUseCase;
 
-        public InvoicesController(IGetInvoiceItemPaymentStatusesUseCase getInvoiceItemPaymentStatusesUseCase)
+        public InvoicesController(IGetInvoiceItemPaymentStatusesUseCase getInvoiceItemPaymentStatusesUseCase, IInvoicesUseCase invoicesUseCase)
         {
             _getInvoiceItemPaymentStatusesUseCase = getInvoiceItemPaymentStatusesUseCase;
+            _invoicesUseCase = invoicesUseCase;
         }
 
         [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
@@ -27,6 +32,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         {
             var res = await _getInvoiceItemPaymentStatusesUseCase.Execute().ConfigureAwait(false);
             return Ok(res);
+        }
+
+        [HttpPost("hold-payment")]
+        [ProducesResponseType(typeof(DisputedInvoiceFlatResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<DisputedInvoiceFlatResponse>> CreateNewPayRun([FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
+        {
+            var result = await _invoicesUseCase.HoldInvoicePaymentUseCase(disputedInvoiceForCreationRequest.ToDomain()).ConfigureAwait(false);
+            return Ok(result);
         }
     }
 }

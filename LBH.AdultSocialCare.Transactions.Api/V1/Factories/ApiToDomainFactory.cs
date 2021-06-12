@@ -1,7 +1,9 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using System.Collections.Generic;
 
@@ -36,6 +38,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return res;
         }
 
-        #endregion
+        #endregion ReleaseHeldInvoiceItems
+
+        #region Invoices
+
+        public static DisputedInvoiceForCreationDomain ToDomain(this DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
+        {
+            var res = _mapper.Map<DisputedInvoiceForCreationDomain>(disputedInvoiceForCreationRequest);
+            return res;
+        }
+
+        #endregion Invoices
     }
 }
