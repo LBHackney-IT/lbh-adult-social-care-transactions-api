@@ -23,7 +23,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             #region Bill
 
             CreateMap<Bill, BillDomain>();
-            CreateMap<BillDomain, Bill>();
             CreateMap<BillDomain, BillResponse>();
             CreateMap<BillCreationDomain, BillCreationRequest>();
             CreateMap<BillCreationRequest, BillCreationDomain>();
@@ -60,6 +59,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 
             CreateMap<Supplier, SupplierDomain>();
             CreateMap<SupplierDomain, SupplierResponse>();
+            CreateMap<SupplierTaxRate, SupplierTaxRateDomain>();
+            CreateMap<SupplierTaxRateDomain, SupplierTaxRateResponse>();
 
             #endregion
 

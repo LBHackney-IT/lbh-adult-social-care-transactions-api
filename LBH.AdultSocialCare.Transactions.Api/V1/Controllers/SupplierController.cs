@@ -17,19 +17,31 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     public class SupplierController : BaseController
     {
         private readonly IGetSuppliersUseCase _getSuppliersUseCase;
+        private readonly IGetSupplierTaxRatesUseCase _getSupplierTaxRatesUseCase;
 
-        public SupplierController(IGetSuppliersUseCase getSuppliersUseCase)
+        public SupplierController(IGetSuppliersUseCase getSuppliersUseCase, IGetSupplierTaxRatesUseCase getSupplierTaxRatesUseCase)
         {
             _getSuppliersUseCase = getSuppliersUseCase;
+            _getSupplierTaxRatesUseCase = getSupplierTaxRatesUseCase;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<SupplierResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<SupplierResponse>>> GetUserPendingInvoices([FromQuery] string query)
+        public async Task<ActionResult<IEnumerable<SupplierResponse>>> GetSupplier([FromQuery] string query)
         {
             var result = await _getSuppliersUseCase.GetSupplierUseCase(query).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpGet("tax-rates/{supplierId}")]
+        [ProducesResponseType(typeof(IEnumerable<SupplierTaxRateResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<IEnumerable<SupplierTaxRateResponse>>> GetSupplierTaxRates(long supplierId)
+        {
+            var result = await _getSupplierTaxRatesUseCase.GetSupplierTaxRates(supplierId).ConfigureAwait(false);
             return Ok(result);
         }
     }

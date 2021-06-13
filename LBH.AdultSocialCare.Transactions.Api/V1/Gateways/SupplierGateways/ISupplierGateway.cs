@@ -12,5 +12,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways
         Task<long> CreateCreditNotes(SupplierCreditNote supplierCreditNote);
 
         Task<IEnumerable<SupplierDomain>> GetSuppliers(string searchTerm);
+
+        Task<IEnumerable<SupplierTaxRateDomain>> GetSupplierTaxRates(long supplierId);
     }
 }

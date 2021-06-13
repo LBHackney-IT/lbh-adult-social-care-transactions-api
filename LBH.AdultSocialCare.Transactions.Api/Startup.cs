@@ -219,6 +219,8 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetUserPendingInvoicesUseCase, GetUserPendingInvoicesUseCase>();
             services.AddScoped<IGetSuppliersUseCase, GetSuppliersUseCase>();
             services.AddScoped<ICreateSupplierCreditNoteUseCase, CreateSupplierCreditNoteUseCase>();
+            services.AddScoped<IGetSupplierTaxRatesUseCase, GetSupplierTaxRatesUseCase>();
+            services.AddScoped<IGetBillUseCase, GetBillUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

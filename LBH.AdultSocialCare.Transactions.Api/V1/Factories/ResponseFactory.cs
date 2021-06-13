@@ -44,6 +44,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<BillItemResponse>>(billItemDomains);
         }
 
+        public static IEnumerable<BillResponse> ToResponse(this IEnumerable<BillDomain> billDomains)
+        {
+            return _mapper.Map<IEnumerable<BillResponse>>(billDomains);
+        }
+
         public static BillStatusResponse ToResponse(this BillStatusDomain billStatusDomain)
         {
             return _mapper.Map<BillStatusResponse>(billStatusDomain);
@@ -65,6 +70,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static IEnumerable<SupplierResponse> ToResponse(this IEnumerable<SupplierDomain> supplierDomain)
         {
             return _mapper.Map<IEnumerable<SupplierResponse>>(supplierDomain);
+        }
+
+        public static IEnumerable<SupplierTaxRateResponse> ToResponse(this IEnumerable<SupplierTaxRateDomain> supplierTaxRateDomain)
+        {
+            return _mapper.Map<IEnumerable<SupplierTaxRateResponse>>(supplierTaxRateDomain);
         }
 
         #endregion
