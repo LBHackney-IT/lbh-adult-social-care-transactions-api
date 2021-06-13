@@ -14,5 +14,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
         Task<BillDomain> GetBillAsync(long billId);
 
         Task<IEnumerable<BillDomain>> GetBillList();
+
+        Task<IEnumerable<BillDomain>> GetBill(Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
     }
 }

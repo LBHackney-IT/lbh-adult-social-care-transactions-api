@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
@@ -17,10 +19,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     public class BillController : ControllerBase
     {
         private readonly ICreateSupplierBillUseCase _createSupplierBillUseCase;
+        private readonly IGetBillUseCase _getBillUseCase;
 
-        public BillController(ICreateSupplierBillUseCase createSupplierBillUseCase)
+        public BillController(ICreateSupplierBillUseCase createSupplierBillUseCase,
+            IGetBillUseCase getBillUseCase)
         {
             _createSupplierBillUseCase = createSupplierBillUseCase;
+            _getBillUseCase = getBillUseCase;
         }
 
         [ProducesResponseType(typeof(BillResponse), StatusCodes.Status200OK)]
@@ -44,6 +49,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 
             var billDomain = billCreationRequest.ToDomain();
             var result = await _createSupplierBillUseCase.ExecuteAsync(billDomain).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<BillResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<IEnumerable<BillResponse>>> GetBill([FromQuery] Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null,
+            DateTimeOffset? toDate = null)
+        {
+            var result = await _getBillUseCase.GetBill(packageId, supplierId, billPaymentStatusId, fromDate,
+                toDate).ConfigureAwait(false);
             return Ok(result);
         }
     }
