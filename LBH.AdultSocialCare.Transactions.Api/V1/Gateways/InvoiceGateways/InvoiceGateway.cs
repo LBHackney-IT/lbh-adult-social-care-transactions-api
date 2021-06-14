@@ -164,5 +164,31 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 throw new DbSaveFailedException($"Could not save disputed invoice to DB: {e.InnerException?.Message}");
             }
         }
+
+        public async Task<bool> ChangeInvoiceStatus(Guid invoiceId, int invoiceStatusId)
+        {
+            var invoice = await _dbContext.Invoices.Where(i => i.InvoiceId.Equals(invoiceId)).SingleOrDefaultAsync().ConfigureAwait(false);
+            if (invoice == null)
+            {
+                throw new EntityNotFoundException($"Invoice with id {invoiceId} not found in the database");
+            }
+
+            invoice.InvoiceStatusId = invoiceStatusId;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                throw new DbSaveFailedException($"Could not update invoice status: {dbUpdateException.InnerException?.Message}");
+            }
+            catch (Exception e)
+            {
+                throw new DbSaveFailedException($"Could not update invoice status: {e.InnerException?.Message}");
+            }
+        }
     }
 }

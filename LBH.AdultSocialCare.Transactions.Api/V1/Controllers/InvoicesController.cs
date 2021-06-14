@@ -5,6 +5,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -42,6 +43,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<DisputedInvoiceFlatResponse>> CreateNewPayRun([FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
         {
             var result = await _invoicesUseCase.HoldInvoicePaymentUseCase(disputedInvoiceForCreationRequest.ToDomain()).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpPost("{invoiceId}/change-invoice-status")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> ChangeInvoiceStatus(Guid invoiceId, [FromBody] ChangeInvoiceStatusRequest changeInvoiceStatusRequest)
+        {
+            var result = await _invoicesUseCase.ChangeInvoiceStatusUseCase(invoiceId, changeInvoiceStatusRequest.InvoiceStatusId).ConfigureAwait(false);
             return Ok(result);
         }
     }
