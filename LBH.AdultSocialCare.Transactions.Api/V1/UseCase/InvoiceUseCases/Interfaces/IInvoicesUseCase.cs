@@ -11,5 +11,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interf
             DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain);
 
         Task<bool> ChangeInvoiceStatusUseCase(Guid invoiceId, int invoiceStatusId);
+
+        Task<bool> ChangeInvoiceItemPaymentStatusUseCase(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId);
     }
 }

@@ -60,6 +60,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<PayRunFlatResponse>(payRunFlat);
         }
 
+        public static PayRunInsightsResponse ToResponse(this PayRunInsightsDomain payRunInsightsDomain)
+        {
+            return _mapper.Map<PayRunInsightsResponse>(payRunInsightsDomain);
+        }
+
         #endregion PayRuns
 
         #region Suppliers

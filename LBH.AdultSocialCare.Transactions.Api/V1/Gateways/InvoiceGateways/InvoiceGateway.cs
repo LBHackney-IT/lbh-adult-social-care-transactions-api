@@ -190,5 +190,35 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 throw new DbSaveFailedException($"Could not update invoice status: {e.InnerException?.Message}");
             }
         }
+
+        public async Task<bool> ChangeInvoiceItemPaymentStatus(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId)
+        {
+            var res = await _dbContext.PayRunItems
+                .Where(pr => pr.PayRunId.Equals(payRunId) && pr.InvoiceItemId.Equals(invoiceItemId))
+                .Select(pr => pr.InvoiceItem).SingleOrDefaultAsync().ConfigureAwait(false);
+
+            if (res == null)
+            {
+                throw new EntityNotFoundException(
+                    $"Invoice item with id {invoiceItemId} not found in pay run with id {payRunId}");
+            }
+
+            res.InvoiceItemPaymentStatusId = invoiceItemPaymentStatusId;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                throw new DbSaveFailedException($"Could not update invoice item payment status: {dbUpdateException.InnerException?.Message}");
+            }
+            catch (Exception e)
+            {
+                throw new DbSaveFailedException($"Could not update invoice item payment status: {e.InnerException?.Message}");
+            }
+        }
     }
 }

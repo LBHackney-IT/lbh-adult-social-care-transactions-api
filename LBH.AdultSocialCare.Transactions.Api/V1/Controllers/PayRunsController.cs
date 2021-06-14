@@ -1,8 +1,12 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +14,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
-using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -32,13 +34,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IGetSinglePayRunDetailsUseCase _getSinglePayRunDetailsUseCase;
         private readonly IChangePayRunStatusUseCase _changePayRunStatusUseCase;
         private readonly IReleaseHeldPaymentsUseCase _releaseHeldPaymentsUseCase;
+        private readonly IInvoicesUseCase _invoicesUseCase;
+        private readonly IPayRunUseCase _payRunUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
             IGetUniquePackageTypesInPayRunUseCase getUniquePackageTypesInPayRunUseCase, IGetReleasedHoldsUseCase getReleasedHoldsUseCase,
             IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
             IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase,
-            IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase)
+            IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase, IInvoicesUseCase invoicesUseCase,
+            IPayRunUseCase payRunUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -50,6 +55,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _getSinglePayRunDetailsUseCase = getSinglePayRunDetailsUseCase;
             _changePayRunStatusUseCase = changePayRunStatusUseCase;
             _releaseHeldPaymentsUseCase = releaseHeldPaymentsUseCase;
+            _invoicesUseCase = invoicesUseCase;
+            _payRunUseCase = payRunUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -149,8 +156,27 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [HttpPut("release-held-invoice-items")]
         public async Task<ActionResult<bool>> ReleaseHeldInvoiceItemPayment([FromBody] IEnumerable<ReleaseHeldInvoiceItemRequest> releaseHeldInvoiceItemRequests)
         {
-            var res = await _releaseHeldPaymentsUseCase.ReleaseHeldInvoiceItemPaymentList(releaseHeldInvoiceItemRequests.ToDomain()).ConfigureAwait(false);
+            var res = await _releaseHeldPaymentsUseCase
+                .ReleaseHeldInvoiceItemPaymentList(releaseHeldInvoiceItemRequests.ToDomain()).ConfigureAwait(false);
             return Ok(res);
+        }
+
+        [HttpPost("{payRunId}/change-invoice-item-payment-status")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> ChangeInvoiceItemPaymentStatus(Guid payRunId, [FromBody] ChangeInvoiceItemPaymentStatusRequest changeInvoiceItemPaymentStatusRequest)
+        {
+            var result = await _invoicesUseCase.ChangeInvoiceItemPaymentStatusUseCase(payRunId,
+                changeInvoiceItemPaymentStatusRequest.InvoiceItemId,
+                changeInvoiceItemPaymentStatusRequest.InvoiceItemPaymentStatusId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpGet("{payRunId}/summary-insights")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> GetSinglePayRunSummaryInsights(Guid payRunId)
+        {
+            var result = await _payRunUseCase.GetSinglePayRunInsightsUseCase(payRunId).ConfigureAwait(false);
+            return Ok(result);
         }
     }
 }

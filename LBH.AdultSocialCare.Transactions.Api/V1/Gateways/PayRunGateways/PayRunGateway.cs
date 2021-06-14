@@ -5,6 +5,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
@@ -231,6 +232,75 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             {
                 throw new DbSaveFailedException("Could not save release status to database");
             }
+        }
+
+        private async Task<PayRun> CheckPayRunExists(Guid payRunId)
+        {
+            var payRun = await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId)).SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            // if not found return
+            if (payRun == null)
+            {
+                throw new EntityNotFoundException($"Pay run with id {payRunId} not found");
+            }
+
+            return payRun;
+        }
+
+        public async Task<PayRunInsightsDomain> GetPayRunInsights(Guid payRunId)
+        {
+            // get this pay run
+            var thisPayRun = await CheckPayRunExists(payRunId).ConfigureAwait(false);
+
+            var thisPayRunAmount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
+                .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
+
+            // get previous pay run id
+            var previousPayRun = await _dbContext.PayRuns.Where(pr => pr.DateTo < thisPayRun.DateFrom)
+                .OrderByDescending(pr => pr.DateTo).FirstOrDefaultAsync().ConfigureAwait(false);
+
+            var previousPayRunAmount = new decimal(0.0);
+
+            if (previousPayRun != null)
+            {
+                previousPayRunAmount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(previousPayRun.PayRunId))
+                    .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
+            }
+
+
+            var supplierCount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
+                .Select(pr => new { pr.InvoiceItem.Invoice.SupplierId }).Distinct()
+                .CountAsync()
+                .ConfigureAwait(false);
+
+            var serviceUserCount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
+                .Select(pr => new { pr.InvoiceItem.Invoice.ServiceUserId }).Distinct()
+                .CountAsync()
+                .ConfigureAwait(false);
+
+            var heldInvoiceCount = await _dbContext.PayRunItems.Where(pr =>
+                    pr.PayRunId.Equals(payRunId) &&
+                    pr.InvoiceItem.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+                .Select(pr => new { pr.InvoiceItem.Invoice.InvoiceId }).Distinct()
+                .CountAsync()
+                .ConfigureAwait(false);
+
+            var holdsAmount = await _dbContext.PayRunItems.Where(pr =>
+                    pr.PayRunId.Equals(payRunId) &&
+                    pr.InvoiceItem.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+                .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
+
+            return new PayRunInsightsDomain
+            {
+                PayRunId = payRunId,
+                TotalAmount = thisPayRunAmount,
+                PercentageIncreaseFromLastCycle = CalculationExtensions.CalculatePercentageChange(previousPayRunAmount, thisPayRunAmount),
+                TotalSuppliers = supplierCount,
+                TotalServiceUsers = serviceUserCount,
+                HoldsCount = heldInvoiceCount,
+                HoldsTotalAmount = holdsAmount
+            };
         }
     }
 }
