@@ -22,6 +22,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
             {
                 Id = (int) InvoiceStatusEnum.Accepted,
                 StatusName = InvoiceStatusEnum.Accepted.ToDescription()
+            }, new InvoiceStatus
+            {
+                Id = (int) InvoiceStatusEnum.Released,
+                StatusName = InvoiceStatusEnum.Released.ToDescription()
             });
         }
     }

@@ -16,5 +16,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums
         [Description("Accepted")]
         [Display(Name = "Accepted")]
         Accepted = 3,
+
+        [Description("Released")]
+        [Display(Name = "Released")]
+        Released = 4
     }
 }

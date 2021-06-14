@@ -53,5 +53,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             var result = await _invoicesUseCase.ChangeInvoiceStatusUseCase(invoiceId, changeInvoiceStatusRequest.InvoiceStatusId).ConfigureAwait(false);
             return Ok(result);
         }
+
+        [HttpPost("{invoiceId}/release-invoice")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> ReleaseSingleInvoice(Guid invoiceId)
+        {
+            var result = await _invoicesUseCase.ReleaseSingleInvoiceUseCase(invoiceId).ConfigureAwait(false);
+            return Ok(result);
+        }
     }
 }

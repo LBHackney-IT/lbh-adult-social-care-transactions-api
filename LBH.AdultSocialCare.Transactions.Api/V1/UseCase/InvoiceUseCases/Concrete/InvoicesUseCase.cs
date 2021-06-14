@@ -27,12 +27,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
         public async Task<bool> ChangeInvoiceStatusUseCase(Guid invoiceId, int invoiceStatusId)
         {
-            if (invoiceStatusId == (int) InvoiceStatusEnum.Held)
+            if (invoiceStatusId == (int) InvoiceStatusEnum.Held || invoiceStatusId == (int) InvoiceStatusEnum.Released)
             {
                 throw new ApiException("Update action not allowed");
             }
 
             return await _invoiceGateway.ChangeInvoiceStatus(invoiceId, invoiceStatusId).ConfigureAwait(false);
+        }
+
+        public async Task<bool> ReleaseSingleInvoiceUseCase(Guid invoiceId)
+        {
+            return await _invoiceGateway.ChangeInvoiceStatus(invoiceId, (int) InvoiceStatusEnum.Released).ConfigureAwait(false);
         }
 
         public async Task<bool> ChangeInvoiceItemPaymentStatusUseCase(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId)
