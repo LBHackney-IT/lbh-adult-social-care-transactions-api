@@ -295,6 +295,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             {
                 PayRunId = payRunId,
                 TotalAmount = thisPayRunAmount,
+                AmountDifferenceFromLastCycle = thisPayRunAmount - previousPayRunAmount,
                 PercentageIncreaseFromLastCycle = CalculationExtensions.CalculatePercentageChange(previousPayRunAmount, thisPayRunAmount),
                 TotalSuppliers = supplierCount,
                 TotalServiceUsers = serviceUserCount,
