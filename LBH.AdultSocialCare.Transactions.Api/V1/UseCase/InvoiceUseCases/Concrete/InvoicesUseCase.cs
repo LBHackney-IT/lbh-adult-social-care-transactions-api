@@ -6,6 +6,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete
@@ -38,6 +39,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
         public async Task<bool> ReleaseSingleInvoiceUseCase(Guid invoiceId)
         {
             return await _invoiceGateway.ChangeInvoiceStatus(invoiceId, (int) InvoiceStatusEnum.Released).ConfigureAwait(false);
+        }
+
+        public async Task<bool> ReleaseMultipleInvoicesUseCase(IEnumerable<Guid> invoiceIds)
+        {
+            foreach (var invoiceId in invoiceIds)
+            {
+                await ReleaseSingleInvoiceUseCase(invoiceId).ConfigureAwait(false);
+            }
+
+            return true;
         }
 
         public async Task<bool> ChangeInvoiceItemPaymentStatusUseCase(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId)
