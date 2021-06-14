@@ -1,14 +1,11 @@
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
+using System.Collections.Generic;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -56,17 +53,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         {
             return _mapper.Map<BillPaymentDomain>(billPayment);
         }
-
+        
         #endregion Bill
 
         #region Invoice
 
-        public static IEnumerable<PendingInvoicesDomain> ToDomain(this List<Invoice> invoices)
+        public static IEnumerable<PendingInvoicesDomain> ToPendingInvoiceDomain(this List<Invoice> invoices)
         {
             return _mapper.Map<IEnumerable<PendingInvoicesDomain>>(invoices);
         }
 
-        #endregion
+        #endregion Invoice
 
         #region Supplier
 
@@ -80,6 +77,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<SupplierTaxRateDomain>>(supplierTaxRatesEntities);
         }
 
-        #endregion
+        #endregion Supplier
+
+        #region Invoices
+
+        public static IEnumerable<InvoiceDomain> ToInvoiceDomain(this IEnumerable<Invoice> invoices)
+        {
+            return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
+        }
+
+        public static DisputedInvoiceFlatDomain ToDomain(this DisputedInvoice disputedInvoice)
+        {
+            return _mapper.Map<DisputedInvoiceFlatDomain>(disputedInvoice);
+        }
+
+        #endregion Invoices
     }
 }

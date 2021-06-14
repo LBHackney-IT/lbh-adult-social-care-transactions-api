@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -29,7 +29,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<Bill>(billCreationDomain);
         }
 
-        #endregion
+        #endregion Bill
 
         #region PayRuns
 
@@ -47,8 +47,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return payRunForCreation;
         }
 
-
-        #endregion
+        #endregion PayRuns
 
         #region Supplier
 
@@ -57,6 +56,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<SupplierCreditNote>(supplierCreditNotesCreationDomain);
         }
 
-        #endregion
+        #endregion Supplier
+
+        #region Invoices
+
+        public static DisputedInvoice ToDb(this DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain)
+        {
+            var entity = _mapper.Map<DisputedInvoice>(disputedInvoiceForCreationDomain);
+            entity.DisputedInvoiceChats = new List<DisputedInvoiceChat>
+            {
+                new DisputedInvoiceChat
+                {
+                    DisputedInvoiceId = entity.DisputedInvoiceId,
+                    MessageRead = false,
+                    Message = entity.ReasonForHolding,
+                    ActionRequiredFromId = entity.ActionRequiredFromId
+                }
+            };
+            return entity;
+        }
+
+        #endregion Invoices
     }
 }

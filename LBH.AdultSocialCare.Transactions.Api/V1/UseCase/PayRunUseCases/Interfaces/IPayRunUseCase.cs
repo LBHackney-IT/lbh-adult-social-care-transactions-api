@@ -1,3 +1,4 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using System;
 using System.Threading.Tasks;
 
@@ -5,11 +6,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
 {
     public interface IPayRunUseCase
     {
-        Task<Guid> CreateResidentialRecurringPayRunUseCase();
-        Task<Guid> CreateDirectPaymentsPayRunUseCase();
-        Task<Guid> CreateHomeCarePayRunUseCase();
-        Task<Guid> CreateResidentialReleaseHoldsPayRunUseCase();
-        Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase();
-        Task<Guid> CreateNewPayRunUseCase(string payRunType);
+        Task<PayRunInsightsResponse> GetSinglePayRunInsightsUseCase(Guid payRunId);
     }
 }

@@ -1,8 +1,8 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices
 {

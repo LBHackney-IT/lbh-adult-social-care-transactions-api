@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers
 {
@@ -12,14 +9,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppli
         /// <summary>
         /// Gets or sets the Id
         /// </summary>
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long SupplierId { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public long SupplierId { get; set; }
 
         /// <summary>
         /// Gets or sets the Supplier Name
         /// </summary>
         public string SupplierName { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the Package Type Id
+        /// </summary>
+        public int PackageTypeId { get; set; }
+
         /// <summary>
         /// Gets or sets the Creator Id
         /// </summary>
@@ -29,5 +30,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppli
         /// Gets or sets the Updater Id
         /// </summary>
         public Guid? UpdaterId { get; set; }
+
+        [ForeignKey(nameof(PackageTypeId))] public PackageType Package { get; set; }
     }
 }
