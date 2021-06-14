@@ -12,5 +12,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         Task<DateTimeOffset?> GetMinDateOfReleasedInvoiceItem(int itemPaymentStatusId);
         Task<DateTimeOffset?> GetMaxDateOfReleasedInvoiceItem(int itemPaymentStatusId);
+        Task<IEnumerable<PendingInvoicesDomain>> GetUserPendingInvoices(Guid serviceUserId);
     }
 }

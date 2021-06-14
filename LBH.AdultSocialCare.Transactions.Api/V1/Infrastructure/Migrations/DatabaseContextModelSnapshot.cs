@@ -38,29 +38,24 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.Bill", b =>
                 {
-                    b.Property<Guid>("BillId")
+                    b.Property<long>("BillId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                    b.Property<DateTimeOffset>("BillDueDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("BillStatusId")
+                    b.Property<int>("BillPaymentStatusId")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset>("DateBilled")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateDue")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateEntered")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset>("DateUpdated")
@@ -69,18 +64,32 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.Property<Guid>("PackageId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Ref")
+                    b.Property<int>("PackageTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("ServiceFromDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ServiceToDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("SupplierId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("SupplierRef")
                         .HasColumnType("text");
 
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("TotalBilled")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid?>("UpdaterId")
                         .HasColumnType("uuid");
 
                     b.HasKey("BillId");
 
-                    b.HasIndex("BillStatusId");
+                    b.HasIndex("BillPaymentStatusId");
+
+                    b.HasIndex("PackageTypeId");
 
                     b.ToTable("Bills");
                 });
@@ -92,8 +101,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<Guid>("BillId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("BillId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
@@ -116,12 +125,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillItem", b =>
                 {
-                    b.Property<Guid>("BillItemId")
+                    b.Property<long>("BillItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<Guid>("BillId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("BillItemStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BillPaymentStatus")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
@@ -132,11 +145,23 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("DateUpdated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
+                    b.Property<long>("HackneySupplierBillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ItemDescription")
                         .HasColumnType("text");
 
-                    b.Property<int>("Quantity")
+                    b.Property<string>("ItemName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PackageTypeId")
                         .HasColumnType("integer");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TaxRatePercentage")
+                        .HasColumnType("real");
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric");
@@ -146,9 +171,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 
                     b.HasKey("BillItemId");
 
-                    b.HasIndex("BillId");
+                    b.HasIndex("HackneySupplierBillId");
 
                     b.ToTable("BillItems");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillPayment", b =>
+                {
+                    b.Property<long>("BillPaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("BillItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("RemainingBalance")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("BillPaymentId");
+
+                    b.ToTable("BillPayments");
                 });
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillStatus", b =>
@@ -424,6 +470,36 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasKey("PackageTypeId");
 
                     b.ToTable("PackageType");
+
+                    b.HasData(
+                        new
+                        {
+                            PackageTypeId = 1,
+                            DateCreated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DateUpdated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            PackageTypeName = "Home Care Package"
+                        },
+                        new
+                        {
+                            PackageTypeId = 2,
+                            DateCreated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DateUpdated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            PackageTypeName = "Residential Care Package"
+                        },
+                        new
+                        {
+                            PackageTypeId = 3,
+                            DateCreated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DateUpdated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            PackageTypeName = "Day Care Package"
+                        },
+                        new
+                        {
+                            PackageTypeId = 4,
+                            DateCreated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DateUpdated = new DateTimeOffset(new DateTime(2021, 5, 21, 9, 40, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            PackageTypeName = "Nursing Care Package"
+                        });
                 });
 
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRun", b =>
@@ -599,11 +675,87 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.Supplier", b =>
+                {
+                    b.Property<long>("SupplierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SupplierName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("UpdaterId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("SupplierId");
+
+                    b.ToTable("Suppliers");
+
+                    b.HasData(
+                        new
+                        {
+                            SupplierId = 1L,
+                            CreatorId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SupplierName = "ABC Limited"
+                        },
+                        new
+                        {
+                            SupplierId = 2L,
+                            CreatorId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SupplierName = "XYZ Ltd"
+                        });
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.SupplierCreditNote", b =>
+                {
+                    b.Property<long>("CreditNoteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<decimal>("AmountOverPaid")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("AmountRemaining")
+                        .HasColumnType("numeric");
+
+                    b.Property<long>("BillPaymentFromId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BillPaymentPaidTo")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DatePaidForward")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("CreditNoteId");
+
+                    b.HasIndex("BillPaymentFromId");
+
+                    b.ToTable("SupplierCreditNotes");
+                });
+
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.Bill", b =>
                 {
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillStatus", "BillStatus")
                         .WithMany()
-                        .HasForeignKey("BillStatusId")
+                        .HasForeignKey("BillPaymentStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PackageType", "PackageType")
+                        .WithMany()
+                        .HasForeignKey("PackageTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -620,8 +772,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillItem", b =>
                 {
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.Bill", "Bill")
-                        .WithMany()
-                        .HasForeignKey("BillId")
+                        .WithMany("BillItems")
+                        .HasForeignKey("HackneySupplierBillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -695,6 +847,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunType", "PayRunType")
                         .WithMany()
                         .HasForeignKey("PayRunTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.SupplierCreditNote", b =>
+                {
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillPayment", "BillPayment")
+                        .WithMany()
+                        .HasForeignKey("BillPaymentFromId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

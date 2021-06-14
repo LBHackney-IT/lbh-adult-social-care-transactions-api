@@ -12,7 +12,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BillFileId { get; set; }
 
-        public Guid BillId { get; set; }
+        public long BillId { get; set; }
 
         [ForeignKey((nameof(BillId)))]
         public Bill Bill { get; set; }

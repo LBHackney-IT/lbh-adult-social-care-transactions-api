@@ -11,6 +11,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
     {
         Task<BillItemDomain> CreateBillItemAsync(BillItem billItem);
 
-        Task<IEnumerable<BillItemDomain>> GetBillItemList(Guid billId);
+        Task<IEnumerable<BillItemDomain>> GetBillItemList(long billId);
     }
 }

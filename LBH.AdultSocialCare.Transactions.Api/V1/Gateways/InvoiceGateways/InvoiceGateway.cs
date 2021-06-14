@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -62,6 +63,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             var maxDateItem = await _dbContext.InvoiceItems.Where(ii => ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
                 .OrderByDescending(ii => ii.DateCreated).FirstOrDefaultAsync().ConfigureAwait(false);
             return maxDateItem?.DateCreated;
+        }
+
+        public async Task<IEnumerable<PendingInvoicesDomain>> GetUserPendingInvoices(Guid serviceUserId)
+        {
+            var invoices = await _dbContext.Invoices.Where(ii => ii.ServiceUserId.Equals(serviceUserId))
+                .Include(ii =>
+                    ii.InvoiceItems)
+                .ToListAsync().ConfigureAwait(false);
+
+            return invoices.ToDomain();
         }
     }
 }

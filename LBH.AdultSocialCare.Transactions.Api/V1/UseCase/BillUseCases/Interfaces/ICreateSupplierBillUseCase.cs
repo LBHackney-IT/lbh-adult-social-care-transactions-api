@@ -7,7 +7,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces
 {
-    public interface ICreateBillAsyncUseCase
+    public interface ICreateSupplierBillUseCase
     {
         public Task<BillResponse> ExecuteAsync(BillCreationDomain billCreationDomains);
     }
