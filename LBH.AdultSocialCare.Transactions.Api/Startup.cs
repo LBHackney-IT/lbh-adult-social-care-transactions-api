@@ -1,13 +1,24 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.CustomAttributes;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.DepartmentGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.DepartmentUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.DepartmentUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,17 +37,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -190,31 +192,49 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IBillStatusGateway, BillStatusGateway>();
             services.AddScoped<IBillPaymentGateway, BillPaymentGateway>();
 
-            #endregion
+            #endregion Bill
 
             #region Invoices
 
             services.AddScoped<IInvoiceGateway, InvoiceGateway>();
 
-            #endregion
+            #endregion Invoices
 
             #region PayRuns
 
             services.AddScoped<IPayRunGateway, PayRunGateway>();
 
-            #endregion
+            #endregion PayRuns
 
             #region Supplier
 
             services.AddScoped<ISupplierGateway, SupplierGateway>();
 
-            #endregion
+            #endregion Supplier
 
+            #region Departments
+
+            services.AddScoped<IDepartmentGateway, DepartmentGateway>();
+
+            #endregion Departments
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<ICreateSupplierBillUseCase, CreateSupplierBillUseCase>();
+            services.AddScoped<ICreatePayRunUseCase, CreatePayRunUseCase>();
+            services.AddScoped<IGetPayRunSummaryListUseCase, GetPayRunSummaryListUseCase>();
+            services.AddScoped<IGetUniqueSuppliersInPayRunUseCase, GetUniqueSuppliersInPayRunUseCase>();
+            services.AddScoped<IGetReleasedHoldsCountUseCase, GetReleasedHoldsCountUseCase>();
+            services.AddScoped<IGetUniquePackageTypesInPayRunUseCase, GetUniquePackageTypesInPayRunUseCase>();
+            services.AddScoped<IGetReleasedHoldsUseCase, GetReleasedHoldsUseCase>();
+            services.AddScoped<IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase, GetUniqueInvoiceItemPaymentStatusInPayRunUseCase>();
+            services.AddScoped<IGetSinglePayRunDetailsUseCase, GetSinglePayRunDetailsUseCase>();
+            services.AddScoped<IGetInvoiceItemPaymentStatusesUseCase, GetInvoiceItemPaymentStatusesUseCase>();
+            services.AddScoped<IChangePayRunStatusUseCase, ChangePayRunStatusUseCase>();
+            services.AddScoped<IReleaseHeldPaymentsUseCase, ReleaseHeldPaymentsUseCase>();
+            services.AddScoped<IGetPaymentDepartmentsUseCase, GetPaymentDepartmentsUseCase>();
+            services.AddScoped<IInvoicesUseCase, InvoicesUseCase>();
             services.AddScoped<IPayRunUseCase, PayRunUseCase>();
             services.AddScoped<IGetUserPendingInvoicesUseCase, GetUserPendingInvoicesUseCase>();
             services.AddScoped<IGetSuppliersUseCase, GetSuppliersUseCase>();

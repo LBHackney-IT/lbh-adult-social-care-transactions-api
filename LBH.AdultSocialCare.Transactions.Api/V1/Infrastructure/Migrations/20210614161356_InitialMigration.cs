@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -34,6 +34,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BillStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Departments",
+                columns: table => new
+                {
+                    DepartmentId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DepartmentName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departments", x => x.DepartmentId);
                 });
 
             migrationBuilder.CreateTable(
@@ -133,21 +146,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Suppliers",
-                columns: table => new
-                {
-                    SupplierId = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SupplierName = table.Column<string>(nullable: true),
-                    CreatorId = table.Column<Guid>(nullable: false),
-                    UpdaterId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Suppliers", x => x.SupplierId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SupplierCreditNotes",
                 columns: table => new
                 {
@@ -211,34 +209,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Invoices",
+                name: "Suppliers",
                 columns: table => new
                 {
-                    InvoiceId = table.Column<Guid>(nullable: false),
-                    DateCreated = table.Column<DateTimeOffset>(nullable: false),
-                    DateUpdated = table.Column<DateTimeOffset>(nullable: false),
-                    InvoiceNumber = table.Column<string>(nullable: true),
-                    SupplierId = table.Column<long>(nullable: false),
+                    SupplierId = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SupplierName = table.Column<string>(nullable: true),
                     PackageTypeId = table.Column<int>(nullable: false),
-                    ServiceUserId = table.Column<Guid>(nullable: false),
-                    DateInvoiced = table.Column<DateTimeOffset>(nullable: false),
-                    TotalAmount = table.Column<decimal>(nullable: false),
-                    SupplierVATPercent = table.Column<float>(nullable: false),
-                    InvoiceStatusId = table.Column<int>(nullable: false),
                     CreatorId = table.Column<Guid>(nullable: false),
                     UpdaterId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Invoices", x => x.InvoiceId);
+                    table.PrimaryKey("PK_Suppliers", x => x.SupplierId);
                     table.ForeignKey(
-                        name: "FK_Invoices_InvoiceStatuses_InvoiceStatusId",
-                        column: x => x.InvoiceStatusId,
-                        principalTable: "InvoiceStatuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Invoices_PackageType_PackageTypeId",
+                        name: "FK_Suppliers_PackageType_PackageTypeId",
                         column: x => x.PackageTypeId,
                         principalTable: "PackageType",
                         principalColumn: "PackageTypeId",
@@ -320,38 +305,43 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InvoiceItems",
+                name: "Invoices",
                 columns: table => new
                 {
-                    InvoiceItemId = table.Column<Guid>(nullable: false),
+                    InvoiceId = table.Column<Guid>(nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(nullable: false),
                     DateUpdated = table.Column<DateTimeOffset>(nullable: false),
-                    InvoiceId = table.Column<Guid>(nullable: false),
-                    InvoiceItemPaymentStatusId = table.Column<int>(nullable: false),
-                    ItemName = table.Column<string>(nullable: true),
-                    PricePerUnit = table.Column<decimal>(nullable: false),
-                    Quantity = table.Column<int>(nullable: false),
-                    SubTotal = table.Column<decimal>(nullable: false),
-                    VatAmount = table.Column<decimal>(nullable: false),
-                    TotalPrice = table.Column<decimal>(nullable: false),
-                    SupplierReturnItemId = table.Column<Guid>(nullable: true),
+                    InvoiceNumber = table.Column<string>(nullable: true),
+                    SupplierId = table.Column<long>(nullable: false),
+                    PackageTypeId = table.Column<int>(nullable: false),
+                    ServiceUserId = table.Column<Guid>(nullable: false),
+                    DateInvoiced = table.Column<DateTimeOffset>(nullable: false),
+                    TotalAmount = table.Column<decimal>(nullable: false),
+                    SupplierVATPercent = table.Column<float>(nullable: false),
+                    InvoiceStatusId = table.Column<int>(nullable: false),
                     CreatorId = table.Column<Guid>(nullable: false),
                     UpdaterId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InvoiceItems", x => x.InvoiceItemId);
+                    table.PrimaryKey("PK_Invoices", x => x.InvoiceId);
                     table.ForeignKey(
-                        name: "FK_InvoiceItems_Invoices_InvoiceId",
-                        column: x => x.InvoiceId,
-                        principalTable: "Invoices",
-                        principalColumn: "InvoiceId",
+                        name: "FK_Invoices_InvoiceStatuses_InvoiceStatusId",
+                        column: x => x.InvoiceStatusId,
+                        principalTable: "InvoiceStatuses",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_InvoiceItems_InvoiceItemPaymentStatuses_InvoiceItemPaymentS~",
-                        column: x => x.InvoiceItemPaymentStatusId,
-                        principalTable: "InvoiceItemPaymentStatuses",
-                        principalColumn: "StatusId",
+                        name: "FK_Invoices_PackageType_PackageTypeId",
+                        column: x => x.PackageTypeId,
+                        principalTable: "PackageType",
+                        principalColumn: "PackageTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Invoices_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "SupplierId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -395,6 +385,75 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InvoiceItems",
+                columns: table => new
+                {
+                    InvoiceItemId = table.Column<Guid>(nullable: false),
+                    DateCreated = table.Column<DateTimeOffset>(nullable: false),
+                    DateUpdated = table.Column<DateTimeOffset>(nullable: false),
+                    InvoiceId = table.Column<Guid>(nullable: false),
+                    InvoiceItemPaymentStatusId = table.Column<int>(nullable: false),
+                    ItemName = table.Column<string>(nullable: true),
+                    PricePerUnit = table.Column<decimal>(nullable: false),
+                    Quantity = table.Column<int>(nullable: false),
+                    SubTotal = table.Column<decimal>(nullable: false),
+                    VatAmount = table.Column<decimal>(nullable: false),
+                    TotalPrice = table.Column<decimal>(nullable: false),
+                    SupplierReturnItemId = table.Column<Guid>(nullable: true),
+                    CreatorId = table.Column<Guid>(nullable: false),
+                    UpdaterId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceItems", x => x.InvoiceItemId);
+                    table.ForeignKey(
+                        name: "FK_InvoiceItems_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "InvoiceId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InvoiceItems_InvoiceItemPaymentStatuses_InvoiceItemPaymentS~",
+                        column: x => x.InvoiceItemPaymentStatusId,
+                        principalTable: "InvoiceItemPaymentStatuses",
+                        principalColumn: "StatusId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DisputedInvoices",
+                columns: table => new
+                {
+                    DisputedInvoiceId = table.Column<Guid>(nullable: false),
+                    InvoiceId = table.Column<Guid>(nullable: false),
+                    InvoiceItemId = table.Column<Guid>(nullable: true),
+                    ActionRequiredFromId = table.Column<int>(nullable: false),
+                    ReasonForHolding = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DisputedInvoices", x => x.DisputedInvoiceId);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoices_Departments_ActionRequiredFromId",
+                        column: x => x.ActionRequiredFromId,
+                        principalTable: "Departments",
+                        principalColumn: "DepartmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoices_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "InvoiceId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoices_InvoiceItems_InvoiceItemId",
+                        column: x => x.InvoiceItemId,
+                        principalTable: "InvoiceItems",
+                        principalColumn: "InvoiceItemId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PayRunItems",
                 columns: table => new
                 {
@@ -423,6 +482,40 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DisputedInvoiceChats",
+                columns: table => new
+                {
+                    DisputedInvoiceChatId = table.Column<Guid>(nullable: false),
+                    DisputedInvoiceId = table.Column<Guid>(nullable: false),
+                    MessageRead = table.Column<bool>(nullable: false),
+                    Message = table.Column<string>(nullable: true),
+                    MessageFromId = table.Column<int>(nullable: true),
+                    ActionRequiredFromId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DisputedInvoiceChats", x => x.DisputedInvoiceChatId);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoiceChats_Departments_ActionRequiredFromId",
+                        column: x => x.ActionRequiredFromId,
+                        principalTable: "Departments",
+                        principalColumn: "DepartmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoiceChats_DisputedInvoices_DisputedInvoiceId",
+                        column: x => x.DisputedInvoiceId,
+                        principalTable: "DisputedInvoices",
+                        principalColumn: "DisputedInvoiceId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoiceChats_Departments_MessageFromId",
+                        column: x => x.MessageFromId,
+                        principalTable: "Departments",
+                        principalColumn: "DepartmentId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "BillStatuses",
                 columns: new[] { "Id", "StatusName" },
@@ -431,6 +524,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     { 1, "Outstanding" },
                     { 2, "Paid" },
                     { 3, "Overdue" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Departments",
+                columns: new[] { "DepartmentId", "DepartmentName" },
+                values: new object[,]
+                {
+                    { 1, "Brokerage" },
+                    { 2, "Finance" }
                 });
 
             migrationBuilder.InsertData(
@@ -457,8 +559,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 values: new object[,]
                 {
                     { 1, "Draft" },
-                    { 2, "Paid" },
-                    { 3, "Held" }
+                    { 2, "Held" },
+                    { 3, "Accepted" },
+                    { 4, "Released" }
                 });
 
             migrationBuilder.InsertData(
@@ -467,7 +570,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 values: new object[,]
                 {
                     { 1, "Draft" },
-                    { 2, "Approved" }
+                    { 2, "SubmittedForApproval" },
+                    { 3, "Approved" }
                 });
 
             migrationBuilder.InsertData(
@@ -510,6 +614,37 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 column: "PackageTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoiceChats_ActionRequiredFromId",
+                table: "DisputedInvoiceChats",
+                column: "ActionRequiredFromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoiceChats_DisputedInvoiceId",
+                table: "DisputedInvoiceChats",
+                column: "DisputedInvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoiceChats_MessageFromId",
+                table: "DisputedInvoiceChats",
+                column: "MessageFromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoices_ActionRequiredFromId",
+                table: "DisputedInvoices",
+                column: "ActionRequiredFromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoices_InvoiceItemId",
+                table: "DisputedInvoices",
+                column: "InvoiceItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoices_InvoiceId_InvoiceItemId",
+                table: "DisputedInvoices",
+                columns: new[] { "InvoiceId", "InvoiceItemId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InvoiceItems_InvoiceId",
                 table: "InvoiceItems",
                 column: "InvoiceId");
@@ -528,6 +663,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "IX_Invoices_PackageTypeId",
                 table: "Invoices",
                 column: "PackageTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_SupplierId",
+                table: "Invoices",
+                column: "SupplierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PayRunItems_InvoiceItemId",
@@ -563,6 +703,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "IX_SupplierCreditNotes_BillPaymentFromId",
                 table: "SupplierCreditNotes",
                 column: "BillPaymentFromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Suppliers_PackageTypeId",
+                table: "Suppliers",
+                column: "PackageTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -572,6 +717,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "BillItems");
+
+            migrationBuilder.DropTable(
+                name: "DisputedInvoiceChats");
 
             migrationBuilder.DropTable(
                 name: "example_table");
@@ -586,13 +734,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "SupplierCreditNotes");
 
             migrationBuilder.DropTable(
-                name: "Suppliers");
-
-            migrationBuilder.DropTable(
                 name: "Bills");
 
             migrationBuilder.DropTable(
-                name: "InvoiceItems");
+                name: "DisputedInvoices");
 
             migrationBuilder.DropTable(
                 name: "PayRuns");
@@ -604,10 +749,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "BillStatuses");
 
             migrationBuilder.DropTable(
-                name: "Invoices");
+                name: "Departments");
 
             migrationBuilder.DropTable(
-                name: "InvoiceItemPaymentStatuses");
+                name: "InvoiceItems");
 
             migrationBuilder.DropTable(
                 name: "PayRunStatuses");
@@ -616,13 +761,22 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "PayRunSubTypes");
 
             migrationBuilder.DropTable(
-                name: "InvoiceStatuses");
+                name: "Invoices");
 
             migrationBuilder.DropTable(
-                name: "PackageType");
+                name: "InvoiceItemPaymentStatuses");
 
             migrationBuilder.DropTable(
                 name: "PayRunTypes");
+
+            migrationBuilder.DropTable(
+                name: "InvoiceStatuses");
+
+            migrationBuilder.DropTable(
+                name: "Suppliers");
+
+            migrationBuilder.DropTable(
+                name: "PackageType");
         }
     }
 }

@@ -1,6 +1,8 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -9,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
@@ -27,6 +27,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<BillFile> BillFiles { get; set; }
         public DbSet<BillItem> BillItems { get; set; }
         public DbSet<BillStatus> BillStatuses { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<DisputedInvoice> DisputedInvoices { get; set; }
+        public DbSet<DisputedInvoiceChat> DisputedInvoiceChats { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
@@ -43,6 +46,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region Model Config
+
+            modelBuilder.Entity<DisputedInvoice>(entity =>
+            {
+                entity.HasIndex(e => new { e.InvoiceId, e.InvoiceItemId })
+                    .IsUnique();
+            });
+
+            #endregion Model Config
+
             base.OnModelCreating(modelBuilder);
 
             #region Database Seeds
@@ -58,6 +71,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             modelBuilder.ApplyConfiguration(new PayRunTypesSeed());
             modelBuilder.ApplyConfiguration(new PayRunStatusesSeed());
             modelBuilder.ApplyConfiguration(new PayRunSubTypesSeed());
+            modelBuilder.ApplyConfiguration(new DepartmentsSeed());
 
             #endregion Database Seeds
         }
