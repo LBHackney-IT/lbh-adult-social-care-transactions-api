@@ -2,10 +2,12 @@ using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.DepartmentBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
@@ -121,5 +123,33 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion Invoices
+
+        public static IEnumerable<BillItemResponse> ToResponse(this IEnumerable<BillItemDomain> billItemDomains)
+        {
+            return _mapper.Map<IEnumerable<BillItemResponse>>(billItemDomains);
+        }
+
+        public static BillStatusResponse ToResponse(this BillStatusDomain billStatusDomain)
+        {
+            return _mapper.Map<BillStatusResponse>(billStatusDomain);
+        }
+
+        #region Invoice
+
+        public static IEnumerable<PendingInvoicesResponse> ToResponse(this IEnumerable<PendingInvoicesDomain> pendingInvoicesDomains)
+        {
+            return _mapper.Map<IEnumerable<PendingInvoicesResponse>>(pendingInvoicesDomains);
+        }
+
+        #endregion Invoice
+
+        #region Supplier
+
+        public static IEnumerable<SupplierResponse> ToResponse(this IEnumerable<SupplierDomain> supplierDomain)
+        {
+            return _mapper.Map<IEnumerable<SupplierResponse>>(supplierDomain);
+        }
+
+        #endregion Supplier
     }
 }

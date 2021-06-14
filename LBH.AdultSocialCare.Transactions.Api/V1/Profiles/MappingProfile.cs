@@ -4,10 +4,12 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.DepartmentBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
@@ -18,6 +20,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 {
@@ -30,7 +33,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<Bill, BillDomain>();
             CreateMap<BillDomain, Bill>();
             CreateMap<BillDomain, BillResponse>();
-            CreateMap<BillResponse, BillDomain>();
             CreateMap<BillCreationDomain, BillCreationRequest>();
             CreateMap<BillCreationRequest, BillCreationDomain>();
             CreateMap<BillCreationDomain, Bill>();
@@ -38,6 +40,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<BillStatus, BillStatusDomain>();
             CreateMap<BillStatusDomain, BillStatus>();
             CreateMap<BillStatusDomain, BillStatusResponse>();
+            CreateMap<BillItemCreationDomain, BillItem>();
+            CreateMap<BillItem, BillItemCreationDomain>();
+            CreateMap<BillItemDomain, BillItemResponse>();
+            CreateMap<BillItemCreationRequest, BillItemCreationDomain>();
 
             #endregion Bill
 
@@ -52,6 +58,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<DisputedInvoiceForCreationDomain, DisputedInvoice>();
             CreateMap<DisputedInvoice, DisputedInvoiceFlatDomain>();
             CreateMap<DisputedInvoiceFlatDomain, DisputedInvoiceFlatResponse>();
+            CreateMap<Invoice, PendingInvoicesDomain>();
+            CreateMap<InvoiceItem, InvoiceItemDomain>();
+            CreateMap<PendingInvoicesDomain, PendingInvoicesResponse>();
+            CreateMap<InvoiceItemDomain, InvoiceItemResponse>();
 
             #endregion Invoices
 
@@ -74,6 +84,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             #region PackageTypes
 
             CreateMap<PackageTypeDomain, PackageTypeResponse>();
+            CreateMap<PackageType, PackageTypeDomain>();
 
             #endregion PackageTypes
 
@@ -83,6 +94,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<DepartmentDomain, DepartmentResponse>();
 
             #endregion Departments
+
+            #region Supplier
+
+            CreateMap<Supplier, SupplierDomain>();
+            CreateMap<SupplierDomain, SupplierResponse>();
+
+            #endregion Supplier
         }
     }
 }

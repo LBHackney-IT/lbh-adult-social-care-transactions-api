@@ -9,9 +9,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
 {
     public interface IBillGateway
     {
-        Task<BillDomain> CreateBillAsync(Bill bill);
+        Task<long> CreateBillAsync(Bill bill);
 
-        Task<BillDomain> GetBillAsync(Guid billId);
+        Task<BillDomain> GetBillAsync(long billId);
 
         Task<IEnumerable<BillDomain>> GetBillList();
     }

@@ -1,15 +1,14 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers
+namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains
 {
-    public class Supplier
+    public class SupplierDomain
     {
         /// <summary>
         /// Gets or sets the Id
         /// </summary>
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public long SupplierId { get; set; }
+        public long SupplierId { get; set; }
 
         /// <summary>
         /// Gets or sets the Supplier Name
@@ -22,6 +21,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppli
         public int PackageTypeId { get; set; }
 
         /// <summary>
+        /// Gets or sets the Package Type Id
+        /// </summary>
+        public PackageTypeDomain Package { get; set; }
+
+        /// <summary>
         /// Gets or sets the Creator Id
         /// </summary>
         public Guid CreatorId { get; set; }
@@ -30,7 +34,5 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppli
         /// Gets or sets the Updater Id
         /// </summary>
         public Guid? UpdaterId { get; set; }
-
-        [ForeignKey(nameof(PackageTypeId))] public PackageType Package { get; set; }
     }
 }

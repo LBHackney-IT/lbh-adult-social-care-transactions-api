@@ -8,14 +8,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request
 {
     public class BillCreationRequest
     {
-        [Required] public int SupplierId { get; set; }
-        [Required] public string Ref { get; set; }
-        [Required] public Guid PackageId { get; set; }
-        [Required] public DateTimeOffset DateEntered { get; set; }
-        [Required] public DateTimeOffset DateDue { get; set; }
-        [Required] public decimal Amount { get; set; }
-        [Required] public decimal AmountPaid { get; set; }
-        public int? BillStatusId { get; set; }
+        public int PackageTypeId { get; set; }
+        public Guid PackageId { get; set; }
+        public string SupplierRef { get; set; }
+        public long SupplierId { get; set; }
+        public DateTimeOffset ServiceFromDate { get; set; }
+        public DateTimeOffset ServiceToDate { get; set; }
+        public DateTimeOffset DateBilled { get; set; }
+        public DateTimeOffset BillDueDate { get; set; }
+        public decimal TotalBilled { get; set; }
+        public int BillPaymentStatusId { get; set; }
+
         public Guid? CreatorId { get; set; }
+        public List<BillItemCreationRequest> BillItems { get; set; }
     }
 }

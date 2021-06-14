@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
@@ -7,10 +11,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -93,7 +93,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            return PagedList<InvoiceDomain>.ToPagedList(invoices.ToDomain(), invoiceIds.Count, parameters.PageNumber,
+            return PagedList<InvoiceDomain>.ToPagedList(invoices.ToInvoiceDomain(), invoiceIds.Count, parameters.PageNumber,
                 parameters.PageSize);
         }
 
@@ -219,6 +219,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             {
                 throw new DbSaveFailedException($"Could not update invoice item payment status: {e.InnerException?.Message}");
             }
+        }
+
+        public async Task<IEnumerable<PendingInvoicesDomain>> GetUserPendingInvoices(Guid serviceUserId)
+        {
+            var invoices = await _dbContext.Invoices.Where(ii => ii.ServiceUserId.Equals(serviceUserId))
+                .Include(ii =>
+                    ii.InvoiceItems)
+                .ToListAsync().ConfigureAwait(false);
+
+            return invoices.ToPendingInvoiceDomain();
         }
     }
 }
