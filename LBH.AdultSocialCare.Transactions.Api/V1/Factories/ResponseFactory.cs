@@ -17,13 +17,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using System.Collections.Generic;
 using System.Linq;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
