@@ -56,6 +56,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<BillPaymentDomain>(billPayment);
         }
 
+        public static BillPaymentDomain ToDomain(this BillPayment billPayment)
+        {
+            return _mapper.Map<BillPaymentDomain>(billPayment);
+        }
+
         #endregion Bill
 
         #region Invoice

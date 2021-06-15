@@ -17,6 +17,13 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using System.Collections.Generic;
 using System.Linq;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -58,11 +65,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<BillResponse>>(billDomains);
         }
 
-    #endregion Bill
+        #endregion Bill
 
         #region PayRuns
 
-    public static IEnumerable<PayRunSummaryResponse> ToResponse(this IEnumerable<PayRunSummaryDomain> payRunSummaryDomains)
+        public static IEnumerable<PayRunSummaryResponse> ToResponse(this IEnumerable<PayRunSummaryDomain> payRunSummaryDomains)
         {
             return _mapper.Map<IEnumerable<PayRunSummaryResponse>>(payRunSummaryDomains);
         }

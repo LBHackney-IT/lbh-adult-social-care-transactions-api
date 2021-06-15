@@ -102,7 +102,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<SupplierTaxRate, SupplierTaxRateDomain>();
             CreateMap<SupplierTaxRateDomain, SupplierTaxRateResponse>();
 
-            #endregion
+            #endregion Supplier
 
             CreateMap<PackageType, PackageTypeDomain>();
 
