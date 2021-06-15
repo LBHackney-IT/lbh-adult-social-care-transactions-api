@@ -807,6 +807,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.ToTable("SupplierCreditNotes");
                 });
 
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.SupplierTaxRate", b =>
+                {
+                    b.Property<int>("TaxRateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("SupplierId")
+                        .HasColumnType("bigint");
+
+                    b.Property<float>("VATPercentage")
+                        .HasColumnType("real");
+
+                    b.HasKey("TaxRateId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("SupplierTaxRates");
+                });
+
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.Bill", b =>
                 {
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillStatus", "BillStatus")
@@ -851,6 +871,28 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.Invoice", "Invoice")
                         .WithMany()
                         .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.InvoiceItem", "InvoiceItem")
+                        .WithMany()
+                        .HasForeignKey("InvoiceItemId");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.DisputedInvoiceChat", b =>
+                {
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Department", "ActionRequiredFromDepartment")
+                        .WithMany()
+                        .HasForeignKey("ActionRequiredFromId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.DisputedInvoice", "DisputedInvoice")
+                        .WithMany("DisputedInvoiceChats")
+                        .HasForeignKey("DisputedInvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -971,6 +1013,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillPayment", "BillPayment")
                         .WithMany()
                         .HasForeignKey("BillPaymentFromId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.SupplierTaxRate", b =>
+                {
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

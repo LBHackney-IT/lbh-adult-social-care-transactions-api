@@ -13,6 +13,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundary.Response
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
@@ -31,7 +32,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             #region Bill
 
             CreateMap<Bill, BillDomain>();
-            CreateMap<BillDomain, Bill>();
             CreateMap<BillDomain, BillResponse>();
             CreateMap<BillCreationDomain, BillCreationRequest>();
             CreateMap<BillCreationRequest, BillCreationDomain>();
@@ -99,8 +99,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 
             CreateMap<Supplier, SupplierDomain>();
             CreateMap<SupplierDomain, SupplierResponse>();
+            CreateMap<SupplierTaxRate, SupplierTaxRateDomain>();
+            CreateMap<SupplierTaxRateDomain, SupplierTaxRateResponse>();
 
             #endregion Supplier
+
+            CreateMap<PackageType, PackageTypeDomain>();
+
+            #region Ledger
+
+            CreateMap<Ledger, LedgerDomain>();
+
+            #endregion
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
@@ -43,6 +44,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<BillPayment> BillPayments { get; set; }
         public DbSet<SupplierCreditNote> SupplierCreditNotes { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<SupplierTaxRate> SupplierTaxRates { get; set; }
+        public DbSet<Ledger> Ledgers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

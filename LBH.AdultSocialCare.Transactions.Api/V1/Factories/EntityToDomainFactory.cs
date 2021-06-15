@@ -6,6 +6,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -49,6 +51,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         {
             return _mapper.Map<IEnumerable<BillItemDomain>>(billItemEntity);
         }
+        public static BillPaymentDomain ToDomain(this BillPayment billPayment)
+        {
+            return _mapper.Map<BillPaymentDomain>(billPayment);
+        }
 
         public static BillPaymentDomain ToDomain(this BillPayment billPayment)
         {
@@ -73,6 +79,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<SupplierDomain>>(supplierEntities);
         }
 
+        public static IEnumerable<SupplierTaxRateDomain> ToDomain(this List<SupplierTaxRate> supplierTaxRatesEntities)
+        {
+            return _mapper.Map<IEnumerable<SupplierTaxRateDomain>>(supplierTaxRatesEntities);
+        }
+
         #endregion Supplier
 
         #region Invoices
@@ -88,5 +99,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion Invoices
+
+        #region Ledger
+
+        public static LedgerDomain ToDomain(this Ledger ledgerEntity)
+        {
+            return _mapper.Map<LedgerDomain>(ledgerEntity);
+        }
+
+        #endregion
     }
 }

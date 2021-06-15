@@ -64,5 +64,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
                 .ToListAsync().ConfigureAwait(false);
             return bill?.ToDomain();
         }
+
+        public async Task<IEnumerable<BillDomain>> GetBill(Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null,
+            DateTimeOffset? toDate = null)
+        {
+            var bill = await _databaseContext.Bills
+                .Where(b =>
+                    (fromDate.Equals(null) || b.DateCreated >= fromDate) &&
+                    (toDate.Equals(null) || b.DateCreated <= toDate) &&
+                    (packageId.Equals(null) || b.PackageId == packageId) &&
+                    (supplierId.Equals(null) || b.SupplierId == supplierId) &&
+                    (billPaymentStatusId.Equals(null) || b.BillPaymentStatusId == billPaymentStatusId))
+                .ToListAsync().ConfigureAwait(false);
+
+            return bill?.ToDomain();
+        }
     }
 }
