@@ -45,6 +45,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<SupplierCreditNote> SupplierCreditNotes { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierTaxRate> SupplierTaxRates { get; set; }
+        public DbSet<Ledger> Ledgers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

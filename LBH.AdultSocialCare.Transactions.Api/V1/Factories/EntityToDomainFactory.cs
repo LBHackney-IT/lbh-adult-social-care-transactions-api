@@ -6,6 +6,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -53,7 +55,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         {
             return _mapper.Map<BillPaymentDomain>(billPayment);
         }
-        
+
         #endregion Bill
 
         #region Invoice
@@ -92,5 +94,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion Invoices
+
+        #region Ledger
+
+        public static LedgerDomain ToDomain(this Ledger ledgerEntity)
+        {
+            return _mapper.Map<LedgerDomain>(ledgerEntity);
+        }
+
+        #endregion
     }
 }
