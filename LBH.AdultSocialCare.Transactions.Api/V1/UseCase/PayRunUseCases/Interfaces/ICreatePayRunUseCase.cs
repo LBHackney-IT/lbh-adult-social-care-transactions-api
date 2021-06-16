@@ -5,7 +5,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
 {
     public interface ICreatePayRunUseCase
     {
-        Task<Guid> CreateResidentialRecurringPayRunUseCase();
+        /*Task<Guid> CreateResidentialRecurringPayRunUseCase();
 
         Task<Guid> CreateDirectPaymentsPayRunUseCase();
 
@@ -13,7 +13,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
 
         Task<Guid> CreateResidentialReleaseHoldsPayRunUseCase();
 
-        Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase();
+        Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase();*/
 
         Task<Guid> CreateNewPayRunUseCase(string payRunType);
     }

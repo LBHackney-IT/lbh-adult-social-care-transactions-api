@@ -157,6 +157,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             return heldInvoices;
         }
 
+        public async Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingInvoiceStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
+        {
+            var invoiceItems = await _dbContext.Invoices.Where(ii =>
+                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
+                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
+                    ii.InvoiceStatusId.Equals(invoiceStatusId))
+                .ToListAsync().ConfigureAwait(false);
+
+            return _mapper.Map<IEnumerable<InvoiceDomain>>(invoiceItems);
+        }
+
         public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
             var invoiceItems = await _dbContext.InvoiceItems.Where(ii =>

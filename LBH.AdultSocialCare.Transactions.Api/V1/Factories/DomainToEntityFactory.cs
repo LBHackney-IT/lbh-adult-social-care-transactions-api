@@ -9,7 +9,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -36,13 +35,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static PayRun ToDb(this PayRunForCreationDomain payRunForCreationDomain)
         {
             var payRunForCreation = _mapper.Map<PayRun>(payRunForCreationDomain);
-            payRunForCreation.PayRunItems = payRunForCreationDomain.InvoiceItems.Select(ii => new PayRunItem
+            payRunForCreation.PayRunItems = new List<PayRunItem>();
+            foreach (var invoiceDomain in payRunForCreationDomain.Invoices)
             {
-                PayRunId = payRunForCreation.PayRunId,
-                InvoiceItemId = ii.InvoiceItemId,
-                PaidAmount = 0,
-                RemainingBalance = ii.TotalPrice
-            }).ToList();
+                payRunForCreation.PayRunItems.Add(new PayRunItem
+                {
+                    PayRunId = payRunForCreation.PayRunId,
+                    InvoiceId = invoiceDomain.InvoiceId,
+                    InvoiceItemId = null,
+                    PaidAmount = 0,
+                    RemainingBalance = invoiceDomain.TotalAmount
+                });
+            }
             payRunForCreation.PayRunStatusId = (int) PayRunStatusesEnum.Draft;
             return payRunForCreation;
         }
