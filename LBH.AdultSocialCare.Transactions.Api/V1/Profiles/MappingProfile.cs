@@ -73,7 +73,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
                 .ForMember(ifc => ifc.DateInvoiced, opt => opt.MapFrom(b => DateTimeOffset.Now));
 
             CreateMap<InvoiceItemForCreationRequest, InvoiceItemForCreationDomain>()
-                .ForMember(ifc => ifc.InvoiceItemPaymentStatusId, opt => opt.MapFrom(b => (int)InvoiceItemPaymentStatusEnum.NotStarted));
+                .ForMember(ifc => ifc.InvoiceItemPaymentStatusId, opt => opt.MapFrom(b => (int) InvoiceItemPaymentStatusEnum.NotStarted));
 
             #endregion Invoices
 
