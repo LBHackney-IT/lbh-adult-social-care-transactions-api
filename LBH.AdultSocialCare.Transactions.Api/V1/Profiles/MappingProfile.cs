@@ -64,6 +64,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<InvoiceItemDomain, InvoiceItemResponse>();
             CreateMap<DisputedInvoice, DisputedInvoiceChat>();
             CreateMap<DisputedInvoiceChatDomain, DisputedInvoiceChatResponse>();
+            CreateMap<InvoiceItemForCreationDomain, InvoiceItem>();
+            CreateMap<InvoiceForCreationDomain, Invoice>();
 
             #endregion Invoices
 

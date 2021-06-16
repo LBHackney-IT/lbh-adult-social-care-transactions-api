@@ -28,6 +28,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetInvoiceItemPaymentStatuses();
 
+        Task<InvoiceDomain> CreateInvoice(Invoice newInvoice);
         Task<DisputedInvoiceFlatDomain> CreateDisputedInvoice(DisputedInvoice newDisputedInvoice);
 
         Task<bool> ChangeInvoiceStatus(Guid invoiceId, int invoiceStatusId);

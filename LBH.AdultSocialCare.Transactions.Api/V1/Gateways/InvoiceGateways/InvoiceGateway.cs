@@ -216,6 +216,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             }).ToListAsync().ConfigureAwait(false);
         }
 
+        public async Task<InvoiceDomain> CreateInvoice(Invoice newInvoice)
+        {
+            var entry = await _dbContext.Invoices.AddAsync(newInvoice).ConfigureAwait(false);
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return entry.Entity.ToInvoiceDomain();
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                throw new DbSaveFailedException($"Could not save invoice to DB: {dbUpdateException.InnerException?.Message}");
+            }
+            catch (Exception e)
+            {
+                // Console.WriteLine(e.GetType());
+                throw new DbSaveFailedException($"Could not save invoice to DB: {e.InnerException?.Message}");
+            }
+        }
+
         public async Task<DisputedInvoiceFlatDomain> CreateDisputedInvoice(DisputedInvoice newDisputedInvoice)
         {
             var entry = await _dbContext.DisputedInvoices.AddAsync(newDisputedInvoice).ConfigureAwait(false);

@@ -88,6 +88,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
         }
 
+        public static InvoiceDomain ToInvoiceDomain(this Invoice invoice)
+        {
+            return _mapper.Map<InvoiceDomain>(invoice);
+        }
+
         public static DisputedInvoiceFlatDomain ToDomain(this DisputedInvoice disputedInvoice)
         {
             return _mapper.Map<DisputedInvoiceFlatDomain>(disputedInvoice);
