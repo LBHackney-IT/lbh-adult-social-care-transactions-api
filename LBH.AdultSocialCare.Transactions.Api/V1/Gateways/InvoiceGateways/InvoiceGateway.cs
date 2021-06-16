@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
@@ -11,6 +8,10 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -68,25 +69,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                           ii.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)))
                 .Include(ii =>
                     ii.InvoiceItems)
-                /*.Select(i => new Invoice
-                {
-                    DateCreated = i.DateCreated,
-                    DateUpdated = i.DateUpdated,
-                    InvoiceId = i.InvoiceId,
-                    InvoiceNumber = i.InvoiceNumber,
-                    SupplierId = i.SupplierId,
-                    PackageTypeId = i.PackageTypeId,
-                    ServiceUserId = i.ServiceUserId,
-                    DateInvoiced = i.DateInvoiced,
-                    TotalAmount = i.TotalAmount,
-                    SupplierVATPercent = i.SupplierVATPercent,
-                    InvoiceStatusId = i.InvoiceStatusId,
-                    CreatorId = i.CreatorId,
-                    UpdaterId = i.UpdaterId,
-                    InvoiceItems = i.InvoiceItems.Where(item =>
-                        parameters.InvoiceItemPaymentStatusId == null ||
-                        item.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)).ToList()
-                })*/
                 .OrderBy(i => i.SupplierId)
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
@@ -95,6 +77,84 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
             return PagedList<InvoiceDomain>.ToPagedList(invoices.ToInvoiceDomain(), invoiceIds.Count, parameters.PageNumber,
                 parameters.PageSize);
+        }
+
+        public async Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments()
+        {
+            var payRunsWithHeldInvoicesIds = await _dbContext.PayRunItems.Where(pr =>
+                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) ||
+                    pr.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held))
+                .Select(pr => pr.PayRunId)
+                .Distinct()
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            /*var res = (from pr in _dbContext.PayRuns
+                join pri in _dbContext.PayRunItems on pr.PayRunId equals pri.PayRun.PayRunId
+                join i in _dbContext.Invoices on pri.Invoice.InvoiceId equals i.InvoiceId
+                join ii in _dbContext.InvoiceItems on i.InvoiceId equals ii.InvoiceId
+                join di in _dbContext.DisputedInvoiceChats on i.InvoiceId equals di.DisputedInvoice.InvoiceId
+                where payRunsWithHeldInvoicesIds.Contains(pr.PayRunId) && pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held)
+                       select pr).ToList();*/
+
+            var heldInvoices = await _dbContext.PayRuns.Where(p => payRunsWithHeldInvoicesIds.Contains(p.PayRunId))
+                .Select(pr => new HeldInvoiceDomain
+                {
+                    PayRunId = pr.PayRunId,
+                    PayRunItemId = pr.PayRunId,
+                    PayRunDate = pr.DateCreated,
+                    Invoices = pr.PayRunItems.Where(pri =>
+                            pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) ||
+                            pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held))
+                        .Select(pri => new InvoiceDomain
+                        {
+                            InvoiceId = pri.InvoiceId,
+                            InvoiceNumber = pri.Invoice.InvoiceNumber,
+                            SupplierId = pri.Invoice.SupplierId,
+                            PackageTypeId = pri.Invoice.PackageTypeId,
+                            ServiceUserId = pri.Invoice.ServiceUserId,
+                            DateInvoiced = pri.Invoice.DateInvoiced,
+                            TotalAmount = pri.Invoice.TotalAmount,
+                            SupplierVATPercent = pri.Invoice.SupplierVATPercent,
+                            InvoiceStatusId = pri.Invoice.InvoiceStatusId,
+                            CreatorId = pri.Invoice.CreatorId,
+                            UpdaterId = pri.Invoice.UpdaterId,
+                            InvoiceItems = pri.Invoice.InvoiceItems.Where(ii =>
+                                ii.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) ||
+                                ii.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held)).Select(
+                                ii => new InvoiceItemMinimalDomain
+                                {
+                                    InvoiceItemId = ii.InvoiceItemId,
+                                    InvoiceId = ii.InvoiceId,
+                                    InvoiceItemPaymentStatusId = ii.InvoiceItemPaymentStatusId,
+                                    ItemName = ii.ItemName,
+                                    PricePerUnit = ii.PricePerUnit,
+                                    Quantity = ii.Quantity,
+                                    SubTotal = ii.SubTotal,
+                                    VatAmount = ii.VatAmount,
+                                    TotalPrice = ii.TotalPrice,
+                                    SupplierReturnItemId = ii.SupplierReturnItemId,
+                                    CreatorId = ii.CreatorId,
+                                    UpdaterId = ii.UpdaterId
+                                }),
+                            DisputedInvoiceChat =
+                                pri.Invoice.DisputedInvoiceChat.Where(di =>
+                                    di.DisputedInvoice.InvoiceId.Equals(pri.InvoiceId) &&
+                                    di.DisputedInvoice.InvoiceItemId.Equals(pri.InvoiceItemId)).Select(dic =>
+                                    new DisputedInvoiceChatDomain
+                                    {
+                                        DisputedInvoiceChatId = dic.DisputedInvoiceChatId,
+                                        DisputedInvoiceId = dic.DisputedInvoiceId,
+                                        MessageRead = dic.MessageRead,
+                                        Message = dic.Message,
+                                        MessageFromId = dic.MessageFromId,
+                                        ActionRequiredFromId = dic.ActionRequiredFromId
+                                    })
+                        })
+                }).ToListAsync()
+                .ConfigureAwait(false);
+
+            return heldInvoices;
         }
 
         public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)

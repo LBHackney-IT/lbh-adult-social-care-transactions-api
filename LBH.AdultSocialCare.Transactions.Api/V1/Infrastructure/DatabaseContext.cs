@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
@@ -54,6 +53,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             modelBuilder.Entity<DisputedInvoice>(entity =>
             {
                 entity.HasIndex(e => new { e.InvoiceId, e.InvoiceItemId })
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<PayRunItem>(entity =>
+            {
+                entity.HasIndex(pri => new { pri.PayRunId, pri.InvoiceId, pri.InvoiceItemId })
                     .IsUnique();
             });
 

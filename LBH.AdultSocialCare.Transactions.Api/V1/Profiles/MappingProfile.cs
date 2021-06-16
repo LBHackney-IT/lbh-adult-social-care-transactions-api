@@ -62,6 +62,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<InvoiceItem, InvoiceItemDomain>();
             CreateMap<PendingInvoicesDomain, PendingInvoicesResponse>();
             CreateMap<InvoiceItemDomain, InvoiceItemResponse>();
+            CreateMap<DisputedInvoice, DisputedInvoiceChat>();
+            CreateMap<DisputedInvoiceChatDomain, DisputedInvoiceChatResponse>();
 
             #endregion Invoices
 
@@ -110,7 +112,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 
             CreateMap<Ledger, LedgerDomain>();
 
-            #endregion
+            #endregion Ledger
         }
     }
 }

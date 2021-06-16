@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -102,6 +102,24 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InvoiceStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ledgers",
+                columns: table => new
+                {
+                    LedgerId = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DateCreated = table.Column<DateTimeOffset>(nullable: false),
+                    DateUpdated = table.Column<DateTimeOffset>(nullable: false),
+                    DateEntered = table.Column<DateTimeOffset>(nullable: false),
+                    MoneyIn = table.Column<decimal>(nullable: false),
+                    PayRunItemId = table.Column<long>(nullable: false),
+                    BillPaymentId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ledgers", x => x.LedgerId);
                 });
 
             migrationBuilder.CreateTable(
@@ -346,6 +364,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SupplierTaxRates",
+                columns: table => new
+                {
+                    TaxRateId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VATPercentage = table.Column<float>(nullable: false),
+                    SupplierId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupplierTaxRates", x => x.TaxRateId);
+                    table.ForeignKey(
+                        name: "FK_SupplierTaxRates_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "SupplierId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PayRuns",
                 columns: table => new
                 {
@@ -461,7 +499,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     DateCreated = table.Column<DateTimeOffset>(nullable: false),
                     DateUpdated = table.Column<DateTimeOffset>(nullable: false),
                     PayRunId = table.Column<Guid>(nullable: false),
-                    InvoiceItemId = table.Column<Guid>(nullable: false),
+                    InvoiceId = table.Column<Guid>(nullable: false),
+                    InvoiceItemId = table.Column<Guid>(nullable: true),
                     PaidAmount = table.Column<decimal>(nullable: false),
                     RemainingBalance = table.Column<decimal>(nullable: false)
                 },
@@ -469,11 +508,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_PayRunItems", x => x.PayRunItemId);
                     table.ForeignKey(
+                        name: "FK_PayRunItems_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "InvoiceId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_PayRunItems_InvoiceItems_InvoiceItemId",
                         column: x => x.InvoiceItemId,
                         principalTable: "InvoiceItems",
                         principalColumn: "InvoiceItemId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PayRunItems_PayRuns_PayRunId",
                         column: x => x.PayRunId,
@@ -491,7 +536,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     MessageRead = table.Column<bool>(nullable: false),
                     Message = table.Column<string>(nullable: true),
                     MessageFromId = table.Column<int>(nullable: true),
-                    ActionRequiredFromId = table.Column<int>(nullable: false)
+                    ActionRequiredFromId = table.Column<int>(nullable: false),
+                    InvoiceId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -508,6 +554,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         principalTable: "DisputedInvoices",
                         principalColumn: "DisputedInvoiceId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DisputedInvoiceChats_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "InvoiceId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_DisputedInvoiceChats_Departments_MessageFromId",
                         column: x => x.MessageFromId,
@@ -624,6 +676,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 column: "DisputedInvoiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DisputedInvoiceChats_InvoiceId",
+                table: "DisputedInvoiceChats",
+                column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DisputedInvoiceChats_MessageFromId",
                 table: "DisputedInvoiceChats",
                 column: "MessageFromId");
@@ -670,14 +727,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PayRunItems_InvoiceId",
+                table: "PayRunItems",
+                column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PayRunItems_InvoiceItemId",
                 table: "PayRunItems",
                 column: "InvoiceItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PayRunItems_PayRunId",
+                name: "IX_PayRunItems_PayRunId_InvoiceId_InvoiceItemId",
                 table: "PayRunItems",
-                column: "PayRunId");
+                columns: new[] { "PayRunId", "InvoiceId", "InvoiceItemId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PayRuns_PayRunStatusId",
@@ -708,6 +771,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "IX_Suppliers_PackageTypeId",
                 table: "Suppliers",
                 column: "PackageTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupplierTaxRates_SupplierId",
+                table: "SupplierTaxRates",
+                column: "SupplierId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -728,10 +796,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 name: "InvoiceNumbers");
 
             migrationBuilder.DropTable(
+                name: "Ledgers");
+
+            migrationBuilder.DropTable(
                 name: "PayRunItems");
 
             migrationBuilder.DropTable(
                 name: "SupplierCreditNotes");
+
+            migrationBuilder.DropTable(
+                name: "SupplierTaxRates");
 
             migrationBuilder.DropTable(
                 name: "Bills");

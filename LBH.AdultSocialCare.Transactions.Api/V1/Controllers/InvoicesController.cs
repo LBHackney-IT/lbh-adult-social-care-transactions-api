@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -20,11 +21,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     {
         private readonly IGetInvoiceItemPaymentStatusesUseCase _getInvoiceItemPaymentStatusesUseCase;
         private readonly IInvoicesUseCase _invoicesUseCase;
+        private readonly IPayRunUseCase _payRunUseCase;
 
-        public InvoicesController(IGetInvoiceItemPaymentStatusesUseCase getInvoiceItemPaymentStatusesUseCase, IInvoicesUseCase invoicesUseCase)
+        public InvoicesController(IGetInvoiceItemPaymentStatusesUseCase getInvoiceItemPaymentStatusesUseCase, IInvoicesUseCase invoicesUseCase, IPayRunUseCase payRunUseCase)
         {
             _getInvoiceItemPaymentStatusesUseCase = getInvoiceItemPaymentStatusesUseCase;
             _invoicesUseCase = invoicesUseCase;
+            _payRunUseCase = payRunUseCase;
         }
 
         [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
@@ -68,6 +71,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         {
             var result = await _invoicesUseCase.ReleaseMultipleInvoicesUseCase(releaseInvoiceList.InvoiceIds).ConfigureAwait(false);
             return Ok(result);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<HeldInvoiceResponse>), StatusCodes.Status200OK)]
+        [HttpGet("held-invoice-payments")]
+        public async Task<ActionResult<IEnumerable<HeldInvoiceResponse>>> GetHeldInvoicePaymentsList()
+        {
+            var res = await _payRunUseCase.GetHeldInvoicePaymentsUseCase().ConfigureAwait(false);
+            return Ok(res);
         }
     }
 }

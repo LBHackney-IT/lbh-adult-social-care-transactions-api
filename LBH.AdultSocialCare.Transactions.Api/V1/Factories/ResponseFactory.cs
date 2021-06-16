@@ -77,6 +77,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<PayRunInsightsResponse>(payRunInsightsDomain);
         }
 
+        public static IEnumerable<HeldInvoiceResponse> ToResponse(this IEnumerable<HeldInvoiceDomain> heldInvoiceDomains)
+        {
+            return _mapper.Map<IEnumerable<HeldInvoiceResponse>>(heldInvoiceDomains);
+        }
+
         #endregion PayRuns
 
         #region Suppliers

@@ -24,5 +24,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         [ForeignKey(nameof(PackageTypeId))] public PackageType PackageType { get; set; }
         [ForeignKey(nameof(SupplierId))] public Supplier Supplier { get; set; }
         public virtual ICollection<InvoiceItem> InvoiceItems { get; set; }
+        public virtual ICollection<DisputedInvoiceChat> DisputedInvoiceChat { get; set; }
     }
 }
