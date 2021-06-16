@@ -219,7 +219,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         public async Task<InvoiceDomain> CreateInvoice(Invoice newInvoice)
         {
             //TODO: Invoice number
+            var invoiceNumber = await _dbContext.InvoiceNumbers.Where(inu => inu.InvoiceNumberId.Equals(1))
+                .SingleOrDefaultAsync().ConfigureAwait(false);
+
+            newInvoice.InvoiceNumber = $"{invoiceNumber.Prefix} {invoiceNumber.CurrentInvoiceNumber}";
             var entry = await _dbContext.Invoices.AddAsync(newInvoice).ConfigureAwait(false);
+
+            // Increment invoice number
+            invoiceNumber.CurrentInvoiceNumber += 1;
             try
             {
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
