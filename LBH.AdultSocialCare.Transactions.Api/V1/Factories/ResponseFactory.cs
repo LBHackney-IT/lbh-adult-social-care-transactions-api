@@ -137,6 +137,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<DisputedInvoiceFlatResponse>(disputedInvoiceFlatDomain);
         }
 
+        public static InvoiceResponse ToResponse(this InvoiceDomain invoiceDomain)
+        {
+            return _mapper.Map<InvoiceResponse>(invoiceDomain);
+        }
+
         #endregion Invoices
 
         public static BillStatusResponse ToResponse(this BillStatusDomain billStatusDomain)

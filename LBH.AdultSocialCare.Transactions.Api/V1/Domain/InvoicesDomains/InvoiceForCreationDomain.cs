@@ -5,7 +5,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
 {
     public class InvoiceForCreationDomain
     {
-        public string InvoiceNumber { get; set; }
         public long SupplierId { get; set; }
         public int PackageTypeId { get; set; }
         public Guid ServiceUserId { get; set; }

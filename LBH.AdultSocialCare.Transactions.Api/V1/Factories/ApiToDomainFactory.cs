@@ -1,3 +1,4 @@
+using System.Collections;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
@@ -6,6 +7,9 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using System.Collections.Generic;
+using System.Net;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -45,6 +49,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static DisputedInvoiceForCreationDomain ToDomain(this DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
         {
             var res = _mapper.Map<DisputedInvoiceForCreationDomain>(disputedInvoiceForCreationRequest);
+            return res;
+        }
+
+        public static InvoiceForCreationDomain ToDomain(this InvoiceForCreationRequest invoiceForCreationRequest)
+        {
+            if (invoiceForCreationRequest.InvoiceItems.IsNullOrEmpty<InvoiceItemForCreationRequest>())
+            {
+                throw new ApiException("Invoice cannot be created without invoice items",
+                    (int) HttpStatusCode.UnprocessableEntity);
+            }
+            var res = _mapper.Map<InvoiceForCreationDomain>(invoiceForCreationRequest);
             return res;
         }
 

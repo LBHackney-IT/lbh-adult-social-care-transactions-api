@@ -80,6 +80,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return entity;
         }
 
+        public static Invoice ToDb(this InvoiceForCreationDomain invoiceForCreationDomain)
+        {
+            var entity = _mapper.Map<Invoice>(invoiceForCreationDomain);
+            return entity;
+        }
+
         #endregion Invoices
     }
 }

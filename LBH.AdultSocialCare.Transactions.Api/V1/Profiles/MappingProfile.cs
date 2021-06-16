@@ -1,4 +1,6 @@
+using System;
 using AutoMapper;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.DepartmentBoundaries.Response;
@@ -66,6 +68,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<DisputedInvoiceChatDomain, DisputedInvoiceChatResponse>();
             CreateMap<InvoiceItemForCreationDomain, InvoiceItem>();
             CreateMap<InvoiceForCreationDomain, Invoice>();
+            CreateMap<InvoiceForCreationRequest, InvoiceForCreationDomain>()
+                .ForMember(ifc => ifc.InvoiceStatusId, opt => opt.MapFrom(b => (int) InvoiceStatusEnum.Draft))
+                .ForMember(ifc => ifc.DateInvoiced, opt => opt.MapFrom(b => DateTimeOffset.Now));
+
+            CreateMap<InvoiceItemForCreationRequest, InvoiceItemForCreationDomain>()
+                .ForMember(ifc => ifc.InvoiceItemPaymentStatusId, opt => opt.MapFrom(b => (int)InvoiceItemPaymentStatusEnum.NotStarted));
 
             #endregion Invoices
 

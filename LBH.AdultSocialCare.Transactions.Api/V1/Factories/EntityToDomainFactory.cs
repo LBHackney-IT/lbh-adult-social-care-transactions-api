@@ -79,6 +79,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<SupplierTaxRateDomain>>(supplierTaxRatesEntities);
         }
 
+        public static SupplierTaxRateDomain ToDomain(this SupplierTaxRate supplierTaxRatesEntity)
+        {
+            return _mapper.Map<SupplierTaxRateDomain>(supplierTaxRatesEntity);
+        }
+
         #endregion Supplier
 
         #region Invoices

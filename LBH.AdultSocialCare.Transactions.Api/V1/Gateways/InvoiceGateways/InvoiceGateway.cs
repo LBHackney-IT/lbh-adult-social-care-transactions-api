@@ -218,6 +218,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         public async Task<InvoiceDomain> CreateInvoice(Invoice newInvoice)
         {
+            //TODO: Invoice number
             var entry = await _dbContext.Invoices.AddAsync(newInvoice).ConfigureAwait(false);
             try
             {
