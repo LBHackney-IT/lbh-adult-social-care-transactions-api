@@ -4,6 +4,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PackageTypeGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using System;
@@ -16,11 +17,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
     {
         private readonly IInvoiceGateway _invoiceGateway;
         private readonly ISupplierGateway _supplierGateway;
+        private readonly IPackageTypeGateway _packageTypeGateway;
 
-        public InvoicesUseCase(IInvoiceGateway invoiceGateway, ISupplierGateway supplierGateway)
+        public InvoicesUseCase(IInvoiceGateway invoiceGateway, ISupplierGateway supplierGateway, IPackageTypeGateway packageTypeGateway)
         {
             _invoiceGateway = invoiceGateway;
             _supplierGateway = supplierGateway;
+            _packageTypeGateway = packageTypeGateway;
         }
 
         public async Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain)
@@ -68,6 +71,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
         public async Task<InvoiceResponse> CreateInvoiceUseCase(InvoiceForCreationDomain invoiceForCreationDomain)
         {
+            // Check if package type is valid
+            _packageTypeGateway.IsValidPackageType(invoiceForCreationDomain.PackageTypeId);
+
             var supplier = await _supplierGateway.CheckSupplierExists(invoiceForCreationDomain.SupplierId).ConfigureAwait(false);
             var supplierTaxRate = await _supplierGateway.GetLatestSupplierTaxRate(supplier.SupplierId).ConfigureAwait(false);
 
