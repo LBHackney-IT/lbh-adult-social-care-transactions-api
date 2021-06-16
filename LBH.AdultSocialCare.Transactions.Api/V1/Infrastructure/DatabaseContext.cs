@@ -62,6 +62,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
                     .IsUnique();
             });
 
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasIndex(i => new { i.InvoiceNumber })
+                    .IsUnique();
+            });
+
             #endregion Model Config
 
             base.OnModelCreating(modelBuilder);
