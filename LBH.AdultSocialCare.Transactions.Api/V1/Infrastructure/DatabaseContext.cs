@@ -80,6 +80,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             modelBuilder.ApplyConfiguration(new PayRunStatusesSeed());
             modelBuilder.ApplyConfiguration(new PayRunSubTypesSeed());
             modelBuilder.ApplyConfiguration(new DepartmentsSeed());
+            modelBuilder.ApplyConfiguration(new PackageTypesSeed());
 
             #endregion Database Seeds
         }
