@@ -126,8 +126,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .Take(parameters.PageSize)
                 .Select(ri => new
                 {
-                    ri.InvoiceItem.Invoice.Supplier.SupplierId,
-                    ri.InvoiceItem.Invoice.Supplier.SupplierName
+                    ri.Invoice.Supplier.SupplierId,
+                    ri.Invoice.Supplier.SupplierName
                 }).Distinct()
                 .Select(ri => new SupplierMinimalDomain { SupplierId = ri.SupplierId, SupplierName = ri.SupplierName })
                 .ToListAsync()
@@ -150,8 +150,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             return await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
                 .Select(pr => new
                 {
-                    pr.InvoiceItem.Invoice.PackageType.PackageTypeId,
-                    pr.InvoiceItem.Invoice.PackageType.PackageTypeName
+                    pr.Invoice.PackageType.PackageTypeId,
+                    pr.Invoice.PackageType.PackageTypeName
                 }).Distinct()
                 .Select(pr => new PackageTypeDomain
                 {
@@ -204,23 +204,23 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
-        public async Task<bool> ReleaseHeldInvoiceItemPayment(Guid payRunId, Guid invoiceId, Guid invoiceItemId)
+        public async Task<bool> ReleaseHeldInvoicePayment(Guid payRunId, Guid invoiceId, Guid? invoiceItemId)
         {
             // Get the invoice item
-            var invoiceItem = await _dbContext.PayRunItems
+            var invoice = await _dbContext.PayRunItems
                 .Where(pri =>
-                    pri.PayRunId.Equals(payRunId) && pri.InvoiceItem.InvoiceId.Equals(invoiceId) &&
-                    pri.InvoiceItemId.Equals(invoiceItemId))
-                .Select(pri => pri.InvoiceItem)
+                    pri.PayRunId.Equals(payRunId) && pri.InvoiceId.Equals(invoiceId) &&
+                    (invoiceId == null || pri.InvoiceItemId.Equals(invoiceItemId)))
+                .Select(pri => pri.Invoice)
                 .SingleOrDefaultAsync()
                 .ConfigureAwait(false);
 
-            if (invoiceItem == null)
+            if (invoice == null)
             {
                 throw new EntityNotFoundException($"Invoice item with id {invoiceItemId} not found");
             }
 
-            invoiceItem.InvoiceItemPaymentStatusId = (int) InvoiceItemPaymentStatusEnum.Released;
+            invoice.InvoiceStatusId = (int) InvoiceStatusEnum.Released;
 
             try
             {
