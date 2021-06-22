@@ -31,5 +31,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<bool> ReleaseHeldInvoicePayment(Guid payRunId, Guid invoiceId, Guid? invoiceItemId);
 
         Task<PayRunInsightsDomain> GetPayRunInsights(Guid payRunId);
+
+        Task<IEnumerable<InvoiceDomain>> GetAllInvoicesInPayRunUsingInvoiceStatus(Guid payRunId, int invoiceStatusId);
+
+        Task<bool> ApprovePayRunForPayment(Guid payRunId);
     }
 }

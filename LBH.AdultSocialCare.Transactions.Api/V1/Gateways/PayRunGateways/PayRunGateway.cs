@@ -6,14 +6,19 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.Bulk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -21,11 +26,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
     {
         private readonly DatabaseContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IInvoiceGateway _invoiceGateway;
 
-        public PayRunGateway(DatabaseContext dbContext, IMapper mapper)
+        public PayRunGateway(DatabaseContext dbContext, IMapper mapper, IInvoiceGateway invoiceGateway)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _invoiceGateway = invoiceGateway;
         }
 
         public async Task<DateTimeOffset> GetDateOfLastPayRun(int payRunTypeId, int? payRunSubTypeId = null)
@@ -190,6 +197,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 throw new EntityNotFoundException($"Pay run with id {payRunId} not found");
             }
 
+            if (payRun.PayRunStatusId.Equals((int)PayRunStatusesEnum.Approved))
+            {
+                throw new ApiException($"Pay run with id {payRunId} is already approved for payment", StatusCodes.Status409Conflict);
+            }
+
             payRun.PayRunStatusId = newPayRunStatusId;
 
             try
@@ -236,7 +248,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         private async Task<PayRun> CheckPayRunExists(Guid payRunId)
         {
-            var payRun = await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId)).SingleOrDefaultAsync()
+            var payRun = await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId))
+                .AsNoTracking()
+                .SingleOrDefaultAsync()
                 .ConfigureAwait(false);
 
             // if not found return
@@ -267,7 +281,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 previousPayRunAmount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(previousPayRun.PayRunId))
                     .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
             }
-
 
             var supplierCount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
                 .Select(pr => new { pr.InvoiceItem.Invoice.SupplierId }).Distinct()
@@ -302,6 +315,178 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 HoldsCount = heldInvoiceCount,
                 HoldsTotalAmount = holdsAmount
             };
+        }
+
+        public async Task<IEnumerable<InvoiceDomain>> GetAllInvoicesInPayRunUsingInvoiceStatus(Guid payRunId, int invoiceStatusId)
+        {
+            await CheckPayRunExists(payRunId).ConfigureAwait(false);
+
+            // Get unique invoice ids
+            /*var invoiceIds = await _dbContext.PayRunItems
+                .Where(ii =>
+                    ii.PayRunId.Equals(payRunId) && ii.Invoice.InvoiceStatusId.Equals(invoiceStatusId))
+                .Select(ii => ii.InvoiceItem.InvoiceId)
+                .Distinct().ToListAsync().ConfigureAwait(false);*/
+
+            /*var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
+                .Include(i => i.InvoiceItems)
+                .AsNoTracking()
+                .ToListAsync()
+                .ConfigureAwait(false);*/
+
+            var invoices = await _dbContext.PayRunItems
+                .Where(ii =>
+                    ii.PayRunId.Equals(payRunId) && ii.Invoice.InvoiceStatusId.Equals(invoiceStatusId))
+                .Include(ii => ii.Invoice)
+                .ThenInclude(i => i.InvoiceItems)
+                .Select(pr => pr.Invoice)
+                .Distinct().ToListAsync().ConfigureAwait(false);
+
+            return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
+        }
+
+        public async Task<IEnumerable<PayRunItem>> GetAllItemsInPayRunUsingInvoiceStatus(Guid payRunId, int invoiceStatusId)
+        {
+            await CheckPayRunExists(payRunId).ConfigureAwait(false);
+
+            var payRunItems = await _dbContext.PayRunItems
+                .Where(ii =>
+                    ii.PayRunId.Equals(payRunId) && ii.Invoice.InvoiceStatusId.Equals(invoiceStatusId))
+                .AsNoTracking()
+                .Distinct().ToListAsync().ConfigureAwait(false);
+
+            return payRunItems;
+        }
+
+        public async Task<List<PayRunInvoicePaymentDomain>> GetPayRunInvoicePaymentDetails(Guid payRunId)
+        {
+            await CheckPayRunExists(payRunId).ConfigureAwait(false);
+
+            var payRunItems = await _dbContext.InvoicePayments
+                .Where(ip =>
+                    ip.PayRunItem.PayRunId.Equals(payRunId))
+                .Select(pi => new PayRunInvoicePaymentDomain
+                {
+                    InvoicePaymentId = pi.InvoicePaymentId,
+                    PayRunItemId = pi.PayRunItemId,
+                    PayRunId = pi.PayRunItem.PayRunId,
+                    InvoiceId = pi.PayRunItem.InvoiceId,
+                    InvoiceItemId = pi.PayRunItem.InvoiceItemId,
+                    PaidAmount = pi.PaidAmount,
+                    RemainingBalance = pi.RemainingBalance,
+                    SupplierId = pi.PayRunItem.Invoice.SupplierId
+                })
+                .AsNoTracking()
+                .Distinct().ToListAsync().ConfigureAwait(false);
+
+            return payRunItems;
+        }
+
+        public async Task<bool> ApprovePayRunForPayment(Guid payRunId)
+        {
+            await CheckPayRunExists(payRunId).ConfigureAwait(false);
+
+            return await RunPayRunInvoicePayments(payRunId).ConfigureAwait(false);
+        }
+
+        private async Task<bool> RunPayRunInvoicePayments(Guid payRunId)
+        {
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
+            try
+            {
+                var approvedInvoicesInPayRun =
+                    await GetAllItemsInPayRunUsingInvoiceStatus(payRunId, (int) InvoiceStatusEnum.Accepted)
+                        .ConfigureAwait(false);
+
+                var invoicesList = approvedInvoicesInPayRun.ToList();
+
+                if (invoicesList.Count.Equals(0))
+                {
+                    // Move pay run to approved and return
+                    await ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.Approved).ConfigureAwait(false);
+                    return true;
+                }
+
+                foreach (var payRunItem in invoicesList)
+                {
+                    payRunItem.PaidAmount = payRunItem.RemainingBalance;
+                    payRunItem.RemainingBalance = new decimal(0.0);
+                }
+
+                var uploader = new NpgsqlBulkUploader(_dbContext);
+                await uploader.UpdateAsync(invoicesList).ConfigureAwait(false);
+
+                var invoicePayments = invoicesList.Select(p => new InvoicePayment
+                {
+                    PayRunItemId = p.PayRunItemId,
+                    PaidAmount = p.PaidAmount,
+                    RemainingBalance = p.RemainingBalance
+                }).ToList();
+
+                await uploader.InsertAsync(invoicePayments).ConfigureAwait(false);
+
+                var ledgerItems = invoicePayments.Select(ip => new Ledger
+                {
+                    DateEntered = DateTimeOffset.Now,
+                    MoneyIn = ip.PaidAmount,
+                    InvoicePaymentId = ip.InvoicePaymentId,
+                    MoneyOut = 0,
+                    BillPaymentId = null
+                }).ToList();
+
+                await uploader.InsertAsync(ledgerItems).ConfigureAwait(false);
+
+                // Get all the invoice payments made in this pay run
+                var paidInvoiceDomains =
+                    await GetPayRunInvoicePaymentDetails(payRunId)
+                        .ConfigureAwait(false);
+
+                // Use domains to create supplier bills
+                var uniqueSuppliers = paidInvoiceDomains.Select(i => i.SupplierId).Distinct().ToList();
+
+                var supplierBills = (from uniqueSupplier in uniqueSuppliers
+                                     let supplierItems = paidInvoiceDomains.Where(i => i.SupplierId.Equals(uniqueSupplier)).ToList()
+                                     let totalPaid = supplierItems.Sum(i => i.PaidAmount)
+                                     select new PayRunSupplierBill
+                                     {
+                                         SupplierId = uniqueSupplier,
+                                         TotalAmount = totalPaid,
+                                         PayRunSupplierBillItems = supplierItems.Select(si => new PayRunSupplierBillItem
+                                         {
+                                             PayRunItemId = si.PayRunItemId,
+                                             InvoicePaymentId = si.InvoicePaymentId,
+                                             InvoiceId = si.InvoiceId,
+                                             InvoiceItemId = si.InvoiceItemId,
+                                             PaidAmount = si.PaidAmount
+                                         })
+                                             .ToList()
+                                     }).ToList();
+
+                await uploader.InsertAsync(supplierBills).ConfigureAwait(false);
+
+                // Record supplier bills in ledger
+                var supplierBillLedgerItems = supplierBills.Select(b => new Ledger
+                {
+                    DateEntered = DateTimeOffset.Now,
+                    MoneyIn = 0,
+                    InvoicePaymentId = null,
+                    MoneyOut = b.TotalAmount,
+                    BillPaymentId = null,
+                    PayRunBillId = b.PayRunBillId
+                });
+
+                await uploader.InsertAsync(supplierBillLedgerItems).ConfigureAwait(false);
+
+                // Move pay run status to approved
+                await ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.Approved).ConfigureAwait(false);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApiException($"Error encountered in pay run approval: {e.InnerException?.Message}");
+            }
         }
     }
 }

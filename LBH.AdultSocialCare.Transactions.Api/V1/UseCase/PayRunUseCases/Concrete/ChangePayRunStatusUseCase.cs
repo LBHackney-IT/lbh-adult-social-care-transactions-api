@@ -15,12 +15,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             _payRunGateway = payRunGateway;
         }
 
-        public async Task<bool> ApprovePayRun(Guid payRunId)
-        {
-            return await _payRunGateway.ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.Approved)
-                .ConfigureAwait(false);
-        }
-
         public async Task<bool> SubmitPayRunForApproval(Guid payRunId)
         {
             return await _payRunGateway.ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.SubmittedForApproval)

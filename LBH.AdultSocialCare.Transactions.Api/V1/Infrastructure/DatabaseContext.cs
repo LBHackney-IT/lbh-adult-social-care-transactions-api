@@ -35,6 +35,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
         public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
         public DbSet<InvoiceItemPaymentStatus> InvoiceItemPaymentStatuses { get; set; }
+        public DbSet<InvoicePayment> InvoicePayments { get; set; }
         public DbSet<PayRun> PayRuns { get; set; }
         public DbSet<PayRunItem> PayRunItems { get; set; }
         public DbSet<PayRunType> PayRunTypes { get; set; }

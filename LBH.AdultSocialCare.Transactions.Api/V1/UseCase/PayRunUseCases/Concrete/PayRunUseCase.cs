@@ -32,5 +32,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             var res = await _invoiceGateway.GetHeldInvoicePayments().ConfigureAwait(false);
             return res.ToResponse();
         }
+
+        public async Task<bool> ApprovePayRunForPaymentUseCase(Guid payRunId)
+        {
+            return await _payRunGateway.ApprovePayRunForPayment(payRunId).ConfigureAwait(false);
+        }
     }
 }

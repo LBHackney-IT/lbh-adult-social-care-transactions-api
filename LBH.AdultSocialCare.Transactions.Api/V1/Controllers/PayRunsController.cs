@@ -140,7 +140,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [HttpGet("{payRunId}/status/approve-pay-run")]
         public async Task<ActionResult<bool>> ApprovePayRun(Guid payRunId)
         {
-            var res = await _changePayRunStatusUseCase.ApprovePayRun(payRunId).ConfigureAwait(false);
+            var res = await _payRunUseCase.ApprovePayRunForPaymentUseCase(payRunId).ConfigureAwait(false);
             return Ok(res);
         }
 

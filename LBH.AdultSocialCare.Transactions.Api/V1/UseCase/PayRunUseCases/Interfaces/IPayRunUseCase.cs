@@ -11,5 +11,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
         Task<PayRunInsightsResponse> GetSinglePayRunInsightsUseCase(Guid payRunId);
 
         Task<IEnumerable<HeldInvoiceResponse>> GetHeldInvoicePaymentsUseCase();
+
+        Task<bool> ApprovePayRunForPaymentUseCase(Guid payRunId);
     }
 }
