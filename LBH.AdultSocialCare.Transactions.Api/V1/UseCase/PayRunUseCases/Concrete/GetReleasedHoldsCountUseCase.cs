@@ -23,7 +23,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
         public async Task<IEnumerable<ReleasedHoldsByTypeResponse>> Execute(DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
             var res = await _invoiceGateway
-                .GetInvoicesCountUsingStatus((int) InvoiceStatusEnum.Held, fromDate, toDate)
+                .GetInvoicesCountUsingStatus((int) InvoiceStatusEnum.Released, fromDate, toDate)
                 .ConfigureAwait(false);
             res = res.Select(x => new PayRunItemsPaymentsByTypeDomain { Name = GetNameEnum(x.Name), Value = x.Value });
             var typeCount = res.Select(x => new ReleasedHoldsByTypeResponse

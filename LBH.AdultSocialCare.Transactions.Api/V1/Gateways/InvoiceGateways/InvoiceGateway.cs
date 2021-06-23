@@ -31,19 +31,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         {
             // Get unique invoice ids
             var invoiceIds = await _dbContext.PayRunItems
-                .Where(ii =>
-                    (parameters.DateFrom.Equals(null) || ii.InvoiceItem.Invoice.DateCreated >= parameters.DateFrom) &&
-                    (parameters.DateTo.Equals(null) || ii.InvoiceItem.Invoice.DateCreated <= parameters.DateTo) &&
+                .Where(pri =>
+                    (parameters.DateFrom.Equals(null) || pri.Invoice.DateCreated >= parameters.DateFrom) &&
+                    (parameters.DateTo.Equals(null) || pri.Invoice.DateCreated <= parameters.DateTo) &&
                     (parameters.SupplierId.Equals(null) ||
-                     ii.InvoiceItem.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
+                     pri.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
                     (parameters.PackageTypeId.Equals(null) ||
-                     ii.InvoiceItem.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
+                     pri.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
                     (parameters.InvoiceStatusId.Equals(null) ||
-                     ii.Invoice.InvoiceStatusId.Equals(parameters.InvoiceStatusId)) &&
-                    ii.PayRunId.Equals(payRunId)
+                     pri.Invoice.InvoiceStatusId.Equals(parameters.InvoiceStatusId)) &&
+                    pri.PayRunId.Equals(payRunId)
                     && (parameters.SearchTerm == null || EF.Functions.Like(
-                        ii.InvoiceItem.Invoice.InvoiceNumber.ToLower(),
-                        $"%{parameters.SearchTerm.Trim().ToLower()}%"))).Select(ii => ii.InvoiceItem.InvoiceId)
+                        pri.Invoice.InvoiceNumber.ToLower(),
+                        $"%{parameters.SearchTerm.Trim().ToLower()}%"))).Select(pri => pri.InvoiceId)
                 .Distinct().ToListAsync().ConfigureAwait(false);
 
             var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
