@@ -30,6 +30,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         Task<bool> ChangeInvoiceStatus(Guid invoiceId, int invoiceStatusId);
 
+        Task<bool> ChangeInvoiceListStatus(List<Guid> invoiceIds, int invoiceStatusId);
+
         Task<IEnumerable<PendingInvoicesDomain>> GetUserPendingInvoices(Guid serviceUserId);
     }
 }

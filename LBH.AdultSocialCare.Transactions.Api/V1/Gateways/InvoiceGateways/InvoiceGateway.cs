@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql.Bulk;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -242,6 +243,32 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             {
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
 
+                return true;
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                throw new DbSaveFailedException($"Could not update invoice status: {dbUpdateException.InnerException?.Message}");
+            }
+            catch (Exception e)
+            {
+                throw new DbSaveFailedException($"Could not update invoice status: {e.InnerException?.Message}");
+            }
+        }
+
+        public async Task<bool> ChangeInvoiceListStatus(List<Guid> invoiceIds, int invoiceStatusId)
+        {
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId)).ToListAsync()
+                .ConfigureAwait(false);
+
+            foreach (var invoice in invoices)
+            {
+                invoice.InvoiceStatusId = invoiceStatusId;
+            }
+
+            try
+            {
+                var uploader = new NpgsqlBulkUploader(_dbContext);
+                await uploader.UpdateAsync(invoices).ConfigureAwait(false);
                 return true;
             }
             catch (DbUpdateException dbUpdateException)

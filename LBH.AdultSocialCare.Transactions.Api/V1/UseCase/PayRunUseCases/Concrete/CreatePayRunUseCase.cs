@@ -40,11 +40,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
 
             var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
-            // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
-                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, null);
-
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
 
         private static PayRunForCreationDomain GeneratePayRunForCreationDomain(DateTimeOffset dateFrom,
@@ -96,11 +92,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
 
             var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
-            // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
-                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, null);
-
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateHomeCarePayRunUseCase()
@@ -118,11 +110,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
 
             var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
-            // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
-                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, null);
-
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateResidentialReleaseHoldsPayRunUseCase()
@@ -142,11 +130,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
             var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
 
-            // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = GeneratePayRunForCreationDomain((DateTimeOffset) dateFrom, (DateTimeOffset) dateTo,
-                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, payRunSubTypeId);
-
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            return await CreatePayRun(invoiceDomains, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo, payRunTypeId, payRunSubTypeId).ConfigureAwait(false);
         }
 
         public async Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase()
@@ -164,11 +148,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
             var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
 
+            return await CreatePayRun(invoiceDomains, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo, payRunTypeId, payRunSubTypeId).ConfigureAwait(false);
+        }
+
+        private async Task<Guid> CreatePayRun(IList<InvoiceDomain> invoiceDomains, DateTimeOffset dateFrom, DateTimeOffset dateTo, int payRunTypeId, int? payRunSubTypeId = null)
+        {
             // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = GeneratePayRunForCreationDomain((DateTimeOffset) dateFrom, (DateTimeOffset) dateTo,
+            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
                 new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, payRunSubTypeId);
 
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            var res = await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            var invoiceIds = invoiceDomains.Select(i => i.InvoiceId).Distinct().ToList();
+            await _invoiceGateway.ChangeInvoiceListStatus(invoiceIds, (int) InvoiceStatusEnum.InPayRun).ConfigureAwait(false);
+            return res;
         }
 
         public async Task<Guid> CreateNewPayRunUseCase(string payRunType)
