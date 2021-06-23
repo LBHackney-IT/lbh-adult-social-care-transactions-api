@@ -8,11 +8,11 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.Bulk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Npgsql.Bulk;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -61,9 +61,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         public async Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments()
         {
-            var payRunsWithHeldInvoicesIds = await _dbContext.PayRunItems.Where(pr =>
+            var payRunsWithHeldInvoicesIds = await _dbContext.DisputedInvoices.Where(pr =>
                     pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
-                .Select(pr => pr.PayRunId)
+                .Select(pr => pr.PayRunItem.PayRunId)
                 .Distinct()
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -80,7 +80,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .Select(pr => new HeldInvoiceDomain
                 {
                     PayRunId = pr.PayRunId,
-                    PayRunItemId = pr.PayRunId,
                     PayRunDate = pr.DateCreated,
                     Invoices = pr.PayRunItems.Where(pri =>
                             pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
@@ -114,9 +113,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                                     UpdaterId = ii.UpdaterId
                                 }),
                             DisputedInvoiceChat =
-                                pri.Invoice.DisputedInvoiceChat.Where(di =>
+                                pri.DisputedInvoice.DisputedInvoiceChats.Where(di =>
                                     di.DisputedInvoice.InvoiceId.Equals(pri.InvoiceId) &&
-                                    di.DisputedInvoice.InvoiceItemId.Equals(pri.InvoiceItemId)).Select(dic =>
+                                    di.DisputedInvoice.PayRunItemId.Equals(pri.PayRunItemId)).Select(dic =>
                                     new DisputedInvoiceChatDomain
                                     {
                                         DisputedInvoiceChatId = dic.DisputedInvoiceChatId,
@@ -216,6 +215,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             {
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
 
+                // Change invoice status to held
+                await ChangeInvoiceStatus(newDisputedInvoice.InvoiceId, (int) InvoiceStatusEnum.Held)
+                    .ConfigureAwait(false);
+
                 return entry.Entity.ToDomain();
             }
             catch (DbUpdateException dbUpdateException)
@@ -289,6 +292,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .ToListAsync().ConfigureAwait(false);
 
             return invoices.ToPendingInvoiceDomain();
+        }
+
+        public async Task<Invoice> CheckInvoiceExists(Guid invoiceId)
+        {
+            var invoice = await _dbContext.Invoices.Where(i => i.InvoiceId.Equals(invoiceId)).SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+            if (invoice == null)
+            {
+                throw new EntityNotFoundException($"Invoice with id {invoiceId} not found");
+            }
+
+            return invoice;
         }
     }
 }

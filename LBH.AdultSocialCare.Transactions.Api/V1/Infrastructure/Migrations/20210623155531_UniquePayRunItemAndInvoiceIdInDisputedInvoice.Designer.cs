@@ -3,15 +3,17 @@ using System;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210623155531_UniquePayRunItemAndInvoiceIdInDisputedInvoice")]
+    partial class UniquePayRunItemAndInvoiceIdInDisputedInvoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,9 +286,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasIndex("InvoiceId");
 
                     b.HasIndex("InvoiceItemId");
-
-                    b.HasIndex("PayRunItemId")
-                        .IsUnique();
 
                     b.HasIndex("PayRunItemId", "InvoiceId")
                         .IsUnique();
@@ -1033,8 +1032,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         .HasForeignKey("InvoiceItemId");
 
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunItem", "PayRunItem")
-                        .WithOne("DisputedInvoice")
-                        .HasForeignKey("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.DisputedInvoice", "PayRunItemId")
+                        .WithMany()
+                        .HasForeignKey("PayRunItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

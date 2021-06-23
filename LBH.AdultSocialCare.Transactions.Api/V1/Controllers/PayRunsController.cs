@@ -118,7 +118,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status422UnprocessableEntity)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<DisputedInvoiceFlatResponse>> HoldInvoicePayment(Guid payRunId, Guid payRunItemId,  [FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
+        public async Task<ActionResult<DisputedInvoiceFlatResponse>> HoldInvoicePayment(Guid payRunId, Guid payRunItemId, [FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
         {
             var result = await _invoicesUseCase
                 .HoldInvoicePaymentUseCase(payRunId, payRunItemId, disputedInvoiceForCreationRequest.ToDomain())

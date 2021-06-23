@@ -54,8 +54,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 
             modelBuilder.Entity<DisputedInvoice>(entity =>
             {
-                entity.HasIndex(e => new { e.PayRunItemId, e.InvoiceId, e.InvoiceItemId })
+                entity.HasIndex(e => new { e.PayRunItemId, e.InvoiceId })
                     .IsUnique();
+
+                entity.HasOne(a => a.PayRunItem)
+                    .WithOne(b => b.DisputedInvoice)
+                    .HasForeignKey<DisputedInvoice>(b => b.PayRunItemId);
             });
 
             modelBuilder.Entity<PayRunItem>(entity =>

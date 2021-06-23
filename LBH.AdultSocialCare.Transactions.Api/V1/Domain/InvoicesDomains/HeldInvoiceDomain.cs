@@ -6,7 +6,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
     public class HeldInvoiceDomain
     {
         public Guid PayRunId { get; set; }
-        public Guid PayRunItemId { get; set; }
         public DateTimeOffset PayRunDate { get; set; }
         public IEnumerable<InvoiceDomain> Invoices { get; set; }
     }
