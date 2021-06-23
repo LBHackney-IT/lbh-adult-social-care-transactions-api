@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -110,6 +111,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         {
             var res = await _getReleasedHoldsUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
             return Ok(res);
+        }
+
+        [HttpPost("{payRunId}/pay-run-items/{payRunItemId}/hold-payment")]
+        [ProducesResponseType(typeof(DisputedInvoiceFlatResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<DisputedInvoiceFlatResponse>> HoldInvoicePayment(Guid payRunId, Guid payRunItemId,  [FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
+        {
+            var result = await _invoicesUseCase
+                .HoldInvoicePaymentUseCase(payRunId, payRunItemId, disputedInvoiceForCreationRequest.ToDomain())
+                .ConfigureAwait(false);
+            return Ok(result);
         }
 
         [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]

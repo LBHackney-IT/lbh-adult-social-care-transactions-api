@@ -9,7 +9,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interf
 {
     public interface IInvoicesUseCase
     {
-        Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(
+        Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(Guid payRunId, Guid payRunItemId,
             DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain);
 
         Task<bool> ChangeInvoiceStatusUseCase(Guid invoiceId, int invoiceStatusId);

@@ -42,17 +42,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(res);
         }
 
-        [HttpPost("hold-payment")]
-        [ProducesResponseType(typeof(DisputedInvoiceFlatResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status422UnprocessableEntity)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<DisputedInvoiceFlatResponse>> CreateNewPayRun([FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
-        {
-            var result = await _invoicesUseCase.HoldInvoicePaymentUseCase(disputedInvoiceForCreationRequest.ToDomain()).ConfigureAwait(false);
-            return Ok(result);
-        }
-
         [HttpPost("{invoiceId}/change-invoice-status")]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<bool>> ChangeInvoiceStatus(Guid invoiceId, [FromBody] ChangeInvoiceStatusRequest changeInvoiceStatusRequest)

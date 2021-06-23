@@ -10,6 +10,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete
 {
@@ -18,16 +19,22 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
         private readonly IInvoiceGateway _invoiceGateway;
         private readonly ISupplierGateway _supplierGateway;
         private readonly IPackageTypeGateway _packageTypeGateway;
+        private readonly IPayRunGateway _payRunGateway;
 
-        public InvoicesUseCase(IInvoiceGateway invoiceGateway, ISupplierGateway supplierGateway, IPackageTypeGateway packageTypeGateway)
+        public InvoicesUseCase(IInvoiceGateway invoiceGateway, ISupplierGateway supplierGateway, IPackageTypeGateway packageTypeGateway, IPayRunGateway payRunGateway)
         {
             _invoiceGateway = invoiceGateway;
             _supplierGateway = supplierGateway;
             _packageTypeGateway = packageTypeGateway;
+            _payRunGateway = payRunGateway;
         }
 
-        public async Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain)
+        public async Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(Guid payRunId, Guid payRunItemId, DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain)
         {
+            var payRunItem = await _payRunGateway.CheckPayRunItemExists(payRunId, payRunItemId).ConfigureAwait(false);
+            disputedInvoiceForCreationDomain.InvoiceId = payRunItem.InvoiceId;
+            disputedInvoiceForCreationDomain.InvoiceItemId = payRunItem.InvoiceItemId;
+            disputedInvoiceForCreationDomain.PayRunItemId = payRunItem.PayRunItemId;
             var res = await _invoiceGateway.CreateDisputedInvoice(disputedInvoiceForCreationDomain.ToDb()).ConfigureAwait(false);
             return res.ToResponse();
         }

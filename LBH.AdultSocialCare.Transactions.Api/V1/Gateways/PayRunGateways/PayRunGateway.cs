@@ -12,13 +12,13 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.Bulk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 {
@@ -104,6 +104,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 })
                 .SingleOrDefaultAsync()
                 .ConfigureAwait(false);
+        }
+
+        public async Task<PayRunItem> CheckPayRunItemExists(Guid payRunId, Guid payRunItemId)
+        {
+            var res = await _dbContext.PayRunItems
+                .Where(pri => pri.PayRunId.Equals(payRunId) && pri.PayRunItemId.Equals(payRunItemId))
+                .SingleOrDefaultAsync().ConfigureAwait(false);
+
+            if (res == null)
+            {
+                throw new EntityNotFoundException($"Pay run item with id {payRunItemId} not found in the database");
+            }
+
+            return res;
         }
 
         public async Task<Guid> CreateNewPayRun(PayRun payRunForCreation)
@@ -476,6 +490,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 });
 
                 await uploader.InsertAsync(supplierBillLedgerItems).ConfigureAwait(false);
+
+                // Change invoice status to paid
+                var invoiceIds = invoicesList.Select(i => i.InvoiceId).Distinct().ToList();
+                await _invoiceGateway.ChangeInvoiceListStatus(invoiceIds, (int) InvoiceStatusEnum.Paid).ConfigureAwait(false);
 
                 // Move pay run status to approved
                 await ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.Approved).ConfigureAwait(false);

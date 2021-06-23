@@ -13,6 +13,8 @@
     <ItemGroup>
       <Compile Remove="V1\Infrastructure\Migrations\20210623105335_PayRunApprovalUpdates.cs" />
       <Compile Remove="V1\Infrastructure\Migrations\20210623105335_PayRunApprovalUpdates.Designer.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210623153329_DisputedInvoiceHasPayRunItemId.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210623153329_DisputedInvoiceHasPayRunItemId.Designer.cs" />
     </ItemGroup>
 
   <ItemGroup>
