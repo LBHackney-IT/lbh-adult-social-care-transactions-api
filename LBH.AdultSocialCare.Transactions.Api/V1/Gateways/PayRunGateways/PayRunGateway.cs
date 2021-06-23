@@ -197,7 +197,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 throw new EntityNotFoundException($"Pay run with id {payRunId} not found");
             }
 
-            if (payRun.PayRunStatusId.Equals((int)PayRunStatusesEnum.Approved))
+            if (payRun.PayRunStatusId.Equals((int) PayRunStatusesEnum.Approved))
             {
                 throw new ApiException($"Pay run with id {payRunId} is already approved for payment", StatusCodes.Status409Conflict);
             }
