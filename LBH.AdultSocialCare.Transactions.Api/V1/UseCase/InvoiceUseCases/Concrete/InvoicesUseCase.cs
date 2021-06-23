@@ -57,18 +57,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
             return true;
         }
 
-        public async Task<bool> ChangeInvoiceItemPaymentStatusUseCase(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId)
-        {
-            if (invoiceItemPaymentStatusId == (int) InvoiceItemPaymentStatusEnum.Held)
-            {
-                throw new ApiException("Update action not allowed");
-            }
-
-            return await _invoiceGateway
-                .ChangeInvoiceItemPaymentStatus(payRunId, invoiceItemId, invoiceItemPaymentStatusId)
-                .ConfigureAwait(false);
-        }
-
         public async Task<InvoiceResponse> CreateInvoiceUseCase(InvoiceForCreationDomain invoiceForCreationDomain)
         {
             // Check if package type is valid

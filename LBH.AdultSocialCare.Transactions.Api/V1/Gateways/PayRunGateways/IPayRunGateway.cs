@@ -24,7 +24,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<IEnumerable<PackageTypeDomain>> GetUniquePackageTypesInPayRun(Guid payRunId);
 
-        Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId);
+        Task<IEnumerable<InvoicePaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId);
 
         Task<bool> ChangePayRunStatus(Guid payRunId, int newPayRunStatusId);
 

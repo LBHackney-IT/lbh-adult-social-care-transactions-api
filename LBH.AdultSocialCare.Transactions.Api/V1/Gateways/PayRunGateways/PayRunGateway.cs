@@ -67,13 +67,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                     TotalAmountPaid =
                         pr.PayRunItems
                             .Where(pri =>
-                                pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals(
-                                    (int) InvoiceItemPaymentStatusEnum.Paid)).Sum(x => x.PaidAmount),
+                                pri.Invoice.InvoiceStatusId.Equals(
+                                    (int) InvoiceStatusEnum.Paid)).Sum(x => x.PaidAmount),
                     TotalAmountHeld =
                         pr.PayRunItems
                             .Where(pri =>
-                                pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals(
-                                    (int) InvoiceItemPaymentStatusEnum.Held)).Sum(x => x.InvoiceItem.TotalPrice),
+                                pri.Invoice.InvoiceStatusId.Equals(
+                                    (int) InvoiceStatusEnum.Held)).Sum(x => x.InvoiceItem.TotalPrice),
                     DateFrom = pr.DateFrom,
                     DateTo = pr.DateTo,
                     DateCreated = pr.DateCreated
@@ -169,18 +169,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId)
+        public async Task<IEnumerable<InvoicePaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId)
         {
             return await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
                 .Select(pr => new
                 {
-                    pr.InvoiceItem.InvoiceItemPaymentStatus.StatusId,
-                    pr.InvoiceItem.InvoiceItemPaymentStatus.StatusName,
-                    pr.InvoiceItem.InvoiceItemPaymentStatus.DisplayName,
+                    pr.Invoice.InvoiceStatus.Id,
+                    pr.Invoice.InvoiceStatus.StatusName,
+                    pr.Invoice.InvoiceStatus.DisplayName,
                 }).Distinct()
-                .Select(pr => new InvoiceItemPaymentStatusDomain
+                .Select(pr => new InvoicePaymentStatusDomain
                 {
-                    StatusId = pr.StatusId,
+                    StatusId = pr.Id,
                     StatusName = pr.StatusName,
                     DisplayName = pr.DisplayName
                 })

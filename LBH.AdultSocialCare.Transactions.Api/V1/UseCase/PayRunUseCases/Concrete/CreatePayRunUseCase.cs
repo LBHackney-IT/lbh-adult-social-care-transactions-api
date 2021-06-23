@@ -66,9 +66,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
         private async Task<List<InvoiceDomain>> GetInvoicesForPayRun(int invoiceStatusId, DateTimeOffset dateFrom, DateTimeOffset dateTo)
         {
             // Get invoices from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            /*var invoiceItems = await _invoiceGateway
-                .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.New, dateFrom, dateTo)
-                .ConfigureAwait(false);*/
 
             var invoices = await _invoiceGateway
                 .GetInvoiceListUsingInvoiceStatus(invoiceStatusId, dateFrom, dateTo)
@@ -135,9 +132,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             // Get date of last pay run. If none there are no holds so return
             //TODO: Change the date logic here. Account for a possible large list of released invoice items. dateFrom = min date invoice item was created. dateTo = max date invoice item was created.
             var dateFrom = await _invoiceGateway
-                .GetMinDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
+                .GetMinDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
             var dateTo = await _invoiceGateway
-                .GetMaxDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
+                .GetMaxDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
             if (dateFrom == null || dateTo == null)
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");
@@ -158,8 +155,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             const int payRunSubTypeId = (int) PayRunSubTypeEnum.DirectPaymentsReleaseHolds;
             // Get date of last pay run. If none there are no holds so return
             //TODO: Change the date logic here. Account for a possible large list of released invoice items. dateFrom = min date invoice item was created. dateTo = max date invoice item was created.
-            var dateFrom = await _invoiceGateway.GetMinDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
-            var dateTo = await _invoiceGateway.GetMaxDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
+            var dateFrom = await _invoiceGateway.GetMinDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
+            var dateTo = await _invoiceGateway.GetMaxDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
             if (dateFrom == null || dateTo == null)
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");

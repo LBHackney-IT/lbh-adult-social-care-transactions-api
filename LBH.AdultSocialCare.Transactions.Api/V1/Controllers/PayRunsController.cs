@@ -104,9 +104,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(res);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<InvoiceItemMinimalResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<InvoiceResponse>), StatusCodes.Status200OK)]
         [HttpGet("released-holds")]
-        public async Task<ActionResult<IEnumerable<InvoiceItemMinimalResponse>>> GetReleasedHolds([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
+        public async Task<ActionResult<IEnumerable<InvoiceResponse>>> GetReleasedHolds([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
         {
             var res = await _getReleasedHoldsUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
             return Ok(res);
@@ -159,16 +159,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             var res = await _releaseHeldPaymentsUseCase
                 .ReleaseHeldInvoiceItemPaymentList(releaseHeldInvoiceItemRequests.ToDomain()).ConfigureAwait(false);
             return Ok(res);
-        }
-
-        [HttpPost("{payRunId}/change-invoice-item-payment-status")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ChangeInvoiceItemPaymentStatus(Guid payRunId, [FromBody] ChangeInvoiceItemPaymentStatusRequest changeInvoiceItemPaymentStatusRequest)
-        {
-            var result = await _invoicesUseCase.ChangeInvoiceItemPaymentStatusUseCase(payRunId,
-                changeInvoiceItemPaymentStatusRequest.InvoiceItemId,
-                changeInvoiceItemPaymentStatusRequest.InvoiceItemPaymentStatusId).ConfigureAwait(false);
-            return Ok(result);
         }
 
         [HttpGet("{payRunId}/summary-insights")]

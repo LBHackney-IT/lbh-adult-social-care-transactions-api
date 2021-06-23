@@ -1,6 +1,6 @@
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
 {
-    public class InvoiceItemPaymentStatusDomain
+    public class InvoicePaymentStatusDomain
     {
         public int StatusId { get; set; }
         public string StatusName { get; set; }
