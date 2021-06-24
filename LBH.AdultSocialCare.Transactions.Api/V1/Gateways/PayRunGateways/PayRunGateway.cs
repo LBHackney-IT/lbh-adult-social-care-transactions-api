@@ -246,6 +246,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 throw new EntityNotFoundException($"Invoice item with id {invoiceItemId} not found");
             }
 
+            if (invoice.InvoiceStatusId != (int) InvoiceStatusEnum.Held)
+            {
+                throw new ApiException($"Invoice with id {invoiceId} is not held", StatusCodes.Status422UnprocessableEntity);
+            }
+
             invoice.InvoiceStatusId = (int) InvoiceStatusEnum.Released;
 
             try
@@ -260,7 +265,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
-        private async Task<PayRun> CheckPayRunExists(Guid payRunId)
+        public async Task<PayRun> CheckPayRunExists(Guid payRunId)
         {
             var payRun = await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId))
                 .AsNoTracking()
@@ -398,9 +403,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         public async Task<bool> ApprovePayRunForPayment(Guid payRunId)
         {
-            await CheckPayRunExists(payRunId).ConfigureAwait(false);
+            var payRun = await CheckPayRunExists(payRunId).ConfigureAwait(false);
 
-            return await RunPayRunInvoicePayments(payRunId).ConfigureAwait(false);
+            // Check if pay run is in submitted for approval stage. That is when it can be approved
+
+            return payRun.PayRunStatusId switch
+            {
+                (int) PayRunStatusesEnum.Approved => throw new ApiException(
+                    $"Pay run with id {payRunId} has already been approved"),
+                (int) PayRunStatusesEnum.SubmittedForApproval => throw new ApiException(
+                    $"Pay run with id {payRunId} has not been submitted for approval"),
+                _ => await RunPayRunInvoicePayments(payRunId).ConfigureAwait(false)
+            };
         }
 
         private async Task<bool> RunPayRunInvoicePayments(Guid payRunId)

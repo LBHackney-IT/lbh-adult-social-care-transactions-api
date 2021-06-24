@@ -50,22 +50,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
-        [HttpPost("{invoiceId}/release-invoice")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ReleaseSingleInvoice(Guid invoiceId)
-        {
-            var result = await _invoicesUseCase.ReleaseSingleInvoiceUseCase(invoiceId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpPost("release-invoice-list")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ReleaseInvoiceList([FromBody] ReleaseInvoiceListRequest releaseInvoiceList)
-        {
-            var result = await _invoicesUseCase.ReleaseMultipleInvoicesUseCase(releaseInvoiceList.InvoiceIds).ConfigureAwait(false);
-            return Ok(result);
-        }
-
         [ProducesResponseType(typeof(IEnumerable<HeldInvoiceResponse>), StatusCodes.Status200OK)]
         [HttpGet("held-invoice-payments")]
         public async Task<ActionResult<IEnumerable<HeldInvoiceResponse>>> GetHeldInvoicePaymentsList()

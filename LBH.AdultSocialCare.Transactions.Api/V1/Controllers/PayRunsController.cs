@@ -4,6 +4,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Res
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
@@ -14,7 +15,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -167,7 +167,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         }
 
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        [HttpPut("release-held-invoice-items")]
+        [HttpPut("release-held-invoice")]
+        public async Task<ActionResult<bool>> ReleaseSingleHeldInvoice([FromBody] ReleaseHeldInvoiceItemRequest releaseHeldInvoiceItemRequest)
+        {
+            var res = await _releaseHeldPaymentsUseCase
+                .ReleaseHeldInvoiceItemPayment(releaseHeldInvoiceItemRequest.ToDomain()).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpPut("release-held-invoice-list")]
         public async Task<ActionResult<bool>> ReleaseHeldInvoiceItemPayment([FromBody] IEnumerable<ReleaseHeldInvoiceItemRequest> releaseHeldInvoiceItemRequests)
         {
             var res = await _releaseHeldPaymentsUseCase

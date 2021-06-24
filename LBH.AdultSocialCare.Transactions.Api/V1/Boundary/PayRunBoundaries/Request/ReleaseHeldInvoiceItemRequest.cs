@@ -7,6 +7,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Requ
     {
         [Required] public Guid? PayRunId { get; set; }
         [Required] public Guid? InvoiceId { get; set; }
-        [Required] public Guid? InvoiceItemId { get; set; }
+        // [Required] public Guid? InvoiceItemId { get; set; }
     }
 }
