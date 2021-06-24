@@ -50,14 +50,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(res);
         }
 
-        [HttpPost("{invoiceId}/change-invoice-status")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ChangeInvoiceStatus(Guid invoiceId, [FromBody] ChangeInvoiceStatusRequest changeInvoiceStatusRequest)
-        {
-            var result = await _invoicesUseCase.ChangeInvoiceStatusUseCase(invoiceId, changeInvoiceStatusRequest.InvoiceStatusId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
         [ProducesResponseType(typeof(IEnumerable<HeldInvoiceResponse>), StatusCodes.Status200OK)]
         [HttpGet("held-invoice-payments")]
         public async Task<ActionResult<IEnumerable<HeldInvoiceResponse>>> GetHeldInvoicePaymentsList()

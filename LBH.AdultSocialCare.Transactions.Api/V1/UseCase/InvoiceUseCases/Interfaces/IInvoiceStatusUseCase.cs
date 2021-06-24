@@ -1,7 +1,7 @@
-using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces
 {
@@ -10,5 +10,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interf
         Task<IEnumerable<InvoiceStatusResponse>> GetAllInvoiceStatusesUseCase();
 
         Task<IEnumerable<InvoiceStatusResponse>> GetInvoicePaymentStatusesUseCase();
+
+        Task<bool> AcceptInvoiceUseCase(Guid payRunId, Guid invoiceId);
     }
 }

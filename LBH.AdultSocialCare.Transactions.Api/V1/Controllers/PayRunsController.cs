@@ -37,6 +37,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IReleaseHeldPaymentsUseCase _releaseHeldPaymentsUseCase;
         private readonly IInvoicesUseCase _invoicesUseCase;
         private readonly IPayRunUseCase _payRunUseCase;
+        private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
@@ -44,7 +45,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
             IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase,
             IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase, IInvoicesUseCase invoicesUseCase,
-            IPayRunUseCase payRunUseCase)
+            IPayRunUseCase payRunUseCase, IInvoiceStatusUseCase invoiceStatusUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -58,6 +59,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _releaseHeldPaymentsUseCase = releaseHeldPaymentsUseCase;
             _invoicesUseCase = invoicesUseCase;
             _payRunUseCase = payRunUseCase;
+            _invoiceStatusUseCase = invoiceStatusUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -189,6 +191,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         public async Task<ActionResult<bool>> GetSinglePayRunSummaryInsights(Guid payRunId)
         {
             var result = await _payRunUseCase.GetSinglePayRunInsightsUseCase(payRunId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        // Accept invoice in pay run
+        [HttpPut("{payRunId}/invoices/{invoiceId}/accept-invoice")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> ApproveInvoice(Guid payRunId, Guid invoiceId)
+        {
+            var result = await _invoiceStatusUseCase.AcceptInvoiceUseCase(payRunId, invoiceId).ConfigureAwait(false);
             return Ok(result);
         }
     }

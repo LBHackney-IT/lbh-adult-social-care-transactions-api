@@ -22,6 +22,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<PayRun> CheckPayRunExists(Guid payRunId);
 
+        Task<InvoiceDomain> GetSingleInvoiceInPayRun(Guid payRunId, Guid invoiceId);
+
         Task<Guid> CreateNewPayRun(PayRun payRunForCreation);
 
         Task<PagedList<SupplierMinimalDomain>> GetUniqueSuppliersInPayRun(Guid payRunId, SupplierListParameters parameters);

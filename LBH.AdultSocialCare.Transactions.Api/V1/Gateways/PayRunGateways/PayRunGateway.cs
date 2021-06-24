@@ -6,6 +6,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
@@ -118,6 +119,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
 
             return res;
+        }
+
+        public async Task<InvoiceDomain> GetSingleInvoiceInPayRun(Guid payRunId, Guid invoiceId)
+        {
+            var invoice = await _dbContext.PayRunItems
+                .Where(pri => pri.PayRunId.Equals(payRunId) && pri.InvoiceId.Equals(invoiceId))
+                .Select(pri => pri.Invoice)
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+            return invoice.ToInvoiceDomain();
         }
 
         public async Task<Guid> CreateNewPayRun(PayRun payRunForCreation)
