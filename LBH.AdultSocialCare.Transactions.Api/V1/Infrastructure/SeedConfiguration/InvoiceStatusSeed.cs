@@ -37,14 +37,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
                     Id = (int) InvoiceStatusEnum.Held,
                     StatusName = InvoiceStatusEnum.Held.ToDescription(),
                     DisplayName = InvoiceStatusEnum.Held.GetDisplayName(),
-                    ApprovalStatus = false
+                    ApprovalStatus = true
                 },
                 new InvoiceStatus
                 {
                     Id = (int) InvoiceStatusEnum.Accepted,
                     StatusName = InvoiceStatusEnum.Accepted.ToDescription(),
                     DisplayName = InvoiceStatusEnum.Accepted.GetDisplayName(),
-                    ApprovalStatus = false
+                    ApprovalStatus = true
                 },
                 new InvoiceStatus
                 {

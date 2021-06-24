@@ -170,14 +170,25 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             return maxDateItem?.DateCreated;
         }
 
-        public async Task<IEnumerable<InvoicePaymentStatusDomain>> GetInvoiceItemPaymentStatuses()
+        public async Task<IEnumerable<InvoiceStatusDomain>> GetAllInvoiceStatuses()
         {
-            return await _dbContext.InvoiceStatuses.Select(x => new InvoicePaymentStatusDomain
+            return await _dbContext.InvoiceStatuses.Select(x => new InvoiceStatusDomain
             {
                 StatusId = x.Id,
                 StatusName = x.StatusName,
                 DisplayName = x.DisplayName
             }).ToListAsync().ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<InvoiceStatusDomain>> GetInvoicePaymentStatuses()
+        {
+            return await _dbContext.InvoiceStatuses.Where(s => s.ApprovalStatus.Equals(true))
+                .Select(x => new InvoiceStatusDomain
+                {
+                    StatusId = x.Id,
+                    StatusName = x.StatusName,
+                    DisplayName = x.DisplayName
+                }).ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<InvoiceDomain> CreateInvoice(Invoice newInvoice)

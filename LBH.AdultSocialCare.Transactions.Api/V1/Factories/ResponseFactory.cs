@@ -109,9 +109,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<InvoiceItemMinimalResponse>>(invoiceItemMinimalDomains);
         }
 
-        public static IEnumerable<InvoiceItemPaymentStatusResponse> ToResponse(this IEnumerable<InvoicePaymentStatusDomain> invoiceItemPaymentStatusDomains)
+        public static IEnumerable<InvoiceStatusResponse> ToResponse(this IEnumerable<InvoiceStatusDomain> invoiceItemPaymentStatusDomains)
         {
-            return _mapper.Map<IEnumerable<InvoiceItemPaymentStatusResponse>>(invoiceItemPaymentStatusDomains);
+            return _mapper.Map<IEnumerable<InvoiceStatusResponse>>(invoiceItemPaymentStatusDomains);
         }
 
         public static IEnumerable<InvoiceResponse> ToResponse(this IEnumerable<InvoiceDomain> invoiceDomains)

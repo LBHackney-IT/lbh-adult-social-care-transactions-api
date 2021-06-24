@@ -237,7 +237,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetReleasedHoldsUseCase, GetReleasedHoldsUseCase>();
             services.AddScoped<IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase, GetUniqueInvoiceItemPaymentStatusInPayRunUseCase>();
             services.AddScoped<IGetSinglePayRunDetailsUseCase, GetSinglePayRunDetailsUseCase>();
-            services.AddScoped<IGetInvoiceItemPaymentStatusesUseCase, GetInvoiceItemPaymentStatusesUseCase>();
+            services.AddScoped<IInvoiceStatusUseCase, InvoiceStatusUseCase>();
             services.AddScoped<IChangePayRunStatusUseCase, ChangePayRunStatusUseCase>();
             services.AddScoped<IReleaseHeldPaymentsUseCase, ReleaseHeldPaymentsUseCase>();
             services.AddScoped<IGetPaymentDepartmentsUseCase, GetPaymentDepartmentsUseCase>();

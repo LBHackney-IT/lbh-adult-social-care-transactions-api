@@ -20,25 +20,33 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     [ApiVersion("1.0")]
     public class InvoicesController : ControllerBase
     {
-        private readonly IGetInvoiceItemPaymentStatusesUseCase _getInvoiceItemPaymentStatusesUseCase;
+        private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
         private readonly IInvoicesUseCase _invoicesUseCase;
         private readonly IPayRunUseCase _payRunUseCase;
         private readonly IGetUserPendingInvoicesUseCase _getUserPendingInvoicesUseCase;
 
-        public InvoicesController(IGetInvoiceItemPaymentStatusesUseCase getInvoiceItemPaymentStatusesUseCase, IInvoicesUseCase invoicesUseCase, IPayRunUseCase payRunUseCase,
+        public InvoicesController(IInvoiceStatusUseCase invoiceStatusUseCase, IInvoicesUseCase invoicesUseCase, IPayRunUseCase payRunUseCase,
             IGetUserPendingInvoicesUseCase getUserPendingInvoicesUseCase)
         {
-            _getInvoiceItemPaymentStatusesUseCase = getInvoiceItemPaymentStatusesUseCase;
+            _invoiceStatusUseCase = invoiceStatusUseCase;
             _invoicesUseCase = invoicesUseCase;
             _payRunUseCase = payRunUseCase;
             _getUserPendingInvoicesUseCase = getUserPendingInvoicesUseCase;
         }
 
-        [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
-        [HttpGet("invoice-item-payment-statuses")]
-        public async Task<ActionResult<IEnumerable<InvoiceItemPaymentStatusResponse>>> GetInvoiceItemPaymentStatusesList()
+        [ProducesResponseType(typeof(IEnumerable<InvoiceStatusResponse>), StatusCodes.Status200OK)]
+        [HttpGet("invoice-payment-statuses")]
+        public async Task<ActionResult<IEnumerable<InvoiceStatusResponse>>> GetInvoicePaymentStatusesList()
         {
-            var res = await _getInvoiceItemPaymentStatusesUseCase.Execute().ConfigureAwait(false);
+            var res = await _invoiceStatusUseCase.GetInvoicePaymentStatusesUseCase().ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<InvoiceStatusResponse>), StatusCodes.Status200OK)]
+        [HttpGet("invoice-status-list")]
+        public async Task<ActionResult<IEnumerable<InvoiceStatusResponse>>> GetAllInvoiceStatusesList()
+        {
+            var res = await _invoiceStatusUseCase.GetAllInvoiceStatusesUseCase().ConfigureAwait(false);
             return Ok(res);
         }
 

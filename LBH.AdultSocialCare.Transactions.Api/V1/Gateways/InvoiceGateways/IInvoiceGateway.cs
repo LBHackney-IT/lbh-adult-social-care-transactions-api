@@ -22,7 +22,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         Task<DateTimeOffset?> GetMaxDateOfReleasedInvoice(int itemPaymentStatusId);
 
-        Task<IEnumerable<InvoicePaymentStatusDomain>> GetInvoiceItemPaymentStatuses();
+        Task<IEnumerable<InvoiceStatusDomain>> GetAllInvoiceStatuses();
+
+        Task<IEnumerable<InvoiceStatusDomain>> GetInvoicePaymentStatuses();
 
         Task<InvoiceDomain> CreateInvoice(Invoice newInvoice);
 

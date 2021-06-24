@@ -183,7 +183,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<InvoicePaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId)
+        public async Task<IEnumerable<InvoiceStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId)
         {
             return await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
                 .Select(pr => new
@@ -192,7 +192,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                     pr.Invoice.InvoiceStatus.StatusName,
                     pr.Invoice.InvoiceStatus.DisplayName,
                 }).Distinct()
-                .Select(pr => new InvoicePaymentStatusDomain
+                .Select(pr => new InvoiceStatusDomain
                 {
                     StatusId = pr.Id,
                     StatusName = pr.StatusName,

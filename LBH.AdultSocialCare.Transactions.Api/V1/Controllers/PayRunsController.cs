@@ -126,9 +126,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<InvoiceStatusResponse>), StatusCodes.Status200OK)]
         [HttpGet("{payRunId}/unique-payment-statuses")]
-        public async Task<ActionResult<IEnumerable<InvoiceItemPaymentStatusResponse>>> GetUniqueInvoiceItemPaymentStatusInPayRun(Guid payRunId)
+        public async Task<ActionResult<IEnumerable<InvoiceStatusResponse>>> GetUniqueInvoiceItemPaymentStatusInPayRun(Guid payRunId)
         {
             var res = await _getUniqueInvoiceItemPaymentStatusInPayRunUseCase.Execute(payRunId).ConfigureAwait(false);
             return Ok(res);
