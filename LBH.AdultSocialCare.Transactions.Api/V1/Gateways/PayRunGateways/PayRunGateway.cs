@@ -73,7 +73,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                         pr.PayRunItems
                             .Where(pri =>
                                 pri.Invoice.InvoiceStatusId.Equals(
-                                    (int) InvoiceStatusEnum.Held)).Sum(x => x.InvoiceItem.TotalPrice),
+                                    (int) InvoiceStatusEnum.Held)).Sum(x => x.Invoice.TotalAmount),
                     DateFrom = pr.DateFrom,
                     DateTo = pr.DateTo,
                     DateCreated = pr.DateCreated
@@ -282,7 +282,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             var thisPayRun = await CheckPayRunExists(payRunId).ConfigureAwait(false);
 
             var thisPayRunAmount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
-                .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
+                .Select(pr => pr.Invoice.TotalAmount).SumAsync().ConfigureAwait(false);
 
             // get previous pay run id
             var previousPayRun = await _dbContext.PayRuns.Where(pr => pr.DateTo < thisPayRun.DateFrom)
@@ -293,30 +293,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             if (previousPayRun != null)
             {
                 previousPayRunAmount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(previousPayRun.PayRunId))
-                    .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
+                    .Select(pr => pr.Invoice.TotalAmount).SumAsync().ConfigureAwait(false);
             }
 
             var supplierCount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
-                .Select(pr => new { pr.InvoiceItem.Invoice.SupplierId }).Distinct()
+                .Select(pr => new { pr.Invoice.SupplierId }).Distinct()
                 .CountAsync()
                 .ConfigureAwait(false);
 
             var serviceUserCount = await _dbContext.PayRunItems.Where(pr => pr.PayRunId.Equals(payRunId))
-                .Select(pr => new { pr.InvoiceItem.Invoice.ServiceUserId }).Distinct()
+                .Select(pr => new { pr.Invoice.ServiceUserId }).Distinct()
                 .CountAsync()
                 .ConfigureAwait(false);
 
             var heldInvoiceCount = await _dbContext.PayRunItems.Where(pr =>
                     pr.PayRunId.Equals(payRunId) &&
-                    pr.InvoiceItem.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
-                .Select(pr => new { pr.InvoiceItem.Invoice.InvoiceId }).Distinct()
+                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+                .Select(pr => new { pr.Invoice.InvoiceId }).Distinct()
                 .CountAsync()
                 .ConfigureAwait(false);
 
             var holdsAmount = await _dbContext.PayRunItems.Where(pr =>
                     pr.PayRunId.Equals(payRunId) &&
-                    pr.InvoiceItem.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
-                .Select(pr => pr.InvoiceItem.TotalPrice).SumAsync().ConfigureAwait(false);
+                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+                .Select(pr => pr.Invoice.TotalAmount).SumAsync().ConfigureAwait(false);
 
             return new PayRunInsightsDomain
             {
