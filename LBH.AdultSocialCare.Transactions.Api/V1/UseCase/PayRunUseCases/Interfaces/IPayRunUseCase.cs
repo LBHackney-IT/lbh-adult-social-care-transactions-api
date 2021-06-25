@@ -13,5 +13,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
         Task<IEnumerable<HeldInvoiceResponse>> GetHeldInvoicePaymentsUseCase();
 
         Task<bool> ApprovePayRunForPaymentUseCase(Guid payRunId);
+
+        Task<bool> DeleteDraftPayRunUseCase(Guid payRunId);
     }
 }

@@ -41,9 +41,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
             switch (payRun.PayRunStatusId)
             {
-                case (int)PayRunStatusesEnum.SubmittedForApproval:
+                case (int) PayRunStatusesEnum.SubmittedForApproval:
                     throw new ApiException($"Pay run with id {payRunId} has already been submitted for approval");
-                case (int)PayRunStatusesEnum.Approved:
+                case (int) PayRunStatusesEnum.Approved:
                     throw new ApiException($"Pay run with id {payRunId} has already been approved. Invoice status cannot be changed");
             }
 
@@ -52,18 +52,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
             switch (invoice.InvoiceStatusId)
             {
-                case (int)InvoiceStatusEnum.Held:
+                case (int) InvoiceStatusEnum.Held:
                     throw new ApiException($"Invoice with id {payRunId} has already been held. It must be released first");
-                case (int)InvoiceStatusEnum.Released:
+                case (int) InvoiceStatusEnum.Released:
                     throw new ApiException($"Released invoice with id {payRunId} will be added to the next pay run");
                 default:
-                {
-                    // Run change status
-                    var res = await _invoiceGateway.ChangeInvoiceStatus(invoiceId, (int) InvoiceStatusEnum.Accepted)
-                        .ConfigureAwait(false);
+                    {
+                        // Run change status
+                        var res = await _invoiceGateway.ChangeInvoiceStatus(invoiceId, (int) InvoiceStatusEnum.Accepted)
+                            .ConfigureAwait(false);
 
-                    return res;
-                }
+                        return res;
+                    }
             }
         }
     }

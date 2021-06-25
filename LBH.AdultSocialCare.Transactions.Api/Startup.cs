@@ -40,6 +40,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.Utils;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -143,6 +144,8 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
             // Add auto mapper
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddScoped<IIdentifierGenerator, GuidCombGenerator>();
 
             ConfigureLogging(services, Configuration);
 

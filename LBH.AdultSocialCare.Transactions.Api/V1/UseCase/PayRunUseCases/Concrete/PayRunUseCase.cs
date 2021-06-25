@@ -37,5 +37,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
         {
             return await _payRunGateway.ApprovePayRunForPayment(payRunId).ConfigureAwait(false);
         }
+
+        public async Task<bool> DeleteDraftPayRunUseCase(Guid payRunId)
+        {
+            return await _payRunGateway.DeleteDraftPayRun(payRunId).ConfigureAwait(false);
+        }
     }
 }

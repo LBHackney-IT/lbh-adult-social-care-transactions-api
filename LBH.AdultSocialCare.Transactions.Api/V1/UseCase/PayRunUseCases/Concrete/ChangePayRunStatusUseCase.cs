@@ -4,6 +4,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete
@@ -26,6 +27,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             {
                 throw new ApiException(
                     $"Pay run with id {payRunId} is not in draft", StatusCodes.Status422UnprocessableEntity);
+            }
+
+            var validInvoiceIds = new List<int>() { (int) InvoiceStatusEnum.Held, (int) InvoiceStatusEnum.Accepted };
+
+            var validInvoiceStatuses = await _payRunGateway.CheckAllInvoicesInPayRunInStatusList(payRunId, validInvoiceIds).ConfigureAwait(false);
+
+            if (!validInvoiceStatuses)
+            {
+                throw new ApiException(
+                    $"All invoices in pay run must be held or accepted before submitting for approval. Please check and try again");
             }
 
             return await _payRunGateway.ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.SubmittedForApproval)

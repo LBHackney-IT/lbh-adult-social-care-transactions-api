@@ -59,6 +59,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 parameters.PageSize);
         }
 
+        public async Task<IEnumerable<Invoice>> GetInvoicesFlatInPayRunAsync(Guid payRunId)
+        {
+            var invoices = await _dbContext.PayRunItems.Where(pri => pri.PayRunId.Equals(payRunId))
+                .Select(pri => pri.Invoice)
+                .Distinct()
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return invoices;
+        }
+
         public async Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments()
         {
             var payRunsWithHeldInvoicesIds = await _dbContext.DisputedInvoices.Where(pr =>

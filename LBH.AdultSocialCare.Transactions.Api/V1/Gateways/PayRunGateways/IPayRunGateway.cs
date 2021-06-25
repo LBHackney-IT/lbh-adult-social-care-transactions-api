@@ -2,6 +2,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using System;
@@ -24,6 +25,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<InvoiceDomain> GetSingleInvoiceInPayRun(Guid payRunId, Guid invoiceId);
 
+        Task<bool> CheckAllInvoicesInPayRunInStatusList(Guid payRunId, List<int> invoiceStatusIds);
+
         Task<Guid> CreateNewPayRun(PayRun payRunForCreation);
 
         Task<PagedList<SupplierMinimalDomain>> GetUniqueSuppliersInPayRun(Guid payRunId, SupplierListParameters parameters);
@@ -41,5 +44,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<IEnumerable<InvoiceDomain>> GetAllInvoicesInPayRunUsingInvoiceStatus(Guid payRunId, int invoiceStatusId);
 
         Task<bool> ApprovePayRunForPayment(Guid payRunId);
+
+        Task<bool> DeleteDraftPayRun(Guid payRunId);
     }
 }
