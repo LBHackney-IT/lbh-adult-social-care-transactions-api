@@ -67,7 +67,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(string), StatusCodes.Status422UnprocessableEntity)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Guid>> CreateNewPayRun(string payRunType)
+        public async Task<ActionResult<Guid>> CreateNewPayRun(string payRunType, [FromBody] PayRunForCreationRequest payRunForCreationRequest)
         {
             var result = await _createPayRunUseCase.CreateNewPayRunUseCase(payRunType).ConfigureAwait(false);
             return Ok(result);

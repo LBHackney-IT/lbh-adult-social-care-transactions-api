@@ -25,12 +25,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             _payRunGateway = payRunGateway;
         }
 
-        public async Task<Guid> CreateResidentialRecurringPayRunUseCase()
+        public async Task<Guid> CreateResidentialRecurringPayRunUseCase(DateTimeOffset dateTo)
         {
             const int payRunTypeId = (int) PayRunTypeEnum.ResidentialRecurring;
             // Get date of last pay run. If none make it today-28 days
             var dateFrom = await _payRunGateway.GetDateOfLastPayRun(payRunTypeId).ConfigureAwait(false);
-            var dateTo = dateFrom.AddDays(28);
+            // var dateTo = dateFrom.AddDays(28);
 
             // If date to is greater than today, make dateTo today's date
             if (dateTo > DateTimeOffset.Now)
@@ -77,12 +77,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             return invoiceDomains;
         }
 
-        public async Task<Guid> CreateDirectPaymentsPayRunUseCase()
+        public async Task<Guid> CreateDirectPaymentsPayRunUseCase(DateTimeOffset dateTo)
         {
             const int payRunTypeId = (int) PayRunTypeEnum.DirectPayments;
             // Get date of last pay run. If none make it today-28 days
             var dateFrom = await _payRunGateway.GetDateOfLastPayRun(payRunTypeId).ConfigureAwait(false);
-            var dateTo = dateFrom.AddDays(28);
+            // var dateTo = dateFrom.AddDays(28);
 
             // If date to is greater than today, make dateTo today's date
             if (dateTo > DateTimeOffset.Now)
@@ -95,12 +95,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
 
-        public async Task<Guid> CreateHomeCarePayRunUseCase()
+        public async Task<Guid> CreateHomeCarePayRunUseCase(DateTimeOffset dateTo)
         {
             const int payRunTypeId = (int) PayRunTypeEnum.HomeCare;
             // Get date of last pay run. If none make it today-28 days
             var dateFrom = await _payRunGateway.GetDateOfLastPayRun(payRunTypeId).ConfigureAwait(false);
-            var dateTo = dateFrom.AddDays(28);
+            // var dateTo = dateFrom.AddDays(28);
 
             // If date to is greater than today, make dateTo today's date
             if (dateTo > DateTimeOffset.Now)
@@ -113,7 +113,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
 
-        public async Task<Guid> CreateResidentialReleaseHoldsPayRunUseCase()
+        public async Task<Guid> CreateResidentialReleaseHoldsPayRunUseCase(DateTimeOffset dateTo)
         {
             const int payRunTypeId = (int) PayRunTypeEnum.ResidentialRecurring;
             const int payRunSubTypeId = (int) PayRunSubTypeEnum.ResidentialReleaseHolds;
@@ -121,8 +121,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             //TODO: Change the date logic here. Account for a possible large list of released invoice items. dateFrom = min date invoice item was created. dateTo = max date invoice item was created.
             var dateFrom = await _invoiceGateway
                 .GetMinDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
-            var dateTo = await _invoiceGateway
-                .GetMaxDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
+            /*var dateTo = await _invoiceGateway
+                .GetMaxDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);*/
             if (dateFrom == null || dateTo == null)
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");
@@ -133,14 +133,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             return await CreatePayRun(invoiceDomains, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo, payRunTypeId, payRunSubTypeId).ConfigureAwait(false);
         }
 
-        public async Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase()
+        public async Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase(DateTimeOffset dateTo)
         {
             const int payRunTypeId = (int) PayRunTypeEnum.ResidentialRecurring;
             const int payRunSubTypeId = (int) PayRunSubTypeEnum.DirectPaymentsReleaseHolds;
             // Get date of last pay run. If none there are no holds so return
             //TODO: Change the date logic here. Account for a possible large list of released invoice items. dateFrom = min date invoice item was created. dateTo = max date invoice item was created.
             var dateFrom = await _invoiceGateway.GetMinDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
-            var dateTo = await _invoiceGateway.GetMaxDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
+            // var dateTo = await _invoiceGateway.GetMaxDateOfReleasedInvoice((int) InvoiceStatusEnum.Released).ConfigureAwait(false);
             if (dateFrom == null || dateTo == null)
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");
@@ -163,7 +163,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             return res;
         }
 
-        public async Task<Guid> CreateNewPayRunUseCase(string payRunType)
+        public async Task<Guid> CreateNewPayRunUseCase(string payRunType, DateTimeOffset dateTo)
         {
             if (!PayRunTypeEnum.ResidentialRecurring.EnumIsDefined(payRunType) && !PayRunSubTypeEnum.DirectPaymentsReleaseHolds.EnumIsDefined(payRunType))
             {
@@ -172,16 +172,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
 
             return payRunType switch
             {
-                nameof(PayRunTypeEnum.ResidentialRecurring) => await CreateResidentialRecurringPayRunUseCase()
+                nameof(PayRunTypeEnum.ResidentialRecurring) => await CreateResidentialRecurringPayRunUseCase(dateTo)
                     .ConfigureAwait(false),
-                nameof(PayRunTypeEnum.DirectPayments) => await CreateDirectPaymentsPayRunUseCase()
+                nameof(PayRunTypeEnum.DirectPayments) => await CreateDirectPaymentsPayRunUseCase(dateTo)
                     .ConfigureAwait(false),
-                nameof(PayRunTypeEnum.HomeCare) => await CreateHomeCarePayRunUseCase()
+                nameof(PayRunTypeEnum.HomeCare) => await CreateHomeCarePayRunUseCase(dateTo)
                     .ConfigureAwait(false),
-                nameof(PayRunSubTypeEnum.ResidentialReleaseHolds) => await CreateResidentialReleaseHoldsPayRunUseCase()
+                nameof(PayRunSubTypeEnum.ResidentialReleaseHolds) => await CreateResidentialReleaseHoldsPayRunUseCase(dateTo)
                     .ConfigureAwait(false),
                 nameof(PayRunSubTypeEnum.DirectPaymentsReleaseHolds) => await
-                    CreateDirectPaymentsReleaseHoldsPayRunUseCase()
+                    CreateDirectPaymentsReleaseHoldsPayRunUseCase(dateTo)
                         .ConfigureAwait(false),
                 _ => throw new EntityNotFoundException("The pay run type is not valid. Please check and try again")
             };
