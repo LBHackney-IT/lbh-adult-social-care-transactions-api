@@ -41,7 +41,7 @@ commands:
           paths:
             - .aws
   terraform-init-then-apply:
-    description: "Initializes and applies terraform configuration"
+    description: "Initializes  and applies terraform configuration"
     parameters:
       environment:
         type: string
@@ -87,7 +87,7 @@ commands:
       - run:
           name: Deploy lambda
           command: |
-            cd ./LBH.AdultSocialCare.Api/
+            cd ./LBH.AdultSocialCare.Transactions.Api/
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
 
 jobs:
