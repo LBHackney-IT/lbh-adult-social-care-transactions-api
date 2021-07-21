@@ -41,7 +41,7 @@ commands:
           paths:
             - .aws
   terraform-init-then-apply:
-    description: "Initializes  and applies terraform configuration"
+    description: "Initializes and applies terraform configuration"
     parameters:
       environment:
         type: string
