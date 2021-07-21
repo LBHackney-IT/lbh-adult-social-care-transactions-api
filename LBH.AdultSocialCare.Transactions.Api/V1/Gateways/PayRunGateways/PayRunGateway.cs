@@ -46,10 +46,33 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                     pr.PayRunTypeId.Equals(payRunTypeId) &&
                     (pr.PayRunSubTypeId.Equals(payRunSubTypeId) || payRunSubTypeId.Equals(null)))
                 .OrderByDescending(pr => pr.DateTo)
-                .SingleOrDefaultAsync()
+                .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
 
             return lastPayRun?.DateTo ?? DateTimeOffset.Now.AddDays(-28);
+        }
+
+        public async Task<PayRunDateSummaryDomain> GetDateOfLastPayRunSummary(int payRunTypeId, int? payRunSubTypeId = null)
+        {
+            var lastPayRun = await _dbContext.PayRuns.Where(pr =>
+                    pr.PayRunTypeId.Equals(payRunTypeId) &&
+                    (pr.PayRunSubTypeId.Equals(payRunSubTypeId) || payRunSubTypeId.Equals(null)))
+                .OrderByDescending(pr => pr.DateTo)
+                .Select(p => new PayRunDateSummaryDomain
+                {
+                    PayRunId = p.PayRunId,
+                    PayRunTypeId = p.PayRunTypeId,
+                    PayRunTypeName = p.PayRunType.TypeName,
+                    PayRunSubTypeId = p.PayRunSubTypeId,
+                    PayRunSubTypeName = p.PayRunSubType.SubTypeName,
+                    DateFrom = p.DateFrom,
+                    DateTo = p.DateTo,
+                    DateCreated = p.DateCreated
+                })
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            return lastPayRun;
         }
 
         public async Task<PagedList<PayRunSummaryDomain>> GetPayRunSummaryList(PayRunSummaryListParameters parameters)

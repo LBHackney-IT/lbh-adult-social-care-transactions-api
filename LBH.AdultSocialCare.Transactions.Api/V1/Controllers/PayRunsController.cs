@@ -73,6 +73,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
+        [HttpGet("date-of-last-pay-run/{payRunType}")]
+        [ProducesResponseType(typeof(PayRunDateSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Guid>> GetDateSummaryOfLastPayRun(string payRunType)
+        {
+            var result = await _payRunUseCase.GetDateOfLastPayRunUseCase(payRunType).ConfigureAwait(false);
+            return Ok(result);
+        }
+
         [ProducesResponseType(typeof(PagedPayRunSummaryResponse), StatusCodes.Status200OK)]
         [HttpGet("summary-list")]
         public async Task<ActionResult<PagedPayRunSummaryResponse>> GetPayRunSummaryList([FromQuery] PayRunSummaryListParameters parameters)
