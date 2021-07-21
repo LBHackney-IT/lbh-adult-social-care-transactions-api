@@ -8,9 +8,12 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.DepartmentGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PackageTypeGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.DepartmentUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.DepartmentUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete;
@@ -37,8 +40,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -199,6 +200,12 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IInvoiceGateway, InvoiceGateway>();
 
             #endregion Invoices
+
+            #region PackageTypes
+
+            services.AddScoped<IPackageTypeGateway, PackageTypeGateway>();
+
+            #endregion PackageTypes
 
             #region PayRuns
 

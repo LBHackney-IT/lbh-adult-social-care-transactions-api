@@ -1,4 +1,5 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
@@ -7,6 +8,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,31 +38,50 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 dateTo = DateTimeOffset.Now;
             }
 
-            // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceItems = await _invoiceGateway
+            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
+
+            // Add range to a new pay run. Date end is date today
+            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
+                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, null);
+
+            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+        }
+
+        private static PayRunForCreationDomain GeneratePayRunForCreationDomain(DateTimeOffset dateFrom,
+            DateTimeOffset dateTo, Guid creatorId, IEnumerable<InvoiceDomain> invoiceDomains, int payRunTypeId, int? payRunSubTypeId = null)
+        {
+            return new PayRunForCreationDomain
+            {
+                PayRunTypeId = payRunTypeId,
+                PayRunSubTypeId = payRunSubTypeId,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                CreatorId = creatorId,
+                UpdaterId = null,
+                Invoices = invoiceDomains,
+                InvoiceItems = new List<InvoiceItemMinimalDomain>()
+            };
+        }
+
+        private async Task<List<InvoiceDomain>> GetInvoicesForPayRun(int invoiceStatusId, DateTimeOffset dateFrom, DateTimeOffset dateTo)
+        {
+            // Get invoices from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
+            /*var invoiceItems = await _invoiceGateway
                 .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.New, dateFrom, dateTo)
+                .ConfigureAwait(false);*/
+
+            var invoices = await _invoiceGateway
+                .GetInvoiceListUsingInvoiceStatus(invoiceStatusId, dateFrom, dateTo)
                 .ConfigureAwait(false);
 
-            // If no invoice items do not create pay run
-            var invoiceItemMinimalDomains = invoiceItems.ToList();
-            if (!invoiceItemMinimalDomains.Any())
+            // If no invoices do not create pay run
+            var invoiceDomains = invoices.ToList();
+            if (!invoiceDomains.Any())
             {
                 throw new EntityNotFoundException("No pending invoices to add to pay run");
             }
 
-            // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = new PayRunForCreationDomain
-            {
-                PayRunTypeId = payRunTypeId,
-                PayRunSubTypeId = null,
-                DateFrom = dateFrom,
-                DateTo = dateTo,
-                CreatorId = new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"),
-                UpdaterId = null,
-                InvoiceItems = invoiceItemMinimalDomains
-            };
-
-            return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
+            return invoiceDomains;
         }
 
         public async Task<Guid> CreateDirectPaymentsPayRunUseCase()
@@ -76,29 +97,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 dateTo = DateTimeOffset.Now;
             }
 
-            // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceItems = await _invoiceGateway
-                .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.New, dateFrom, dateTo)
-                .ConfigureAwait(false);
-
-            // If no invoice items do not create pay run
-            var invoiceItemMinimalDomains = invoiceItems.ToList();
-            if (!invoiceItemMinimalDomains.Any())
-            {
-                throw new EntityNotFoundException("No pending invoices to add to pay run");
-            }
+            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
             // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = new PayRunForCreationDomain
-            {
-                PayRunTypeId = payRunTypeId,
-                PayRunSubTypeId = null,
-                DateFrom = dateFrom,
-                DateTo = dateTo,
-                CreatorId = new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"),
-                UpdaterId = null,
-                InvoiceItems = invoiceItemMinimalDomains
-            };
+            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
+                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, null);
 
             return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
@@ -116,29 +119,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 dateTo = DateTimeOffset.Now;
             }
 
-            // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceItems = await _invoiceGateway
-                .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.New, dateFrom, dateTo)
-                .ConfigureAwait(false);
-
-            // If no invoice items do not create pay run
-            var invoiceItemMinimalDomains = invoiceItems.ToList();
-            if (!invoiceItemMinimalDomains.Any())
-            {
-                throw new EntityNotFoundException("No pending invoices to add to pay run");
-            }
+            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
             // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = new PayRunForCreationDomain
-            {
-                PayRunTypeId = payRunTypeId,
-                PayRunSubTypeId = null,
-                DateFrom = dateFrom,
-                DateTo = dateTo,
-                CreatorId = new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"),
-                UpdaterId = null,
-                InvoiceItems = invoiceItemMinimalDomains
-            };
+            var newPayRunDomain = GeneratePayRunForCreationDomain(dateFrom, dateTo,
+                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, null);
 
             return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
@@ -149,27 +134,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             const int payRunSubTypeId = (int) PayRunSubTypeEnum.ResidentialReleaseHolds;
             // Get date of last pay run. If none there are no holds so return
             //TODO: Change the date logic here. Account for a possible large list of released invoice items. dateFrom = min date invoice item was created. dateTo = max date invoice item was created.
-            var dateFrom = await _invoiceGateway.GetMinDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
-            var dateTo = await _invoiceGateway.GetMaxDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
+            var dateFrom = await _invoiceGateway
+                .GetMinDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
+            var dateTo = await _invoiceGateway
+                .GetMaxDateOfReleasedInvoiceItem((int) InvoiceItemPaymentStatusEnum.Released).ConfigureAwait(false);
             if (dateFrom == null || dateTo == null)
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");
             }
             // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceItems = await _invoiceGateway
-                .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.Released, dateFrom, dateTo)
-                .ConfigureAwait(false);
+            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
+
             // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = new PayRunForCreationDomain
-            {
-                PayRunTypeId = payRunTypeId,
-                PayRunSubTypeId = payRunSubTypeId,
-                DateFrom = (DateTimeOffset) dateFrom,
-                DateTo = (DateTimeOffset) dateTo,
-                CreatorId = new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"),
-                UpdaterId = null,
-                InvoiceItems = invoiceItems
-            };
+            var newPayRunDomain = GeneratePayRunForCreationDomain((DateTimeOffset) dateFrom, (DateTimeOffset) dateTo,
+                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, payRunSubTypeId);
 
             return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }
@@ -187,20 +165,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 throw new EntityNotFoundException("There are no held invoices at this time");
             }
             // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceItems = await _invoiceGateway
-                .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.Released, dateFrom, dateTo)
-                .ConfigureAwait(false);
+            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
+
             // Add range to a new pay run. Date end is date today
-            var newPayRunDomain = new PayRunForCreationDomain
-            {
-                PayRunTypeId = payRunTypeId,
-                PayRunSubTypeId = payRunSubTypeId,
-                DateFrom = (DateTimeOffset) dateFrom,
-                DateTo = (DateTimeOffset) dateTo,
-                CreatorId = new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"),
-                UpdaterId = null,
-                InvoiceItems = invoiceItems
-            };
+            var newPayRunDomain = GeneratePayRunForCreationDomain((DateTimeOffset) dateFrom, (DateTimeOffset) dateTo,
+                new Guid("1f825b5f-5c65-41fb-8d9e-9d36d78fd6d8"), invoiceDomains, payRunTypeId, payRunSubTypeId);
 
             return await _payRunGateway.CreateNewPayRun(newPayRunDomain.ToDb()).ConfigureAwait(false);
         }

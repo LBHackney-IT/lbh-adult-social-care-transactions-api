@@ -77,6 +77,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<PayRunInsightsResponse>(payRunInsightsDomain);
         }
 
+        public static IEnumerable<HeldInvoiceResponse> ToResponse(this IEnumerable<HeldInvoiceDomain> heldInvoiceDomains)
+        {
+            return _mapper.Map<IEnumerable<HeldInvoiceResponse>>(heldInvoiceDomains);
+        }
+
         #endregion PayRuns
 
         #region Suppliers
@@ -130,6 +135,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static DisputedInvoiceFlatResponse ToResponse(this DisputedInvoiceFlatDomain disputedInvoiceFlatDomain)
         {
             return _mapper.Map<DisputedInvoiceFlatResponse>(disputedInvoiceFlatDomain);
+        }
+
+        public static InvoiceResponse ToResponse(this InvoiceDomain invoiceDomain)
+        {
+            return _mapper.Map<InvoiceResponse>(invoiceDomain);
         }
 
         #endregion Invoices

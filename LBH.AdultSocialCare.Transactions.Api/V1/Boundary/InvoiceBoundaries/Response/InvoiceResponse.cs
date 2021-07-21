@@ -17,5 +17,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Res
         public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
         public IEnumerable<InvoiceItemMinimalResponse> InvoiceItems { get; set; }
+        public IEnumerable<DisputedInvoiceChatResponse> DisputedInvoiceChat { get; set; }
     }
 }

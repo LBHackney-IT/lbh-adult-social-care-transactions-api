@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 {
@@ -57,6 +56,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
                     .IsUnique();
             });
 
+            modelBuilder.Entity<PayRunItem>(entity =>
+            {
+                entity.HasIndex(pri => new { pri.PayRunId, pri.InvoiceId, pri.InvoiceItemId })
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasIndex(i => new { i.InvoiceNumber })
+                    .IsUnique();
+            });
+
             #endregion Model Config
 
             base.OnModelCreating(modelBuilder);
@@ -75,6 +86,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             modelBuilder.ApplyConfiguration(new PayRunStatusesSeed());
             modelBuilder.ApplyConfiguration(new PayRunSubTypesSeed());
             modelBuilder.ApplyConfiguration(new DepartmentsSeed());
+            modelBuilder.ApplyConfiguration(new PackageTypesSeed());
 
             #endregion Database Seeds
         }
