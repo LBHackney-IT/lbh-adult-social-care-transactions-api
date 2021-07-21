@@ -28,12 +28,14 @@ commands:
     parameters:
       aws-account:
         type: string
+      account-role:
+        type: string
     steps:
       - checkout
       - aws_assume_role/assume_role:
           account: <<parameters.aws-account>>
           profile_name: default
-          role: "LBH_Circle_CI_Deployment_Role"
+          role: <<parameters.account-role>>
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -85,7 +87,7 @@ commands:
       - run:
           name: Deploy lambda
           command: |
-            cd ./LBH.AdultSocialCare.Transactions.Api/
+            cd ./LBH.AdultSocialCare.Api/
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
 
 jobs:
@@ -115,16 +117,19 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
+          account-role: "LBH_Circle_CI_Deployment_Role"
   assume-role-staging:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_STAGING
+          account-role: "LBH_Circle_CI_Deployment_Role"
   assume-role-production:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
+          account-role: "circleci-assume-role"
   terraform-init-and-apply-to-development:
     executor: docker-terraform
     steps:
@@ -160,59 +165,81 @@ jobs:
           aws-account: $AWS_ACCOUNT_PRODUCTION
 
 workflows:
-  check-and-deploy-development:
-    jobs:
+  # check-and-deploy-development:
+    # jobs:
+      # - check-code-formatting
+      # - build-and-test
+      # - assume-role-development:
+          # context: mosaic-staging-context
+          # requires:
+            # - build-and-test
+          # filters:
+            # branches:
+              # only: develop
+      # # - terraform-init-and-apply-to-development:
+          # # requires:
+            # # - assume-role-development
+          # # filters:
+            # # branches:
+              # # only: develop
+      # - deploy-to-development:
+          # context: mosaic-staging-context
+          # requires:
+            # - assume-role-development
+          # filters:
+            # branches:
+              # only: develop
+  check-and-deploy-staging-and-production:
+      jobs:      
       - check-code-formatting
       - build-and-test
-      - assume-role-development:
-          context: api-assume-role-housing-development-context
+      - assume-role-staging:
+          context: mosaic-staging-context
           requires:
-            - build-and-test
+              - build-and-test
+          filters:
+             branches:
+              only: 
+                - develop
+                - master
+      - terraform-init-and-apply-to-staging:
+          requires:
+            - assume-role-staging
           filters:
             branches:
-              only: development
-      - terraform-init-and-apply-to-development:
+              only: 
+                - develop
+                - master
+      - deploy-to-staging:
           requires:
-            - assume-role-development
+            - terraform-init-and-apply-to-staging
           filters:
             branches:
-              only: development
-      - deploy-to-development:
-          context: api-assume-role-housing-development-context
+              only: 
+                - develop
+                - master
+      - assume-role-production:
+          context: api-assume-role-social-care-production-context
+          filters:
+             branches:
+               only: master
+      - terraform-init-and-apply-to-production:
           requires:
-            - terraform-init-and-apply-to-development
+            - assume-role-production
           filters:
             branches:
-              only: development
-#   check-and-deploy-staging-and-production:
-#       jobs:
-#       - build-and-test:
-#           filters:
-#             branches:
-#               only: master
-#       - assume-role-staging:
-#           context: api-assume-role-staging-context
-#           requires:
-#               - build-and-test
-#           filters:
-#              branches:
-#                only: master
-#       - terraform-init-and-apply-to-staging:
-#           requires:
-#             - assume-role-staging
-#           filters:
-#             branches:
-#               only: master
-#       - deploy-to-staging:
-#           requires:
-#             - terraform-init-and-apply-to-staging
-#           filters:
-#             branches:
-#               only: master
-#       - permit-production-terraform-release:
-#           type: approval
-#           requires:
-#             - deploy-to-staging
+              only: master
+      - deploy-to-production:
+          requires:
+            - terraform-init-and-apply-to-production
+          filters:
+            branches:
+              only: 
+                - master
+      # - permit-production-terraform-release:
+          # type: approval
+          # requires:
+            # - deploy-to-staging
 #       - assume-role-production:
 #           context: api-assume-role-production-context
 #           requires:
