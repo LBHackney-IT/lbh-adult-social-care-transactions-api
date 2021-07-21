@@ -82,6 +82,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<HeldInvoiceResponse>>(heldInvoiceDomains);
         }
 
+        public static PayRunDateSummaryResponse ToResponse(this PayRunDateSummaryDomain payRunDateSummaryDomain)
+        {
+            return _mapper.Map<PayRunDateSummaryResponse>(payRunDateSummaryDomain);
+        }
+
         #endregion PayRuns
 
         #region Suppliers
@@ -109,9 +114,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<InvoiceItemMinimalResponse>>(invoiceItemMinimalDomains);
         }
 
-        public static IEnumerable<InvoiceItemPaymentStatusResponse> ToResponse(this IEnumerable<InvoiceItemPaymentStatusDomain> invoiceItemPaymentStatusDomains)
+        public static IEnumerable<InvoiceStatusResponse> ToResponse(this IEnumerable<InvoiceStatusDomain> invoiceItemPaymentStatusDomains)
         {
-            return _mapper.Map<IEnumerable<InvoiceItemPaymentStatusResponse>>(invoiceItemPaymentStatusDomains);
+            return _mapper.Map<IEnumerable<InvoiceStatusResponse>>(invoiceItemPaymentStatusDomains);
         }
 
         public static IEnumerable<InvoiceResponse> ToResponse(this IEnumerable<InvoiceDomain> invoiceDomains)

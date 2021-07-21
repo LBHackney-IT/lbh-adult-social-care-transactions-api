@@ -16,5 +16,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRun
         [ForeignKey(nameof(PayRunId))] public PayRun PayRun { get; set; }
         [ForeignKey(nameof(InvoiceId))] public Invoice Invoice { get; set; }
         [ForeignKey(nameof(InvoiceItemId))] public InvoiceItem InvoiceItem { get; set; }
+        public virtual DisputedInvoice DisputedInvoice { get; set; }
     }
 }

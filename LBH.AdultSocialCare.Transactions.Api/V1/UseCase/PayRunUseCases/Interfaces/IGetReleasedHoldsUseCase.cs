@@ -7,6 +7,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
 {
     public interface IGetReleasedHoldsUseCase
     {
-        Task<IEnumerable<InvoiceItemMinimalResponse>> Execute(DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
+        Task<IEnumerable<InvoiceResponse>> Execute(DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
     }
 }

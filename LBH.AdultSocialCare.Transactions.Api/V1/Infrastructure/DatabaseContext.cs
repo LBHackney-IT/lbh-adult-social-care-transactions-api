@@ -34,12 +34,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
         public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
-        public DbSet<InvoiceItemPaymentStatus> InvoiceItemPaymentStatuses { get; set; }
+        public DbSet<InvoicePayment> InvoicePayments { get; set; }
         public DbSet<PayRun> PayRuns { get; set; }
         public DbSet<PayRunItem> PayRunItems { get; set; }
         public DbSet<PayRunType> PayRunTypes { get; set; }
         public DbSet<PayRunStatus> PayRunStatuses { get; set; }
         public DbSet<PayRunSubType> PayRunSubTypes { get; set; }
+        public DbSet<PayRunSupplierBill> PayRunSupplierBills { get; set; }
+        public DbSet<PayRunSupplierBillItem> PayRunSupplierBillItems { get; set; }
         public DbSet<BillPayment> BillPayments { get; set; }
         public DbSet<SupplierCreditNote> SupplierCreditNotes { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
@@ -52,8 +54,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
 
             modelBuilder.Entity<DisputedInvoice>(entity =>
             {
-                entity.HasIndex(e => new { e.InvoiceId, e.InvoiceItemId })
+                entity.HasIndex(e => new { e.PayRunItemId, e.InvoiceId })
                     .IsUnique();
+
+                entity.HasOne(a => a.PayRunItem)
+                    .WithOne(b => b.DisputedInvoice)
+                    .HasForeignKey<DisputedInvoice>(b => b.PayRunItemId);
             });
 
             modelBuilder.Entity<PayRunItem>(entity =>
@@ -80,7 +86,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             // Seed invoice status
             modelBuilder.ApplyConfiguration(new InvoiceStatusSeed());
             modelBuilder.ApplyConfiguration(new InvoiceNumberSeed());
-            modelBuilder.ApplyConfiguration(new InvoiceItemPaymentStatusesSeed());
 
             modelBuilder.ApplyConfiguration(new PayRunTypesSeed());
             modelBuilder.ApplyConfiguration(new PayRunStatusesSeed());

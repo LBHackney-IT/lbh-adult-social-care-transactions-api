@@ -20,61 +20,34 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     [ApiVersion("1.0")]
     public class InvoicesController : ControllerBase
     {
-        private readonly IGetInvoiceItemPaymentStatusesUseCase _getInvoiceItemPaymentStatusesUseCase;
+        private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
         private readonly IInvoicesUseCase _invoicesUseCase;
         private readonly IPayRunUseCase _payRunUseCase;
         private readonly IGetUserPendingInvoicesUseCase _getUserPendingInvoicesUseCase;
 
-        public InvoicesController(IGetInvoiceItemPaymentStatusesUseCase getInvoiceItemPaymentStatusesUseCase, IInvoicesUseCase invoicesUseCase, IPayRunUseCase payRunUseCase,
+        public InvoicesController(IInvoiceStatusUseCase invoiceStatusUseCase, IInvoicesUseCase invoicesUseCase, IPayRunUseCase payRunUseCase,
             IGetUserPendingInvoicesUseCase getUserPendingInvoicesUseCase)
         {
-            _getInvoiceItemPaymentStatusesUseCase = getInvoiceItemPaymentStatusesUseCase;
+            _invoiceStatusUseCase = invoiceStatusUseCase;
             _invoicesUseCase = invoicesUseCase;
             _payRunUseCase = payRunUseCase;
             _getUserPendingInvoicesUseCase = getUserPendingInvoicesUseCase;
         }
 
-        [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
-        [HttpGet("invoice-item-payment-statuses")]
-        public async Task<ActionResult<IEnumerable<InvoiceItemPaymentStatusResponse>>> GetInvoiceItemPaymentStatusesList()
+        [ProducesResponseType(typeof(IEnumerable<InvoiceStatusResponse>), StatusCodes.Status200OK)]
+        [HttpGet("invoice-payment-statuses")]
+        public async Task<ActionResult<IEnumerable<InvoiceStatusResponse>>> GetInvoicePaymentStatusesList()
         {
-            var res = await _getInvoiceItemPaymentStatusesUseCase.Execute().ConfigureAwait(false);
+            var res = await _invoiceStatusUseCase.GetInvoicePaymentStatusesUseCase().ConfigureAwait(false);
             return Ok(res);
         }
 
-        [HttpPost("hold-payment")]
-        [ProducesResponseType(typeof(DisputedInvoiceFlatResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status422UnprocessableEntity)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<DisputedInvoiceFlatResponse>> CreateNewPayRun([FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
+        [ProducesResponseType(typeof(IEnumerable<InvoiceStatusResponse>), StatusCodes.Status200OK)]
+        [HttpGet("invoice-status-list")]
+        public async Task<ActionResult<IEnumerable<InvoiceStatusResponse>>> GetAllInvoiceStatusesList()
         {
-            var result = await _invoicesUseCase.HoldInvoicePaymentUseCase(disputedInvoiceForCreationRequest.ToDomain()).ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpPost("{invoiceId}/change-invoice-status")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ChangeInvoiceStatus(Guid invoiceId, [FromBody] ChangeInvoiceStatusRequest changeInvoiceStatusRequest)
-        {
-            var result = await _invoicesUseCase.ChangeInvoiceStatusUseCase(invoiceId, changeInvoiceStatusRequest.InvoiceStatusId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpPost("{invoiceId}/release-invoice")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ReleaseSingleInvoice(Guid invoiceId)
-        {
-            var result = await _invoicesUseCase.ReleaseSingleInvoiceUseCase(invoiceId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpPost("release-invoice-list")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ReleaseInvoiceList([FromBody] ReleaseInvoiceListRequest releaseInvoiceList)
-        {
-            var result = await _invoicesUseCase.ReleaseMultipleInvoicesUseCase(releaseInvoiceList.InvoiceIds).ConfigureAwait(false);
-            return Ok(result);
+            var res = await _invoiceStatusUseCase.GetAllInvoiceStatusesUseCase().ConfigureAwait(false);
+            return Ok(res);
         }
 
         [ProducesResponseType(typeof(IEnumerable<HeldInvoiceResponse>), StatusCodes.Status200OK)]

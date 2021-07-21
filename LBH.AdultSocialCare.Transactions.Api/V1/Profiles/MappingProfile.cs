@@ -54,7 +54,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<Invoice, InvoiceDomain>();
             CreateMap<InvoiceItem, InvoiceItemMinimalDomain>();
             CreateMap<InvoiceItemMinimalDomain, InvoiceItemMinimalResponse>();
-            CreateMap<InvoiceItemPaymentStatusDomain, InvoiceItemPaymentStatusResponse>();
+            CreateMap<InvoiceStatusDomain, InvoiceStatusResponse>();
             CreateMap<InvoiceDomain, InvoiceResponse>();
             CreateMap<DisputedInvoiceForCreationRequest, DisputedInvoiceForCreationDomain>();
             CreateMap<DisputedInvoiceForCreationDomain, DisputedInvoice>();
@@ -72,8 +72,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
                 .ForMember(ifc => ifc.InvoiceStatusId, opt => opt.MapFrom(b => (int) InvoiceStatusEnum.Draft))
                 .ForMember(ifc => ifc.DateInvoiced, opt => opt.MapFrom(b => DateTimeOffset.Now));
 
-            CreateMap<InvoiceItemForCreationRequest, InvoiceItemForCreationDomain>()
-                .ForMember(ifc => ifc.InvoiceItemPaymentStatusId, opt => opt.MapFrom(b => (int) InvoiceItemPaymentStatusEnum.NotStarted));
+            CreateMap<InvoiceItemForCreationRequest, InvoiceItemForCreationDomain>();
+            CreateMap<HeldInvoiceDomain, HeldInvoiceResponse>();
 
             #endregion Invoices
 
@@ -84,6 +84,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<PayRunFlatDomain, PayRunFlatResponse>();
             CreateMap<ReleaseHeldInvoiceItemRequest, ReleaseHeldInvoiceItemDomain>();
             CreateMap<PayRunInsightsDomain, PayRunInsightsResponse>();
+            CreateMap<PayRunDateSummaryDomain, PayRunDateSummaryResponse>();
 
             #endregion Payruns
 

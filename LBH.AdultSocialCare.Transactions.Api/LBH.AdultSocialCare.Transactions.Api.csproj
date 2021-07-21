@@ -10,6 +10,12 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="V1\Infrastructure\Migrations\20210623105335_PayRunApprovalUpdates.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210623105335_PayRunApprovalUpdates.Designer.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210623153329_DisputedInvoiceHasPayRunItemId.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210623153329_DisputedInvoiceHasPayRunItemId.Designer.cs" />
+    </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="5.1.1" />
@@ -30,6 +36,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NpgsqlBulk.EFCore" Version="0.9.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />

@@ -8,6 +8,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.Bulk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,47 +27,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<InvoiceDomain>> GetInvoicesUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
-        {
-            // Get unique invoice ids
-            var invoiceIds = await _dbContext.InvoiceItems
-                .Where(ii =>
-                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
-                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
-                    ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId)).Select(ii => ii.InvoiceId)
-                .Distinct().ToListAsync().ConfigureAwait(false);
-
-            // Get the invoices and invoice items in payment status
-            var invoices = await _dbContext.Invoices.Where(ii => invoiceIds.Contains(ii.InvoiceId))
-                .Include(ii =>
-                    ii.InvoiceItems.Where(item => item.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId)))
-                .ToListAsync().ConfigureAwait(false);
-
-            return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
-        }
-
         public async Task<PagedList<InvoiceDomain>> GetInvoicesInPayRun(Guid payRunId, InvoiceListParameters parameters)
         {
             // Get unique invoice ids
             var invoiceIds = await _dbContext.PayRunItems
-                .Where(ii =>
-                    (parameters.DateFrom.Equals(null) || ii.InvoiceItem.Invoice.DateCreated >= parameters.DateFrom) &&
-                    (parameters.DateTo.Equals(null) || ii.InvoiceItem.Invoice.DateCreated <= parameters.DateTo) &&
+                .Where(pri =>
+                    (parameters.DateFrom.Equals(null) || pri.Invoice.DateCreated >= parameters.DateFrom) &&
+                    (parameters.DateTo.Equals(null) || pri.Invoice.DateCreated <= parameters.DateTo) &&
                     (parameters.SupplierId.Equals(null) ||
-                     ii.InvoiceItem.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
+                     pri.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
                     (parameters.PackageTypeId.Equals(null) ||
-                     ii.InvoiceItem.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
-                    (parameters.InvoiceItemPaymentStatusId.Equals(null) ||
-                     ii.InvoiceItem.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)) &&
-                    ii.PayRunId.Equals(payRunId)
+                     pri.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
+                    (parameters.InvoiceStatusId.Equals(null) ||
+                     pri.Invoice.InvoiceStatusId.Equals(parameters.InvoiceStatusId)) &&
+                    pri.PayRunId.Equals(payRunId)
                     && (parameters.SearchTerm == null || EF.Functions.Like(
-                        ii.InvoiceItem.Invoice.InvoiceNumber.ToLower(),
-                        $"%{parameters.SearchTerm.Trim().ToLower()}%"))).Select(ii => ii.InvoiceItem.InvoiceId)
+                        pri.Invoice.InvoiceNumber.ToLower(),
+                        $"%{parameters.SearchTerm.Trim().ToLower()}%"))).Select(pri => pri.InvoiceId)
                 .Distinct().ToListAsync().ConfigureAwait(false);
 
-            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId) && i.InvoiceItems.All(
-                    ii => parameters.InvoiceItemPaymentStatusId == null ||
-                          ii.InvoiceItemPaymentStatusId.Equals(parameters.InvoiceItemPaymentStatusId)))
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
                 .Include(ii =>
                     ii.InvoiceItems)
                 .OrderBy(i => i.SupplierId)
@@ -79,12 +59,22 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 parameters.PageSize);
         }
 
+        public async Task<IEnumerable<Invoice>> GetInvoicesFlatInPayRunAsync(Guid payRunId)
+        {
+            var invoices = await _dbContext.PayRunItems.Where(pri => pri.PayRunId.Equals(payRunId))
+                .Select(pri => pri.Invoice)
+                .Distinct()
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return invoices;
+        }
+
         public async Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments()
         {
-            var payRunsWithHeldInvoicesIds = await _dbContext.PayRunItems.Where(pr =>
-                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) ||
-                    pr.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held))
-                .Select(pr => pr.PayRunId)
+            var payRunsWithHeldInvoicesIds = await _dbContext.DisputedInvoices.Where(pr =>
+                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+                .Select(pr => pr.PayRunItem.PayRunId)
                 .Distinct()
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -101,11 +91,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .Select(pr => new HeldInvoiceDomain
                 {
                     PayRunId = pr.PayRunId,
-                    PayRunItemId = pr.PayRunId,
                     PayRunDate = pr.DateCreated,
                     Invoices = pr.PayRunItems.Where(pri =>
-                            pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) ||
-                            pri.InvoiceItem.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held))
+                            pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
                         .Select(pri => new InvoiceDomain
                         {
                             InvoiceId = pri.InvoiceId,
@@ -120,13 +108,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                             CreatorId = pri.Invoice.CreatorId,
                             UpdaterId = pri.Invoice.UpdaterId,
                             InvoiceItems = pri.Invoice.InvoiceItems.Where(ii =>
-                                ii.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) ||
-                                ii.InvoiceItemPaymentStatusId.Equals((int) InvoiceItemPaymentStatusEnum.Held)).Select(
+                                ii.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held)).Select(
                                 ii => new InvoiceItemMinimalDomain
                                 {
                                     InvoiceItemId = ii.InvoiceItemId,
                                     InvoiceId = ii.InvoiceId,
-                                    InvoiceItemPaymentStatusId = ii.InvoiceItemPaymentStatusId,
                                     ItemName = ii.ItemName,
                                     PricePerUnit = ii.PricePerUnit,
                                     Quantity = ii.Quantity,
@@ -138,9 +124,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                                     UpdaterId = ii.UpdaterId
                                 }),
                             DisputedInvoiceChat =
-                                pri.Invoice.DisputedInvoiceChat.Where(di =>
+                                pri.DisputedInvoice.DisputedInvoiceChats.Where(di =>
                                     di.DisputedInvoice.InvoiceId.Equals(pri.InvoiceId) &&
-                                    di.DisputedInvoice.InvoiceItemId.Equals(pri.InvoiceItemId)).Select(dic =>
+                                    di.DisputedInvoice.PayRunItemId.Equals(pri.PayRunItemId)).Select(dic =>
                                     new DisputedInvoiceChatDomain
                                     {
                                         DisputedInvoiceChatId = dic.DisputedInvoiceChatId,
@@ -168,52 +154,52 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             return _mapper.Map<IEnumerable<InvoiceDomain>>(invoiceItems);
         }
 
-        public async Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
-        {
-            var invoiceItems = await _dbContext.InvoiceItems.Where(ii =>
-                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
-                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
-                    ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
-                .ToListAsync().ConfigureAwait(false);
-
-            return _mapper.Map<IEnumerable<InvoiceItemMinimalDomain>>(invoiceItems);
-        }
-
-        public async Task<IEnumerable<PayRunItemsPaymentsByTypeDomain>> GetInvoiceItemsCountUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null,
+        public async Task<IEnumerable<PayRunItemsPaymentsByTypeDomain>> GetInvoicesCountUsingStatus(int invoiceStatusId, DateTimeOffset? fromDate = null,
             DateTimeOffset? toDate = null)
         {
             return await _dbContext.PayRunItems.Where(ii =>
                     (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
                     (toDate.Equals(null) || ii.DateCreated <= toDate) &&
-                    ii.InvoiceItem.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
+                    ii.Invoice.InvoiceStatusId.Equals(invoiceStatusId))
                 .GroupBy(pri => pri.PayRun.PayRunType.TypeName)
                 .Select(pri => new PayRunItemsPaymentsByTypeDomain { Name = pri.Key, Value = pri.Count() })
                 .ToListAsync()
                 .ConfigureAwait(false);
         }
 
-        public async Task<DateTimeOffset?> GetMinDateOfReleasedInvoiceItem(int itemPaymentStatusId)
+        public async Task<DateTimeOffset?> GetMinDateOfReleasedInvoice(int itemPaymentStatusId)
         {
-            var minDateItem = await _dbContext.InvoiceItems.Where(ii => ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
+            var minDateItem = await _dbContext.Invoices.Where(i => i.InvoiceStatusId.Equals(itemPaymentStatusId))
                 .OrderBy(ii => ii.DateCreated).FirstOrDefaultAsync().ConfigureAwait(false);
             return minDateItem?.DateCreated;
         }
 
-        public async Task<DateTimeOffset?> GetMaxDateOfReleasedInvoiceItem(int itemPaymentStatusId)
+        public async Task<DateTimeOffset?> GetMaxDateOfReleasedInvoice(int itemPaymentStatusId)
         {
-            var maxDateItem = await _dbContext.InvoiceItems.Where(ii => ii.InvoiceItemPaymentStatusId.Equals(itemPaymentStatusId))
+            var maxDateItem = await _dbContext.Invoices.Where(i => i.InvoiceStatusId.Equals(itemPaymentStatusId))
                 .OrderByDescending(ii => ii.DateCreated).FirstOrDefaultAsync().ConfigureAwait(false);
             return maxDateItem?.DateCreated;
         }
 
-        public async Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetInvoiceItemPaymentStatuses()
+        public async Task<IEnumerable<InvoiceStatusDomain>> GetAllInvoiceStatuses()
         {
-            return await _dbContext.InvoiceItemPaymentStatuses.Select(x => new InvoiceItemPaymentStatusDomain
+            return await _dbContext.InvoiceStatuses.Select(x => new InvoiceStatusDomain
             {
-                StatusId = x.StatusId,
+                StatusId = x.Id,
                 StatusName = x.StatusName,
                 DisplayName = x.DisplayName
             }).ToListAsync().ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<InvoiceStatusDomain>> GetInvoicePaymentStatuses()
+        {
+            return await _dbContext.InvoiceStatuses.Where(s => s.ApprovalStatus.Equals(true))
+                .Select(x => new InvoiceStatusDomain
+                {
+                    StatusId = x.Id,
+                    StatusName = x.StatusName,
+                    DisplayName = x.DisplayName
+                }).ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<InvoiceDomain> CreateInvoice(Invoice newInvoice)
@@ -250,6 +236,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             try
             {
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                // Change invoice status to held
+                await ChangeInvoiceStatus(newDisputedInvoice.InvoiceId, (int) InvoiceStatusEnum.Held)
+                    .ConfigureAwait(false);
 
                 return entry.Entity.ToDomain();
             }
@@ -290,33 +280,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             }
         }
 
-        public async Task<bool> ChangeInvoiceItemPaymentStatus(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId)
+        public async Task<bool> ChangeInvoiceListStatus(List<Guid> invoiceIds, int invoiceStatusId)
         {
-            var res = await _dbContext.PayRunItems
-                .Where(pr => pr.PayRunId.Equals(payRunId) && pr.InvoiceItemId.Equals(invoiceItemId))
-                .Select(pr => pr.InvoiceItem).SingleOrDefaultAsync().ConfigureAwait(false);
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId)).ToListAsync()
+                .ConfigureAwait(false);
 
-            if (res == null)
+            foreach (var invoice in invoices)
             {
-                throw new EntityNotFoundException(
-                    $"Invoice item with id {invoiceItemId} not found in pay run with id {payRunId}");
+                invoice.InvoiceStatusId = invoiceStatusId;
             }
-
-            res.InvoiceItemPaymentStatusId = invoiceItemPaymentStatusId;
 
             try
             {
-                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-
+                var uploader = new NpgsqlBulkUploader(_dbContext);
+                await uploader.UpdateAsync(invoices).ConfigureAwait(false);
                 return true;
             }
             catch (DbUpdateException dbUpdateException)
             {
-                throw new DbSaveFailedException($"Could not update invoice item payment status: {dbUpdateException.InnerException?.Message}");
+                throw new DbSaveFailedException($"Could not update invoice status: {dbUpdateException.InnerException?.Message}");
             }
             catch (Exception e)
             {
-                throw new DbSaveFailedException($"Could not update invoice item payment status: {e.InnerException?.Message}");
+                throw new DbSaveFailedException($"Could not update invoice status: {e.InnerException?.Message}");
             }
         }
 
@@ -328,6 +314,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 .ToListAsync().ConfigureAwait(false);
 
             return invoices.ToPendingInvoiceDomain();
+        }
+
+        public async Task<Invoice> CheckInvoiceExists(Guid invoiceId)
+        {
+            var invoice = await _dbContext.Invoices.Where(i => i.InvoiceId.Equals(invoiceId)).SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+            if (invoice == null)
+            {
+                throw new EntityNotFoundException($"Invoice with id {invoiceId} not found");
+            }
+
+            return invoice;
         }
     }
 }

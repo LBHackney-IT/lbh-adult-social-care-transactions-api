@@ -6,7 +6,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
     {
         public Guid InvoiceItemId { get; set; }
         public Guid InvoiceId { get; set; }
-        public int InvoiceItemPaymentStatusId { get; set; }
         public string ItemName { get; set; }
         public decimal PricePerUnit { get; set; }
         public int Quantity { get; set; }

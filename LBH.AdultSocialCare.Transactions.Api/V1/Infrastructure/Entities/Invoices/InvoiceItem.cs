@@ -10,7 +10,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid InvoiceItemId { get; set; }
         [Required] public Guid InvoiceId { get; set; }
-        [Required] public int InvoiceItemPaymentStatusId { get; set; }
         [Required] public string ItemName { get; set; }
         [Required] public decimal PricePerUnit { get; set; }
         [Required] public int Quantity { get; set; }
@@ -22,7 +21,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         public Guid? UpdaterId { get; set; }
 
         [ForeignKey((nameof(InvoiceId)))] public Invoice Invoice { get; set; }
-        [ForeignKey((nameof(InvoiceItemPaymentStatusId)))] public InvoiceItemPaymentStatus InvoiceItemPaymentStatus { get; set; }
         public virtual ICollection<PayRunItem> PayRunItems { get; set; }
     }
 }

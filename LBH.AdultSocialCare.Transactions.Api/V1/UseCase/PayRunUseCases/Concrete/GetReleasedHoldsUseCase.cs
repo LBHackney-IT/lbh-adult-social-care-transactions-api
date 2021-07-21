@@ -18,10 +18,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             _invoiceGateway = invoiceGateway;
         }
 
-        public async Task<IEnumerable<InvoiceItemMinimalResponse>> Execute(DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
+        public async Task<IEnumerable<InvoiceResponse>> Execute(DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
             var res = await _invoiceGateway
-                .GetInvoiceItemsUsingItemPaymentStatus((int) InvoiceItemPaymentStatusEnum.Released, fromDate, toDate)
+                .GetInvoiceListUsingInvoiceStatus((int) InvoiceStatusEnum.Released, fromDate, toDate)
                 .ConfigureAwait(false);
             return res?.ToResponse();
         }

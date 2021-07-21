@@ -15,6 +15,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
 
         Task<Guid> CreateDirectPaymentsReleaseHoldsPayRunUseCase();*/
 
-        Task<Guid> CreateNewPayRunUseCase(string payRunType);
+        Task<Guid> CreateNewPayRunUseCase(string payRunType, DateTimeOffset dateTo);
     }
 }

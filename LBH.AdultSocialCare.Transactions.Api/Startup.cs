@@ -40,6 +40,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.Utils;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
@@ -144,6 +145,8 @@ namespace LBH.AdultSocialCare.Transactions.Api
             // Add auto mapper
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddScoped<IIdentifierGenerator, GuidCombGenerator>();
+
             ConfigureLogging(services, Configuration);
 
             ConfigureDbContext(services);
@@ -237,7 +240,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetReleasedHoldsUseCase, GetReleasedHoldsUseCase>();
             services.AddScoped<IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase, GetUniqueInvoiceItemPaymentStatusInPayRunUseCase>();
             services.AddScoped<IGetSinglePayRunDetailsUseCase, GetSinglePayRunDetailsUseCase>();
-            services.AddScoped<IGetInvoiceItemPaymentStatusesUseCase, GetInvoiceItemPaymentStatusesUseCase>();
+            services.AddScoped<IInvoiceStatusUseCase, InvoiceStatusUseCase>();
             services.AddScoped<IChangePayRunStatusUseCase, ChangePayRunStatusUseCase>();
             services.AddScoped<IReleaseHeldPaymentsUseCase, ReleaseHeldPaymentsUseCase>();
             services.AddScoped<IGetPaymentDepartmentsUseCase, GetPaymentDepartmentsUseCase>();
