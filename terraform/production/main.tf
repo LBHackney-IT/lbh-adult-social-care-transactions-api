@@ -44,7 +44,7 @@ module "postgres_db_production" {
     source = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/postgres"
     environment_name = "production"
     vpc_id = data.aws_vpc.production_vpc.id
-    db_identifier = "soc-care-pack-trans-db"
+    db_identifier = "scp-transactions-db"
     db_name = "scp_trans_db"
     db_port  = 5829
     subnet_ids = data.aws_subnet_ids.production_private_subnets.ids
