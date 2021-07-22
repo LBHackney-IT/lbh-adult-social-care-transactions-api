@@ -7,6 +7,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Inter
 {
     public interface ICreateSupplierCreditNoteUseCase
     {
-        Task<long> CreateSupplierCreditNote(long billPaymentId);
+        Task CreateSupplierCreditNote(long billId);
     }
 }

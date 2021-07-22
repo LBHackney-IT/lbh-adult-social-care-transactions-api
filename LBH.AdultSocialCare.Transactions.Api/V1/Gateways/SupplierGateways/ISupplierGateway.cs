@@ -2,6 +2,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways
 {
@@ -9,7 +10,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways
     {
         Task<long> CreateCreditNotes(SupplierCreditNote supplierCreditNote);
 
-        Task<IEnumerable<SupplierDomain>> GetSuppliers(string searchTerm);
+        Task<PagedList<SupplierDomain>> GetSuppliers(SupplierListParameters parameters);
 
         Task<IEnumerable<SupplierTaxRateDomain>> GetSupplierTaxRates(long supplierId);
 

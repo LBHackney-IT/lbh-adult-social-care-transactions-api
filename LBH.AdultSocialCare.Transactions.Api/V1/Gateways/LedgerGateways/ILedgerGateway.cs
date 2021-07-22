@@ -11,6 +11,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.LedgerGateways
     {
         Task<LedgerDomain> GetLedger(long ledgerId);
 
-        Task<long> CreateLedger(Ledger ledgerEntity);
+        Task<bool> CreateLedger(Ledger ledgerEntity);
     }
 }

@@ -17,6 +17,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppli
         public decimal AmountRemaining { get; set; }
         public long BillPaymentPaidTo { get; set; }
         public DateTimeOffset DatePaidForward { get; set; }
+
         [ForeignKey(nameof(BillPaymentFromId))]
         public BillPayment BillPayment { get; set; }
     }

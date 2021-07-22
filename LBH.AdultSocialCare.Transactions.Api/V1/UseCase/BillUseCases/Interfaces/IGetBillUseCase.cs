@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces
 {
     public interface IGetBillUseCase
     {
-        Task<IEnumerable<BillResponse>> GetBill(Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
+        Task<PagedBillSummaryResponse> GetBill(BillSummaryListParameters parameters);
     }
 }

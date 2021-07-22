@@ -14,38 +14,40 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Concr
     {
         private readonly ISupplierGateway _supplierGateway;
         private readonly IBillPaymentGateway _billPaymentGateway;
+        private readonly IBillGateway _billGateway;
 
-        public CreateSupplierCreditNoteUseCase(ISupplierGateway supplierGateway, IBillPaymentGateway billPaymentGateway)
+        public CreateSupplierCreditNoteUseCase(ISupplierGateway supplierGateway,
+            IBillPaymentGateway billPaymentGateway,
+            IBillGateway billGateway)
         {
             _supplierGateway = supplierGateway;
             _billPaymentGateway = billPaymentGateway;
+            _billGateway = billGateway;
         }
 
-        public async Task<long> CreateSupplierCreditNote(long billPaymentId)
+        public async Task CreateSupplierCreditNote(long billId)
         {
-            var billPayments = _billPaymentGateway.GetBillPayment(billPaymentId);
+            var bill = await _billGateway.GetBillAsync(billId).ConfigureAwait(false);
+            var billPayment = await _billPaymentGateway.GetBillPaymentByBillId(billId).ConfigureAwait(false);
             decimal amountOverPaid = 0;
             decimal amountRemaining = 0;
+            var billBalance = bill.TotalBilled - billPayment.PaidAmount;
 
-            switch (billPayments.Result.RemainingBalance < 0)
-            {
-                case true:
-                    amountOverPaid = billPayments.Result.RemainingBalance * -1;
-                    break;
-                default:
-                    amountRemaining = billPayments.Result.RemainingBalance;
-                    break;
-            }
+            if (billBalance > 0)
+                amountRemaining = billBalance;
+            else if (billBalance < 0) amountOverPaid = billBalance * -1;
+            else
+                return;
 
             var newSupplierCreditNotesCreationDomain = new SupplierCreditNotesCreationDomain
             {
                 AmountOverPaid = amountOverPaid,
                 AmountRemaining = amountRemaining,
-                BillPaymentFromId = billPaymentId,
+                BillPaymentFromId = billPayment.BillPaymentId,
                 DatePaidForward = DateTimeOffset.Now
             };
 
-            return await _supplierGateway.CreateCreditNotes(newSupplierCreditNotesCreationDomain.ToDb()).ConfigureAwait(false);
+            await _supplierGateway.CreateCreditNotes(newSupplierCreditNotesCreationDomain.ToDb()).ConfigureAwait(false);
         }
     }
 }
