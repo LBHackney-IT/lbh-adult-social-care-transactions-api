@@ -79,6 +79,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<SupplierTaxRateDomain>>(supplierTaxRatesEntities);
         }
 
+        public static SupplierTaxRateDomain ToDomain(this SupplierTaxRate supplierTaxRatesEntity)
+        {
+            return _mapper.Map<SupplierTaxRateDomain>(supplierTaxRatesEntity);
+        }
+
         #endregion Supplier
 
         #region Invoices
@@ -86,6 +91,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static IEnumerable<InvoiceDomain> ToInvoiceDomain(this IEnumerable<Invoice> invoices)
         {
             return _mapper.Map<IEnumerable<InvoiceDomain>>(invoices);
+        }
+
+        public static InvoiceDomain ToInvoiceDomain(this Invoice invoice)
+        {
+            return _mapper.Map<InvoiceDomain>(invoice);
         }
 
         public static DisputedInvoiceFlatDomain ToDomain(this DisputedInvoice disputedInvoice)

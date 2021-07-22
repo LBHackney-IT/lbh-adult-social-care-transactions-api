@@ -51,5 +51,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways
                 .ToListAsync().ConfigureAwait(false);
             return supplierTaxRates?.ToDomain();
         }
+
+        public async Task<SupplierTaxRateDomain> GetLatestSupplierTaxRate(long supplierId)
+        {
+            var supplierTaxRate = await _dbContext.SupplierTaxRates
+                .Where(s => s.SupplierId.Equals(supplierId))
+                .OrderByDescending(s => s.TaxRateId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+            return supplierTaxRate?.ToDomain();
+        }
+
+        public async Task<Supplier> CheckSupplierExists(long supplierId)
+        {
+            var supplier = await _dbContext.Suppliers.Where(pr => pr.SupplierId.Equals(supplierId)).SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            // if not found return
+            if (supplier == null)
+            {
+                throw new EntityNotFoundException($"Supplier with id {supplierId} not found");
+            }
+
+            return supplier;
+        }
     }
 }

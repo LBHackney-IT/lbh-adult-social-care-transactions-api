@@ -4,6 +4,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Res
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
@@ -36,6 +37,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IReleaseHeldPaymentsUseCase _releaseHeldPaymentsUseCase;
         private readonly IInvoicesUseCase _invoicesUseCase;
         private readonly IPayRunUseCase _payRunUseCase;
+        private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
@@ -43,7 +45,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
             IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase,
             IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase, IInvoicesUseCase invoicesUseCase,
-            IPayRunUseCase payRunUseCase)
+            IPayRunUseCase payRunUseCase, IInvoiceStatusUseCase invoiceStatusUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -57,6 +59,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _releaseHeldPaymentsUseCase = releaseHeldPaymentsUseCase;
             _invoicesUseCase = invoicesUseCase;
             _payRunUseCase = payRunUseCase;
+            _invoiceStatusUseCase = invoiceStatusUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -64,9 +67,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(string), StatusCodes.Status422UnprocessableEntity)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Guid>> CreateNewPayRun(string payRunType)
+        public async Task<ActionResult<Guid>> CreateNewPayRun(string payRunType, [FromBody] PayRunForCreationRequest payRunForCreationRequest)
         {
-            var result = await _createPayRunUseCase.CreateNewPayRunUseCase(payRunType).ConfigureAwait(false);
+            var result = await _createPayRunUseCase.CreateNewPayRunUseCase(payRunType, payRunForCreationRequest.DateTo).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpGet("date-of-last-pay-run/{payRunType}")]
+        [ProducesResponseType(typeof(PayRunDateSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<PayRunDateSummaryResponse>> GetDateSummaryOfLastPayRun(string payRunType)
+        {
+            var result = await _payRunUseCase.GetDateOfLastPayRunUseCase(payRunType).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -104,17 +117,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(res);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<InvoiceItemMinimalResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<InvoiceResponse>), StatusCodes.Status200OK)]
         [HttpGet("released-holds")]
-        public async Task<ActionResult<IEnumerable<InvoiceItemMinimalResponse>>> GetReleasedHolds([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
+        public async Task<ActionResult<IEnumerable<InvoiceResponse>>> GetReleasedHolds([FromQuery] DateTimeOffset? fromDate, [FromQuery] DateTimeOffset? toDate)
         {
             var res = await _getReleasedHoldsUseCase.Execute(fromDate, toDate).ConfigureAwait(false);
             return Ok(res);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<InvoiceItemPaymentStatusResponse>), StatusCodes.Status200OK)]
+        [HttpPost("{payRunId}/pay-run-items/{payRunItemId}/hold-payment")]
+        [ProducesResponseType(typeof(DisputedInvoiceFlatResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<DisputedInvoiceFlatResponse>> HoldInvoicePayment(Guid payRunId, Guid payRunItemId, [FromBody] DisputedInvoiceForCreationRequest disputedInvoiceForCreationRequest)
+        {
+            var result = await _invoicesUseCase
+                .HoldInvoicePaymentUseCase(payRunId, payRunItemId, disputedInvoiceForCreationRequest.ToDomain())
+                .ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<InvoiceStatusResponse>), StatusCodes.Status200OK)]
         [HttpGet("{payRunId}/unique-payment-statuses")]
-        public async Task<ActionResult<IEnumerable<InvoiceItemPaymentStatusResponse>>> GetUniqueInvoiceItemPaymentStatusInPayRun(Guid payRunId)
+        public async Task<ActionResult<IEnumerable<InvoiceStatusResponse>>> GetUniqueInvoiceItemPaymentStatusInPayRun(Guid payRunId)
         {
             var res = await _getUniqueInvoiceItemPaymentStatusInPayRunUseCase.Execute(payRunId).ConfigureAwait(false);
             return Ok(res);
@@ -140,7 +166,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         [HttpGet("{payRunId}/status/approve-pay-run")]
         public async Task<ActionResult<bool>> ApprovePayRun(Guid payRunId)
         {
-            var res = await _changePayRunStatusUseCase.ApprovePayRun(payRunId).ConfigureAwait(false);
+            var res = await _payRunUseCase.ApprovePayRunForPaymentUseCase(payRunId).ConfigureAwait(false);
             return Ok(res);
         }
 
@@ -153,7 +179,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         }
 
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        [HttpPut("release-held-invoice-items")]
+        [HttpPut("release-held-invoice")]
+        public async Task<ActionResult<bool>> ReleaseSingleHeldInvoice([FromBody] ReleaseHeldInvoiceItemRequest releaseHeldInvoiceItemRequest)
+        {
+            var res = await _releaseHeldPaymentsUseCase
+                .ReleaseHeldInvoiceItemPayment(releaseHeldInvoiceItemRequest.ToDomain()).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpPut("release-held-invoice-list")]
         public async Task<ActionResult<bool>> ReleaseHeldInvoiceItemPayment([FromBody] IEnumerable<ReleaseHeldInvoiceItemRequest> releaseHeldInvoiceItemRequests)
         {
             var res = await _releaseHeldPaymentsUseCase
@@ -161,21 +196,29 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(res);
         }
 
-        [HttpPost("{payRunId}/change-invoice-item-payment-status")]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ChangeInvoiceItemPaymentStatus(Guid payRunId, [FromBody] ChangeInvoiceItemPaymentStatusRequest changeInvoiceItemPaymentStatusRequest)
-        {
-            var result = await _invoicesUseCase.ChangeInvoiceItemPaymentStatusUseCase(payRunId,
-                changeInvoiceItemPaymentStatusRequest.InvoiceItemId,
-                changeInvoiceItemPaymentStatusRequest.InvoiceItemPaymentStatusId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
         [HttpGet("{payRunId}/summary-insights")]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<bool>> GetSinglePayRunSummaryInsights(Guid payRunId)
         {
             var result = await _payRunUseCase.GetSinglePayRunInsightsUseCase(payRunId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        // Accept invoice in pay run
+        [HttpPut("{payRunId}/invoices/{invoiceId}/accept-invoice")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> ApproveInvoice(Guid payRunId, Guid invoiceId)
+        {
+            var result = await _invoiceStatusUseCase.AcceptInvoiceUseCase(payRunId, invoiceId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        // Delete Pay Run
+        [HttpDelete("{payRunId}")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> DeleteDraftPayRun(Guid payRunId)
+        {
+            var result = await _payRunUseCase.DeleteDraftPayRunUseCase(payRunId).ConfigureAwait(false);
             return Ok(result);
         }
     }

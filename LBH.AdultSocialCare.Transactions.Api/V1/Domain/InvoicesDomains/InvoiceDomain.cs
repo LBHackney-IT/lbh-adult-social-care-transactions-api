@@ -17,5 +17,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
         public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
         public IEnumerable<InvoiceItemMinimalDomain> InvoiceItems { get; set; }
+        public IEnumerable<DisputedInvoiceChatDomain> DisputedInvoiceChat { get; set; }
     }
 }

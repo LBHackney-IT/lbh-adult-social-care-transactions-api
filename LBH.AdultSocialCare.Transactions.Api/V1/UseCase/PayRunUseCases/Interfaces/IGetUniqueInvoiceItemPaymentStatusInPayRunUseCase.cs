@@ -7,6 +7,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
 {
     public interface IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase
     {
-        Task<IEnumerable<InvoiceItemPaymentStatusResponse>> Execute(Guid payRunId);
+        Task<IEnumerable<InvoiceStatusResponse>> Execute(Guid payRunId);
     }
 }

@@ -12,6 +12,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains
         public DateTimeOffset DateTo { get; set; }
         public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
+        public IEnumerable<InvoiceDomain> Invoices { get; set; }
         public IEnumerable<InvoiceItemMinimalDomain> InvoiceItems { get; set; }
     }
 }

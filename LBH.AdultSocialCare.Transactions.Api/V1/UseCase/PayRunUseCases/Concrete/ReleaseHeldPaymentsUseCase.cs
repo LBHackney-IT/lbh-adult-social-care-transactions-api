@@ -17,7 +17,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
 
         public async Task<bool> ReleaseHeldInvoiceItemPayment(ReleaseHeldInvoiceItemDomain releaseHeldInvoiceItemDomain)
         {
-            return await _payRunGateway.ReleaseHeldInvoiceItemPayment(releaseHeldInvoiceItemDomain.PayRunId,
+            return await _payRunGateway.ReleaseHeldInvoicePayment(releaseHeldInvoiceItemDomain.PayRunId,
                     releaseHeldInvoiceItemDomain.InvoiceId, releaseHeldInvoiceItemDomain.InvoiceItemId)
                 .ConfigureAwait(false);
         }

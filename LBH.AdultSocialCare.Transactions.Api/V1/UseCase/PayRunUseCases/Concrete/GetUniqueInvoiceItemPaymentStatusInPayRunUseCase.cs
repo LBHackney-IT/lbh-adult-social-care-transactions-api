@@ -17,7 +17,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             _payRunGateway = payRunGateway;
         }
 
-        public async Task<IEnumerable<InvoiceItemPaymentStatusResponse>> Execute(Guid payRunId)
+        public async Task<IEnumerable<InvoiceStatusResponse>> Execute(Guid payRunId)
         {
             var res = await _payRunGateway.GetUniqueInvoiceItemPaymentStatusesInPayRun(payRunId).ConfigureAwait(false);
             return res?.ToResponse();

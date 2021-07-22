@@ -10,26 +10,34 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
     public interface IInvoiceGateway
     {
-        Task<IEnumerable<InvoiceDomain>> GetInvoicesUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
-
         Task<PagedList<InvoiceDomain>> GetInvoicesInPayRun(Guid payRunId, InvoiceListParameters parameters);
 
-        Task<IEnumerable<InvoiceItemMinimalDomain>> GetInvoiceItemsUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
+        Task<IEnumerable<Invoice>> GetInvoicesFlatInPayRunAsync(Guid payRunId);
 
-        Task<IEnumerable<PayRunItemsPaymentsByTypeDomain>> GetInvoiceItemsCountUsingItemPaymentStatus(int itemPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
+        Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments();
 
-        Task<DateTimeOffset?> GetMinDateOfReleasedInvoiceItem(int itemPaymentStatusId);
+        Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingInvoiceStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
 
-        Task<DateTimeOffset?> GetMaxDateOfReleasedInvoiceItem(int itemPaymentStatusId);
+        Task<IEnumerable<PayRunItemsPaymentsByTypeDomain>> GetInvoicesCountUsingStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
 
-        Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetInvoiceItemPaymentStatuses();
+        Task<DateTimeOffset?> GetMinDateOfReleasedInvoice(int itemPaymentStatusId);
+
+        Task<DateTimeOffset?> GetMaxDateOfReleasedInvoice(int itemPaymentStatusId);
+
+        Task<IEnumerable<InvoiceStatusDomain>> GetAllInvoiceStatuses();
+
+        Task<IEnumerable<InvoiceStatusDomain>> GetInvoicePaymentStatuses();
+
+        Task<InvoiceDomain> CreateInvoice(Invoice newInvoice);
 
         Task<DisputedInvoiceFlatDomain> CreateDisputedInvoice(DisputedInvoice newDisputedInvoice);
 
         Task<bool> ChangeInvoiceStatus(Guid invoiceId, int invoiceStatusId);
 
-        Task<bool> ChangeInvoiceItemPaymentStatus(Guid payRunId, Guid invoiceItemId, int invoiceItemPaymentStatusId);
+        Task<bool> ChangeInvoiceListStatus(List<Guid> invoiceIds, int invoiceStatusId);
 
         Task<IEnumerable<PendingInvoicesDomain>> GetUserPendingInvoices(Guid serviceUserId);
+
+        Task<Invoice> CheckInvoiceExists(Guid invoiceId);
     }
 }

@@ -6,7 +6,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensio
     {
         public long? SupplierId { get; set; }
         public int? PackageTypeId { get; set; }
-        public int? InvoiceItemPaymentStatusId { get; set; }
+        public int? InvoiceStatusId { get; set; }
         public DateTimeOffset? DateFrom { get; set; }
         public DateTimeOffset? DateTo { get; set; }
         public string SearchTerm { get; set; }

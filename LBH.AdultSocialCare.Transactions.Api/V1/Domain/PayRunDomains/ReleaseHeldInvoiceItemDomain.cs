@@ -6,6 +6,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains
     {
         public Guid PayRunId { get; set; }
         public Guid InvoiceId { get; set; }
-        public Guid InvoiceItemId { get; set; }
+        public Guid? InvoiceItemId { get; set; }
     }
 }

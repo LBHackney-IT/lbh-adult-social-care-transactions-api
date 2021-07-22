@@ -14,9 +14,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
     {
         Task<DateTimeOffset> GetDateOfLastPayRun(int payRunTypeId, int? payRunSubTypeId = null);
 
+        Task<PayRunDateSummaryDomain> GetDateOfLastPayRunSummary(int payRunTypeId, int? payRunSubTypeId = null);
+
         Task<PagedList<PayRunSummaryDomain>> GetPayRunSummaryList(PayRunSummaryListParameters parameters);
 
         Task<PayRunFlatDomain> GetPayRunFlat(Guid payRunId);
+
+        Task<PayRunItem> CheckPayRunItemExists(Guid payRunId, Guid payRunItemId);
+
+        Task<PayRun> CheckPayRunExists(Guid payRunId);
+
+        Task<InvoiceDomain> GetSingleInvoiceInPayRun(Guid payRunId, Guid invoiceId);
+
+        Task<bool> CheckAllInvoicesInPayRunInStatusList(Guid payRunId, List<int> invoiceStatusIds);
 
         Task<Guid> CreateNewPayRun(PayRun payRunForCreation);
 
@@ -24,12 +34,18 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<IEnumerable<PackageTypeDomain>> GetUniquePackageTypesInPayRun(Guid payRunId);
 
-        Task<IEnumerable<InvoiceItemPaymentStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId);
+        Task<IEnumerable<InvoiceStatusDomain>> GetUniqueInvoiceItemPaymentStatusesInPayRun(Guid payRunId);
 
         Task<bool> ChangePayRunStatus(Guid payRunId, int newPayRunStatusId);
 
-        Task<bool> ReleaseHeldInvoiceItemPayment(Guid payRunId, Guid invoiceId, Guid invoiceItemId);
+        Task<bool> ReleaseHeldInvoicePayment(Guid payRunId, Guid invoiceId, Guid? invoiceItemId);
 
         Task<PayRunInsightsDomain> GetPayRunInsights(Guid payRunId);
+
+        Task<IEnumerable<InvoiceDomain>> GetAllInvoicesInPayRunUsingInvoiceStatus(Guid payRunId, int invoiceStatusId);
+
+        Task<bool> ApprovePayRunForPayment(Guid payRunId);
+
+        Task<bool> DeleteDraftPayRun(Guid payRunId);
     }
 }
