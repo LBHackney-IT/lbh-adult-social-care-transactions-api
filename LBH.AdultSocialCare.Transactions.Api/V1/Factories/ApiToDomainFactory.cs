@@ -7,6 +7,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using System.Collections.Generic;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using System.Net;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
@@ -70,5 +72,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             var res = _mapper.Map<BillItemCreationDomain>(billItemCreationRequest);
             return res;
         }
+
+        #region SupplierReturn
+
+        public static SupplierReturnItemDisputeConversationCreationDomain ToDomain(this SupplierReturnItemDisputeConversationCreationRequest supplierReturnItemDisputeConversationCreationRequest)
+        {
+            return _mapper.Map<SupplierReturnItemDisputeConversationCreationDomain>(supplierReturnItemDisputeConversationCreationRequest);
+        }
+
+        #endregion
     }
 }

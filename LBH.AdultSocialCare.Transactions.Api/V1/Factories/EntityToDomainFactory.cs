@@ -7,7 +7,9 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -113,5 +115,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion
+
+        #region SupplierReturn
+
+        public static IEnumerable<SupplierReturnItemDisputeConversationDomain> ToDomain
+            (this List<SupplierReturnItemDisputeConversation> supplierReturnItemDisputeConversations)
+        {
+            return _mapper.Map<IEnumerable<SupplierReturnItemDisputeConversationDomain>>(supplierReturnItemDisputeConversations);
+        }
+
+        public static SupplierReturnDomain ToDomain(this SupplierReturn supplierReturn)
+        {
+            return _mapper.Map<SupplierReturnDomain>(supplierReturn);
+        }
+
+        #endregion SupplierReturn
     }
 }

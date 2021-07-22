@@ -40,6 +40,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.LedgerGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.Utils;
 
 namespace LBH.AdultSocialCare.Transactions.Api
@@ -227,6 +231,18 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IDepartmentGateway, DepartmentGateway>();
 
             #endregion Departments
+
+            #region Ledger
+
+            services.AddScoped<ILedgerGateway, LedgerGateway>();
+
+            #endregion
+
+            #region SupplierReturn
+
+            services.AddScoped<ISupplierReturnGateway, SupplierReturnGateway>();
+
+            #endregion SupplierReturn
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -251,6 +267,15 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<ICreateSupplierCreditNoteUseCase, CreateSupplierCreditNoteUseCase>();
             services.AddScoped<IGetSupplierTaxRatesUseCase, GetSupplierTaxRatesUseCase>();
             services.AddScoped<IGetBillUseCase, GetBillUseCase>();
+            services.AddScoped<IPaySupplierBillUseCase, PaySupplierBillUseCase>();
+            services.AddScoped<IChangeBillStatusUseCase, ChangeBillStatusUseCase>();
+            services.AddScoped<IAcceptAllSupplierReturnPackageItemsUseCase, AcceptAllSupplierReturnPackageItemsUseCase>();
+            services.AddScoped<IChangeSupplierReturnPackageValuesUseCase, ChangeSupplierReturnPackageValuesUseCase>();
+            services.AddScoped<ICreateDisputeItemChatUseCase, CreateDisputeItemChatUseCase>();
+            services.AddScoped<IDisputeAllSupplierReturnPackageItemsUseCase, DisputeAllSupplierReturnPackageItemsUseCase>();
+            services.AddScoped<IGetDisputeItemChatUseCase, GetDisputeItemChatUseCase>();
+            services.AddScoped<IGetSingleSupplierReturnInsightsUseCase, GetSingleSupplierReturnInsightsUseCase>();
+            services.AddScoped<IMarkDisputeItemChatUseCase, MarkDisputeItemChatUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
