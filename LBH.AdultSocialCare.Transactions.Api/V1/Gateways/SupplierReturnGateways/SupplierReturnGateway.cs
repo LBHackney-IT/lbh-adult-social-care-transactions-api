@@ -177,7 +177,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateway
 
             var packageCount = await _dbContext.SupplierReturns
                 .Where(sr => sr.SuppliersReturnsId.Equals(suppliersReturnsId))
-                .Select(sr => new {sr.PackageId})
+                .Select(sr => new { sr.PackageId })
                 .CountAsync()
                 .ConfigureAwait(false);
 
@@ -188,7 +188,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateway
 
             var supplierReturnIds = await _dbContext.SupplierReturns
                 .Where(sr => sr.SuppliersReturnsId.Equals(suppliersReturnsId))
-                .Select(sr => sr.SupplierReturnId )
+                .Select(sr => sr.SupplierReturnId)
                 .ToListAsync()
                 .ConfigureAwait(false);
 
@@ -219,9 +219,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateway
                 Accepted = acceptedCount,
                 Returned = returnedCount,
                 InDispute = inDisputeCount,
-                TotalPaid = 0 
+                TotalPaid = 0
             };
-            
+
             return supplierReturnInsights;
         }
     }

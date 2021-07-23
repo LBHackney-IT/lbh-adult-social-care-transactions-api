@@ -48,7 +48,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
                     bill.BillPaymentStatusId = (int) BillStatusEnum.PaidId;
                 else
                     bill.BillPaymentStatusId = (int) BillStatusEnum.PaidPartiallyId;
-            else if(bill.BillDueDate < DateTimeOffset.Now) bill.BillPaymentStatusId = (int) BillStatusEnum.OverdueId;
+            else if (bill.BillDueDate < DateTimeOffset.Now) bill.BillPaymentStatusId = (int) BillStatusEnum.OverdueId;
 
             try
             {

@@ -21,8 +21,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases
 
         public async Task<SupplierReturnInsightsResponse> GetSingleSupplierReturnInsights(Guid suppliersReturnsId)
         {
-           var result = await _supplierReturnGateway.GetSingleSupplierReturnInsights(suppliersReturnsId).ConfigureAwait(false);
-           return result.ToResponse();
+            var result = await _supplierReturnGateway.GetSingleSupplierReturnInsights(suppliersReturnsId).ConfigureAwait(false);
+            return result.ToResponse();
         }
     }
 }

@@ -53,7 +53,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
         public DbSet<SupplierReturnItem> SupplierReturnItems { get; set; }
         public DbSet<SupplierReturnItemStatus> SupplierReturnItemStatuses { get; set; }
         public DbSet<SupplierReturnItemDisputeConversation> SupplierReturnItemDisputeConversations { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             #region Model Config
