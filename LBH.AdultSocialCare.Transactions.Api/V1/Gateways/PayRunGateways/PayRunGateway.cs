@@ -531,6 +531,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
+        public Task<bool> CreatePayRunHeldChat(Guid payRunId, Guid packageId, string message)
+        {
+            return Task.FromResult(true);
+        }
+
         private async Task<bool> RunPayRunInvoicePayments(Guid payRunId)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
