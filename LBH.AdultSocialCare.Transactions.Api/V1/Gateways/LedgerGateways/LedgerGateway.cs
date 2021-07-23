@@ -34,13 +34,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.LedgerGateways
             return ledgerEntity?.ToDomain();
         }
 
-        public async Task<long> CreateLedger(Ledger ledgerEntity)
+        public async Task<bool> CreateLedger(Ledger ledgerEntity)
         {
             var entry = await _dbContext.Ledgers.AddAsync(ledgerEntity).ConfigureAwait(false);
             try
             {
-                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-                return entry.Entity.LedgerId;
+                bool isSuccess = await _dbContext.SaveChangesAsync().ConfigureAwait(false) == 1;
+                return isSuccess;
             }
             catch (Exception)
             {

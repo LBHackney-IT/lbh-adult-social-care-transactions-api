@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
 {
@@ -15,6 +16,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
 
         Task<IEnumerable<BillDomain>> GetBillList();
 
-        Task<IEnumerable<BillDomain>> GetBill(Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
+        Task<PagedList<BillSummaryDomain>> GetBill(BillSummaryListParameters parameters);
     }
 }

@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
@@ -23,6 +25,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
 
         public async Task<long> CreateBillAsync(Bill bill)
         {
+            bill.BillPaymentStatusId = (int) BillStatusEnum.OutstandingId;
+            if (bill.BillDueDate.Date < DateTimeOffset.Now)
+            {
+                bill.BillPaymentStatusId = (int) BillStatusEnum.OverdueId;
+            }
             var entry = await _databaseContext.Bills.AddAsync(bill)
                 .ConfigureAwait(false);
             try
@@ -65,19 +72,39 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
             return bill?.ToDomain();
         }
 
-        public async Task<IEnumerable<BillDomain>> GetBill(Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null,
-            DateTimeOffset? toDate = null)
+        public async Task<PagedList<BillSummaryDomain>> GetBill(BillSummaryListParameters parameters)
         {
-            var bill = await _databaseContext.Bills
-                .Where(b =>
-                    (fromDate.Equals(null) || b.DateCreated >= fromDate) &&
-                    (toDate.Equals(null) || b.DateCreated <= toDate) &&
-                    (packageId.Equals(null) || b.PackageId == packageId) &&
-                    (supplierId.Equals(null) || b.SupplierId == supplierId) &&
-                    (billPaymentStatusId.Equals(null) || b.BillPaymentStatusId == billPaymentStatusId))
+            var billList = await _databaseContext.Bills
+                .FilterBillSummaryList(parameters.PackageId, parameters.SupplierId, parameters.BillPaymentStatusId,
+                    parameters.FromDate, parameters.ToDate)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .Include(b => b.Supplier)
+                .Include(b => b.BillStatus)
+                .Select(bs => new BillSummaryDomain()
+                {
+                    BillId = bs.BillId,
+                    SupplierRef = bs.SupplierRef,
+                    PackageId = bs.PackageId,
+                    SupplierName = bs.Supplier.SupplierName,
+                    ServiceFromDate = bs.ServiceFromDate,
+                    ServiceToDate = bs.ServiceToDate,
+                    DateBilled = bs.DateBilled,
+                    BillDueDate = bs.BillDueDate,
+                    TotalBilled = bs.TotalBilled,
+                    PaidAmount = _databaseContext.BillPayments
+                        .Where(bp => bp.BillId.Equals(bs.BillId))
+                        .Sum(x => x.PaidAmount),
+                    StatusName = bs.BillStatus.StatusName
+                })
                 .ToListAsync().ConfigureAwait(false);
 
-            return bill?.ToDomain();
+            var billCount = await _databaseContext.Bills
+                .FilterBillSummaryList(parameters.PackageId, parameters.SupplierId, parameters.BillPaymentStatusId,
+                    parameters.FromDate, parameters.ToDate)
+                .CountAsync().ConfigureAwait(false);
+
+            return PagedList<BillSummaryDomain>.ToPagedList(billList, billCount, parameters.PageNumber, parameters.PageSize);
         }
     }
 }

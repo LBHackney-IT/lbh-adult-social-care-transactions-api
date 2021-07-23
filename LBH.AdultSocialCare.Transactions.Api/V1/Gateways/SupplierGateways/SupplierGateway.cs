@@ -7,6 +7,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways
@@ -34,13 +35,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways
             }
         }
 
-        public async Task<IEnumerable<SupplierDomain>> GetSuppliers(string searchTerm)
+        public async Task<PagedList<SupplierDomain>> GetSuppliers(SupplierListParameters parameters)
         {
-            var res = await _dbContext.Suppliers
+            var supplierList = await _dbContext.Suppliers
                     .Where(pr =>
-                       searchTerm != null ? pr.SupplierName.ToLower().Contains(searchTerm.ToLower()) : pr.Equals(pr))
-                .ToListAsync().ConfigureAwait(false);
-            return res?.ToDomain();
+                        parameters.SearchTerm != null ? pr.SupplierName.ToLower().Contains(parameters.SearchTerm.ToLower()) : pr.Equals(pr))
+                    .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                    .Take(parameters.PageSize)
+                    .ToListAsync().ConfigureAwait(false);
+
+            var supplierCount = await _dbContext.Suppliers
+                .Where(pr =>
+                    parameters.SearchTerm != null ? pr.SupplierName.ToLower().Contains(parameters.SearchTerm.ToLower()) : pr.Equals(pr))
+                .CountAsync().ConfigureAwait(false);
+
+            return PagedList<SupplierDomain>.ToPagedList(supplierList.ToDomain(), supplierCount, parameters.PageNumber, parameters.PageSize);
         }
 
         public async Task<IEnumerable<SupplierTaxRateDomain>> GetSupplierTaxRates(long supplierId)

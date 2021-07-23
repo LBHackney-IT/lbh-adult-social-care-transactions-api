@@ -11,6 +11,14 @@
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="V1\UseCase\SupplierReturnUseCases\Concrete\CreateDisputeChatUseCase.cs" />
+      <Compile Remove="V1\UseCase\SupplierReturnUseCases\Concrete\GetDisputeChatUseCase.cs" />
+      <Compile Remove="V1\UseCase\SupplierReturnUseCases\Concrete\MarkDisputeChatUseCase.cs" />
+      <Compile Remove="V1\UseCase\SupplierReturnUseCases\Interfaces\ICreateDisputeChatUseCase.cs" />
+      <Compile Remove="V1\UseCase\SupplierReturnUseCases\Interfaces\IGetDisputeChatUseCase.cs" />
+      <Compile Remove="V1\UseCase\SupplierReturnUseCases\Interfaces\IMarkDisputeChatUseCase.cs" />
+    </ItemGroup>
+    <ItemGroup>
       <Compile Remove="V1\Infrastructure\Migrations\20210623105335_PayRunApprovalUpdates.cs" />
       <Compile Remove="V1\Infrastructure\Migrations\20210623105335_PayRunApprovalUpdates.Designer.cs" />
       <Compile Remove="V1\Infrastructure\Migrations\20210623153329_DisputedInvoiceHasPayRunItemId.cs" />

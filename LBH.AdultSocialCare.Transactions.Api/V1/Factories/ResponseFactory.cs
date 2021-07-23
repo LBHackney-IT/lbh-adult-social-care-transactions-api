@@ -16,7 +16,9 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using System.Collections.Generic;
 using System.Linq;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -56,6 +58,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static IEnumerable<BillResponse> ToResponse(this IEnumerable<BillDomain> billDomains)
         {
             return _mapper.Map<IEnumerable<BillResponse>>(billDomains);
+        }
+
+        public static IEnumerable<BillSummaryResponse> ToResponse(this IEnumerable<BillSummaryDomain> billDomains)
+        {
+            return _mapper.Map<IEnumerable<BillSummaryResponse>>(billDomains);
         }
 
         #endregion Bill
@@ -176,5 +183,24 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion Supplier
+
+        #region SupplierReturn
+
+        public static IEnumerable<SupplierReturnDisputeConversationResponse> ToResponse(this IEnumerable<SupplierReturnDisputeConversationDomain> supplierReturnDisputeConversationDomains)
+        {
+            return _mapper.Map<IEnumerable<SupplierReturnDisputeConversationResponse>>(supplierReturnDisputeConversationDomains);
+        }
+
+        public static IEnumerable<SupplierReturnItemDisputeConversationResponse> ToResponse(this IEnumerable<SupplierReturnItemDisputeConversationDomain> supplierReturnItemDisputeConversationDomains)
+        {
+            return _mapper.Map<IEnumerable<SupplierReturnItemDisputeConversationResponse>>(supplierReturnItemDisputeConversationDomains);
+        }
+
+        public static SupplierReturnInsightsResponse ToResponse(this SupplierReturnInsightsDomain supplierReturnInsightsDomain)
+        {
+            return _mapper.Map<SupplierReturnInsightsResponse>(supplierReturnInsightsDomain);
+        }
+
+        #endregion SupplierReturn
     }
 }

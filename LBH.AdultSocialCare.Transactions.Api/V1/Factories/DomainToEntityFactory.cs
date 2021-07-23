@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
@@ -9,6 +10,11 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
+using System.Linq;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -26,6 +32,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static Bill ToDb(this BillCreationDomain billCreationDomain)
         {
             return _mapper.Map<Bill>(billCreationDomain);
+        }
+
+        public static BillPayment ToDb(this BillPaymentDomain billPaymentDomain)
+        {
+            return _mapper.Map<BillPayment>(billPaymentDomain);
         }
 
         #endregion Bill
@@ -87,5 +98,26 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         }
 
         #endregion Invoices
+
+        #region Ledger
+
+        public static Ledger ToDb(this LedgerDomain ledgerDomain)
+        {
+            return _mapper.Map<Ledger>(ledgerDomain);
+        }
+
+        #endregion
+
+        #region SupplierReturn
+
+        public static SupplierReturnItemDisputeConversation ToDb
+            (this SupplierReturnItemDisputeConversationCreationDomain supplierReturnItemDisputeConversationCreationDomain)
+        {
+            supplierReturnItemDisputeConversationCreationDomain.DateCreated = DateTimeOffset.Now;
+            supplierReturnItemDisputeConversationCreationDomain.MessageRead = false;
+            return _mapper.Map<SupplierReturnItemDisputeConversation>(supplierReturnItemDisputeConversationCreationDomain);
+        }
+
+        #endregion SupplierReturn
     }
 }

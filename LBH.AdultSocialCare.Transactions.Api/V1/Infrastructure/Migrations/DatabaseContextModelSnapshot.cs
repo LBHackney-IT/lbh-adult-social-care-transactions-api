@@ -183,7 +183,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<long>("BillItemId")
+                    b.Property<long>("BillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("BillItemId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("PaidAmount")
@@ -193,6 +196,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("BillPaymentId");
+
+                    b.HasIndex("BillId");
 
                     b.ToTable("BillPayments");
                 });
@@ -225,6 +230,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
+                            StatusName = "Paid Partially"
+                        },
+                        new
+                        {
+                            Id = 4,
                             StatusName = "Overdue"
                         });
                 });
@@ -599,6 +609,39 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasIndex("BillPaymentId");
 
                     b.HasIndex("PayRunBillId");
+
+                    b.ToTable("Ledgers");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Ledger", b =>
+                {
+                    b.Property<long>("LedgerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("BillPaymentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateEntered")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("MoneyIn")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MoneyOut")
+                        .HasColumnType("numeric");
+
+                    b.Property<long>("PayRunItemId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("LedgerId");
 
                     b.ToTable("Ledgers");
                 });
@@ -1014,17 +1057,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.DisputedInvoice", b =>
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillPayment", b =>
                 {
-                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Department", "ActionRequiredFromDepartment")
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.Bill", "BillStatus")
                         .WithMany()
-                        .HasForeignKey("ActionRequiredFromId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.Invoice", "Invoice")
-                        .WithMany()
-                        .HasForeignKey("InvoiceId")
+                        .HasForeignKey("BillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

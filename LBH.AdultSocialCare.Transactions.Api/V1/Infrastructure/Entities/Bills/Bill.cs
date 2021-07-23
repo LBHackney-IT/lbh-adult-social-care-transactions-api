@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills
 {
@@ -20,13 +21,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills
         public DateTimeOffset DateBilled { get; set; }
         public DateTimeOffset BillDueDate { get; set; }
         public decimal TotalBilled { get; set; }
-        public int BillPaymentStatusId { get; set; }
+        public int? BillPaymentStatusId { get; set; }
 
         [ForeignKey(nameof(PackageTypeId))]
         public PackageType PackageType { get; set; }
 
         [ForeignKey(nameof(BillPaymentStatusId))]
         public BillStatus BillStatus { get; set; }
+
+        [ForeignKey(nameof(SupplierId))]
+        public Supplier Supplier { get; set; }
         public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
         public virtual ICollection<BillItem> BillItems { get; set; }

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.CustomAttributes;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
+using Newtonsoft.Json;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -20,12 +22,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
     {
         private readonly ICreateSupplierBillUseCase _createSupplierBillUseCase;
         private readonly IGetBillUseCase _getBillUseCase;
+        private readonly IPaySupplierBillUseCase _paySupplierBillUseCase;
 
         public BillController(ICreateSupplierBillUseCase createSupplierBillUseCase,
-            IGetBillUseCase getBillUseCase)
+            IGetBillUseCase getBillUseCase,
+            IPaySupplierBillUseCase paySupplierBillUseCase)
         {
             _createSupplierBillUseCase = createSupplierBillUseCase;
             _getBillUseCase = getBillUseCase;
+            _paySupplierBillUseCase = paySupplierBillUseCase;
         }
 
         [ProducesResponseType(typeof(BillResponse), StatusCodes.Status200OK)]
@@ -53,14 +58,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<BillResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedBillSummaryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<BillResponse>>> GetBill([FromQuery] Guid packageId, long supplierId, int billPaymentStatusId, DateTimeOffset? fromDate = null,
-            DateTimeOffset? toDate = null)
+        public async Task<ActionResult<PagedBillSummaryResponse>> GetBill([FromQuery] BillSummaryListParameters parameters)
         {
-            var result = await _getBillUseCase.GetBill(packageId, supplierId, billPaymentStatusId, fromDate,
-                toDate).ConfigureAwait(false);
+            var result = await _getBillUseCase.GetBill(parameters).ConfigureAwait(false);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.PagingMetaData));
+            return Ok(result);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        [HttpPost("pay")]
+        public async Task<ActionResult<bool>> PaySelectedBill(
+            [FromBody] IEnumerable<long> supplierBillIds)
+        {
+            if (supplierBillIds == null)
+            {
+                return BadRequest("Object for creation cannot be null.");
+            }
+
+            var result = await _paySupplierBillUseCase.PaySupplierBill(supplierBillIds).ConfigureAwait(false);
             return Ok(result);
         }
     }

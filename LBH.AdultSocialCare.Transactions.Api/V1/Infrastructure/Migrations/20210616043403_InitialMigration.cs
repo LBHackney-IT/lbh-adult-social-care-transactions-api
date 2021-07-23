@@ -205,7 +205,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     DateBilled = table.Column<DateTimeOffset>(nullable: false),
                     BillDueDate = table.Column<DateTimeOffset>(nullable: false),
                     TotalBilled = table.Column<decimal>(nullable: false),
-                    BillPaymentStatusId = table.Column<int>(nullable: false),
+                    BillPaymentStatusId = table.Column<int>(nullable: true),
                     CreatorId = table.Column<Guid>(nullable: false),
                     UpdaterId = table.Column<Guid>(nullable: true)
                 },
@@ -575,7 +575,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 {
                     { 1, "Outstanding" },
                     { 2, "Paid" },
-                    { 3, "Overdue" }
+                    { 3, "Paid Partially" },
+                    { 4, "Overdue" }
                 });
 
             migrationBuilder.InsertData(

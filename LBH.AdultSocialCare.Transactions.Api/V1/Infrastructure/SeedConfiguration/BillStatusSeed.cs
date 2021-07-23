@@ -23,6 +23,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
             }, new BillStatus
             {
                 Id = 3,
+                StatusName = "Paid Partially"
+            }, new BillStatus
+            {
+                Id = 4,
                 StatusName = "Overdue"
             });
         }

@@ -10,5 +10,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways
     public interface IBillStatusGateway
     {
         Task<IEnumerable<BillStatusDomain>> GetBillStatusList();
+
+        Task CheckAndSetBillStatus(long billId);
     }
 }

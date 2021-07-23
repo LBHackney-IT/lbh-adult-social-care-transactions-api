@@ -15,6 +15,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -38,6 +40,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IInvoicesUseCase _invoicesUseCase;
         private readonly IPayRunUseCase _payRunUseCase;
         private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
+        private readonly ICreatePayRunHeldChatUseCase _createPayRunHeldChatUseCase;
+
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
@@ -45,7 +49,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase getUniqueInvoiceItemPaymentStatusInPayRunUseCase,
             IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase,
             IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase, IInvoicesUseCase invoicesUseCase,
-            IPayRunUseCase payRunUseCase, IInvoiceStatusUseCase invoiceStatusUseCase)
+            IPayRunUseCase payRunUseCase,
+            IInvoiceStatusUseCase invoiceStatusUseCase,
+            ICreatePayRunHeldChatUseCase createPayRunHeldChatUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -60,6 +66,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _invoicesUseCase = invoicesUseCase;
             _payRunUseCase = payRunUseCase;
             _invoiceStatusUseCase = invoiceStatusUseCase;
+            _createPayRunHeldChatUseCase = createPayRunHeldChatUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -213,12 +220,36 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
+        // Accept invoices in pay run //todo temp solution
+        [HttpPut("{payRunId}/invoices/accept-invoices")]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> ApproveInvoices(Guid payRunId, [FromBody] IEnumerable<Guid> invoiceIds)
+        {
+            var result = false;
+            foreach (var invoiceItem in invoiceIds)
+            {
+                result = await _invoiceStatusUseCase.AcceptInvoiceUseCase(payRunId, invoiceItem).ConfigureAwait(false);
+            }
+            return Ok(result);
+        }
+
         // Delete Pay Run
         [HttpDelete("{payRunId}")]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<bool>> DeleteDraftPayRun(Guid payRunId)
         {
             var result = await _payRunUseCase.DeleteDraftPayRunUseCase(payRunId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        //todo temp solution replace it with correct one
+        [HttpPost("{payRunId}/create-held-chat")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<bool>> CreatePayRunHeldChat([FromBody] PayRunHeldChatForCreationRequest payRunHeldChatForCreationRequest)
+        {
+            var result = await _createPayRunHeldChatUseCase.CreatePayRunHeldChat(payRunHeldChatForCreationRequest.PayRunId, payRunHeldChatForCreationRequest.PackageId, payRunHeldChatForCreationRequest.Message).ConfigureAwait(false);
             return Ok(result);
         }
     }

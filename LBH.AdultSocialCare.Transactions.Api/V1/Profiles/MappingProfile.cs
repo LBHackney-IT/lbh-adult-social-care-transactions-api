@@ -12,6 +12,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
@@ -19,10 +21,12 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
@@ -46,6 +50,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<BillItem, BillItemCreationDomain>();
             CreateMap<BillItemDomain, BillItemResponse>();
             CreateMap<BillItemCreationRequest, BillItemCreationDomain>();
+            CreateMap<BillPayment, BillPaymentDomain>();
+            CreateMap<BillPaymentDomain, BillPayment>();
+            CreateMap<BillSummaryDomain, BillSummaryResponse>();
 
             #endregion Bill
 
@@ -122,6 +129,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             #region Ledger
 
             CreateMap<Ledger, LedgerDomain>();
+            CreateMap<LedgerDomain, Ledger>();
+
+            #endregion
+
+            #region SupplierReturn
+
+            CreateMap<SupplierReturnItemDisputeConversation, SupplierReturnItemDisputeConversationDomain>();
+            CreateMap<SupplierReturnItemDisputeConversationCreationDomain, SupplierReturnItemDisputeConversation>();
+            CreateMap<SupplierReturnItemDisputeConversationCreationRequest, SupplierReturnItemDisputeConversationCreationDomain>();
+            CreateMap<SupplierReturnInsightsDomain, SupplierReturnInsightsResponse>();
 
             #endregion Ledger
         }

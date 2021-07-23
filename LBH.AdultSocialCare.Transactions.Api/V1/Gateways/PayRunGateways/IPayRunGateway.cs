@@ -47,5 +47,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<bool> ApprovePayRunForPayment(Guid payRunId);
 
         Task<bool> DeleteDraftPayRun(Guid payRunId);
+
+        Task<bool> CreatePayRunHeldChat(Guid payRunId, Guid packageId, string message);
     }
 }
