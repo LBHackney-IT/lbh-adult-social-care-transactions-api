@@ -1,7 +1,6 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundary.Response;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;

@@ -15,8 +15,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Interfaces;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -41,7 +39,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IPayRunUseCase _payRunUseCase;
         private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
         private readonly ICreatePayRunHeldChatUseCase _createPayRunHeldChatUseCase;
-
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
@@ -220,13 +217,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
-        // Accept invoices in pay run //todo temp solution
+        // Accept list of invoices in pay run
         [HttpPut("{payRunId}/invoices/accept-invoices")]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> ApproveInvoices(Guid payRunId, [FromBody] IEnumerable<Guid> invoiceIds)
+        public async Task<ActionResult<bool>> ApproveInvoices(Guid payRunId, [FromBody] InvoiceIdListRequest invoiceIdList)
         {
             var result = false;
-            foreach (var invoiceItem in invoiceIds)
+            foreach (var invoiceItem in invoiceIdList.InvoiceIds)
             {
                 result = await _invoiceStatusUseCase.AcceptInvoiceUseCase(payRunId, invoiceItem).ConfigureAwait(false);
             }
