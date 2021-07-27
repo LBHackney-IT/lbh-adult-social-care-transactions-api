@@ -62,7 +62,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
             return res.ToResponse();
         }
 
-        public async Task<Guid> CreateDisputedInvoiceChatUseCase(
+        public async Task<DisputedInvoiceChatResponse> CreateDisputedInvoiceChatUseCase(
             DisputedInvoiceChatForCreationDomain disputedInvoiceChatForCreationDomain)
         {
             // Check disputed invoice exists
@@ -74,7 +74,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
                 .CreateDisputedInvoiceChat(disputedInvoiceChatForCreationDomain.ToDb(payRun.DisputedInvoiceId))
                 .ConfigureAwait(false);
 
-            return res;
+            return res?.ToResponse();
         }
 
         public async Task<InvoiceResponse> CreateInvoiceUseCase(InvoiceForCreationDomain invoiceForCreationDomain)

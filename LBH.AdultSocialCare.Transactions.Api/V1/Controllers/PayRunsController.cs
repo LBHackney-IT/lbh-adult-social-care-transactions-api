@@ -238,10 +238,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 
         // Create disputed invoice chat
         [HttpPost("{payRunId}/create-held-chat")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DisputedInvoiceChatResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> CreateDisputedInvoiceChat(Guid payRunId, [FromBody] DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest)
+        public async Task<ActionResult<DisputedInvoiceChatResponse>> CreateDisputedInvoiceChat(Guid payRunId,
+            [FromBody] DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest)
         {
             var result = await _invoicesUseCase
                 .CreateDisputedInvoiceChatUseCase(disputedInvoiceChatForCreationRequest.ToDomain(payRunId))

@@ -51,6 +51,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<bool> DeleteDraftPayRun(Guid payRunId);
 
-        Task<Guid> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat);
+        Task<DisputedInvoiceChatDomain> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat);
     }
 }

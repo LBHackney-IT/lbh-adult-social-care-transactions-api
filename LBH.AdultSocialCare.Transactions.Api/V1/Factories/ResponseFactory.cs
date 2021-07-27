@@ -8,17 +8,17 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundary.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.DepartmentDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using System.Collections.Generic;
 using System.Linq;
-using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Response;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -152,6 +152,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         public static InvoiceResponse ToResponse(this InvoiceDomain invoiceDomain)
         {
             return _mapper.Map<InvoiceResponse>(invoiceDomain);
+        }
+
+        public static DisputedInvoiceChatResponse ToResponse(this DisputedInvoiceChatDomain disputedInvoiceChatDomain)
+        {
+            return _mapper.Map<DisputedInvoiceChatResponse>(disputedInvoiceChatDomain);
         }
 
         #endregion Invoices

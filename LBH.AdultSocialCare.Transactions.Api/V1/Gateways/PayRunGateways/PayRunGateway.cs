@@ -545,14 +545,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
-        public async Task<Guid> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat)
+        public async Task<DisputedInvoiceChatDomain> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat)
         {
             var entry = await _dbContext.DisputedInvoiceChats.AddAsync(disputedInvoiceChat).ConfigureAwait(false);
             try
             {
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-                return entry.Entity.DisputedInvoiceChatId;
+                return entry.Entity?.ToDomain();
             }
             catch (Exception)
             {

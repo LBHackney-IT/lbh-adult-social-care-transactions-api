@@ -1,15 +1,15 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
-using System.Collections.Generic;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
+using System.Collections.Generic;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -53,6 +53,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         {
             return _mapper.Map<IEnumerable<BillItemDomain>>(billItemEntity);
         }
+
         public static BillPaymentDomain ToDomain(this BillPayment billPayment)
         {
             return _mapper.Map<BillPaymentDomain>(billPayment);
@@ -105,6 +106,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<DisputedInvoiceFlatDomain>(disputedInvoice);
         }
 
+        public static DisputedInvoiceChatDomain ToDomain(this DisputedInvoiceChat disputedInvoiceChat)
+        {
+            return _mapper.Map<DisputedInvoiceChatDomain>(disputedInvoiceChat);
+        }
+
         #endregion Invoices
 
         #region Ledger
@@ -114,7 +120,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<LedgerDomain>(ledgerEntity);
         }
 
-        #endregion
+        #endregion Ledger
 
         #region SupplierReturn
 
