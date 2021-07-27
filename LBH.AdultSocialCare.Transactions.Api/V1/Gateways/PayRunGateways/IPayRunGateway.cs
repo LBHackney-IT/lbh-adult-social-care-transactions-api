@@ -2,6 +2,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using System;
@@ -23,6 +24,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<PayRunItem> CheckPayRunItemExists(Guid payRunId, Guid payRunItemId);
 
         Task<PayRun> CheckPayRunExists(Guid payRunId);
+
+        Task<DisputedInvoice> CheckDisputedInvoiceExists(Guid payRunId, Guid payRunItemId);
 
         Task<InvoiceDomain> GetSingleInvoiceInPayRun(Guid payRunId, Guid invoiceId);
 
@@ -48,6 +51,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<bool> DeleteDraftPayRun(Guid payRunId);
 
-        Task<bool> CreatePayRunHeldChat(Guid payRunId, Guid packageId, string message);
+        Task<Guid> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat);
     }
 }

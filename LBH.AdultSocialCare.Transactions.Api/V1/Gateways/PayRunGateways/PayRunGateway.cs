@@ -148,6 +148,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             return res;
         }
 
+        public async Task<DisputedInvoice> CheckDisputedInvoiceExists(Guid payRunId, Guid payRunItemId)
+        {
+            var res = await _dbContext.DisputedInvoices
+                .Where(di => di.PayRunItemId.Equals(payRunItemId) && di.PayRunItem.PayRunId.Equals(payRunId))
+                .SingleOrDefaultAsync().ConfigureAwait(false);
+
+            if (res == null)
+            {
+                throw new EntityNotFoundException($"Disputed invoice with for pay run item with id {payRunItemId} not found in the database");
+            }
+
+            return res;
+        }
+
         public async Task<InvoiceDomain> GetSingleInvoiceInPayRun(Guid payRunId, Guid invoiceId)
         {
             var invoice = await _dbContext.PayRunItems
@@ -531,9 +545,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
-        public Task<bool> CreatePayRunHeldChat(Guid payRunId, Guid packageId, string message)
+        public async Task<Guid> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat)
         {
-            return Task.FromResult(true);
+            var entry = await _dbContext.DisputedInvoiceChats.AddAsync(disputedInvoiceChat).ConfigureAwait(false);
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return entry.Entity.DisputedInvoiceChatId;
+            }
+            catch (Exception)
+            {
+                throw new DbSaveFailedException("Could not save disputed invoice chat to database");
+            }
         }
 
         private async Task<bool> RunPayRunInvoicePayments(Guid payRunId)

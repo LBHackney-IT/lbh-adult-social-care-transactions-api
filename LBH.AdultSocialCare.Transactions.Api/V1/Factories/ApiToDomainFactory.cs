@@ -1,17 +1,17 @@
-using System.Collections;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
-using System.Collections.Generic;
-using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
-using System.Net;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
@@ -65,6 +65,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return res;
         }
 
+        public static DisputedInvoiceChatForCreationDomain ToDomain(this DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest, Guid payRunId)
+        {
+            var res = _mapper.Map<DisputedInvoiceChatForCreationDomain>(disputedInvoiceChatForCreationRequest);
+            res.PayRunId = payRunId;
+            return res;
+        }
+
         #endregion Invoices
 
         public static BillItemCreationDomain ToDomain(this BillItemCreationRequest billItemCreationRequest)
@@ -80,6 +87,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<SupplierReturnItemDisputeConversationCreationDomain>(supplierReturnItemDisputeConversationCreationRequest);
         }
 
-        #endregion
+        #endregion SupplierReturn
     }
 }

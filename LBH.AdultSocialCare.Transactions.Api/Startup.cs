@@ -276,7 +276,6 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetDisputeItemChatUseCase, GetDisputeItemChatUseCase>();
             services.AddScoped<IGetSingleSupplierReturnInsightsUseCase, GetSingleSupplierReturnInsightsUseCase>();
             services.AddScoped<IMarkDisputeItemChatUseCase, MarkDisputeItemChatUseCase>();
-            services.AddScoped<ICreatePayRunHeldChatUseCase, CreatePayRunHeldChatUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

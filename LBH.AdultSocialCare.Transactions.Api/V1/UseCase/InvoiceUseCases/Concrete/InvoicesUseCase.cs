@@ -62,6 +62,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
             return res.ToResponse();
         }
 
+        public async Task<Guid> CreateDisputedInvoiceChatUseCase(
+            DisputedInvoiceChatForCreationDomain disputedInvoiceChatForCreationDomain)
+        {
+            // Check disputed invoice exists
+            var payRun = await _payRunGateway.CheckDisputedInvoiceExists(disputedInvoiceChatForCreationDomain.PayRunId,
+                disputedInvoiceChatForCreationDomain.PayRunItemId).ConfigureAwait(false);
+
+            // Create disputed invoice chat
+            var res = await _payRunGateway
+                .CreateDisputedInvoiceChat(disputedInvoiceChatForCreationDomain.ToDb(payRun.DisputedInvoiceId))
+                .ConfigureAwait(false);
+
+            return res;
+        }
+
         public async Task<InvoiceResponse> CreateInvoiceUseCase(InvoiceForCreationDomain invoiceForCreationDomain)
         {
             // Check if package type is valid

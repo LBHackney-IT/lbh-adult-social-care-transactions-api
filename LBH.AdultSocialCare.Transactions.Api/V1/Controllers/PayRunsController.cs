@@ -38,7 +38,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         private readonly IInvoicesUseCase _invoicesUseCase;
         private readonly IPayRunUseCase _payRunUseCase;
         private readonly IInvoiceStatusUseCase _invoiceStatusUseCase;
-        private readonly ICreatePayRunHeldChatUseCase _createPayRunHeldChatUseCase;
 
         public PayRunsController(ICreatePayRunUseCase createPayRunUseCase, IGetPayRunSummaryListUseCase getPayRunSummaryListUseCase,
             IGetUniqueSuppliersInPayRunUseCase getUniqueSuppliersInPayRunUseCase, IGetReleasedHoldsCountUseCase getReleasedHoldsCountUseCase,
@@ -47,8 +46,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             IGetSinglePayRunDetailsUseCase getSinglePayRunDetailsUseCase, IChangePayRunStatusUseCase changePayRunStatusUseCase,
             IReleaseHeldPaymentsUseCase releaseHeldPaymentsUseCase, IInvoicesUseCase invoicesUseCase,
             IPayRunUseCase payRunUseCase,
-            IInvoiceStatusUseCase invoiceStatusUseCase,
-            ICreatePayRunHeldChatUseCase createPayRunHeldChatUseCase)
+            IInvoiceStatusUseCase invoiceStatusUseCase)
         {
             _createPayRunUseCase = createPayRunUseCase;
             _getPayRunSummaryListUseCase = getPayRunSummaryListUseCase;
@@ -63,7 +61,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             _invoicesUseCase = invoicesUseCase;
             _payRunUseCase = payRunUseCase;
             _invoiceStatusUseCase = invoiceStatusUseCase;
-            _createPayRunHeldChatUseCase = createPayRunHeldChatUseCase;
         }
 
         [HttpPost("{payRunType}")]
@@ -239,14 +236,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(result);
         }
 
-        //todo temp solution replace it with correct one
+        // Create disputed invoice chat
         [HttpPost("{payRunId}/create-held-chat")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<bool>> CreatePayRunHeldChat([FromBody] PayRunHeldChatForCreationRequest payRunHeldChatForCreationRequest)
+        public async Task<ActionResult<bool>> CreateDisputedInvoiceChat(Guid payRunId, [FromBody] DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest)
         {
-            var result = await _createPayRunHeldChatUseCase.CreatePayRunHeldChat(payRunHeldChatForCreationRequest.PayRunId, payRunHeldChatForCreationRequest.PackageId, payRunHeldChatForCreationRequest.Message).ConfigureAwait(false);
+            var result = await _invoicesUseCase
+                .CreateDisputedInvoiceChatUseCase(disputedInvoiceChatForCreationRequest.ToDomain(payRunId))
+                .ConfigureAwait(false);
             return Ok(result);
         }
     }

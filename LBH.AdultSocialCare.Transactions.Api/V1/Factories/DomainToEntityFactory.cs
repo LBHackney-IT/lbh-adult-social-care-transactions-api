@@ -97,6 +97,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return entity;
         }
 
+        public static DisputedInvoiceChat ToDb(this DisputedInvoiceChatForCreationDomain disputedInvoiceChatForCreationDomain, Guid disputedInvoiceId)
+        {
+            var entity = _mapper.Map<DisputedInvoiceChat>(disputedInvoiceChatForCreationDomain);
+            entity.DisputedInvoiceId = disputedInvoiceId;
+            entity.MessageRead = false;
+            return entity;
+        }
+
         #endregion Invoices
 
         #region Ledger
