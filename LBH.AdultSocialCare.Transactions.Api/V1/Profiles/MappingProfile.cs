@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.BillBoundary.Request;
@@ -28,6 +27,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
+using System;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 {
@@ -72,6 +72,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<PendingInvoicesDomain, PendingInvoicesResponse>();
             CreateMap<InvoiceItemDomain, InvoiceItemResponse>();
             CreateMap<DisputedInvoice, DisputedInvoiceChat>();
+            CreateMap<DisputedInvoiceChat, DisputedInvoiceChatDomain>();
             CreateMap<DisputedInvoiceChatDomain, DisputedInvoiceChatResponse>();
             CreateMap<InvoiceItemForCreationDomain, InvoiceItem>();
             CreateMap<InvoiceForCreationDomain, Invoice>();
@@ -81,6 +82,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
 
             CreateMap<InvoiceItemForCreationRequest, InvoiceItemForCreationDomain>();
             CreateMap<HeldInvoiceDomain, HeldInvoiceResponse>();
+
+            CreateMap<DisputedInvoiceChatForCreationRequest, DisputedInvoiceChatForCreationDomain>();
+            CreateMap<DisputedInvoiceChatForCreationDomain, DisputedInvoiceChat>();
 
             #endregion Invoices
 
@@ -131,7 +135,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<Ledger, LedgerDomain>();
             CreateMap<LedgerDomain, Ledger>();
 
-            #endregion
+            #endregion Ledger
 
             #region SupplierReturn
 
@@ -140,7 +144,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<SupplierReturnItemDisputeConversationCreationRequest, SupplierReturnItemDisputeConversationCreationDomain>();
             CreateMap<SupplierReturnInsightsDomain, SupplierReturnInsightsResponse>();
 
-            #endregion Ledger
+            #endregion SupplierReturn
         }
     }
 }
