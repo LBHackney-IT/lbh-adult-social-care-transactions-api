@@ -52,5 +52,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<bool> DeleteDraftPayRun(Guid payRunId);
 
         Task<DisputedInvoiceChatDomain> CreateDisputedInvoiceChat(DisputedInvoiceChat disputedInvoiceChat);
+
+        Task<IEnumerable<PayRunTypeDomain>> GetAllPayRunTypes();
+
+        Task<IEnumerable<PayRunSubTypeDomain>> GetAllPayRunSubTypes();
     }
 }

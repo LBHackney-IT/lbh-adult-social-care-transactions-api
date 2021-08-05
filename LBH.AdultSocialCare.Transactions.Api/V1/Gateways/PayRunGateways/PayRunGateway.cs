@@ -560,6 +560,28 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
+        public async Task<IEnumerable<PayRunTypeDomain>> GetAllPayRunTypes()
+        {
+            var res = await _dbContext.PayRunTypes.Select(pt => new PayRunTypeDomain
+            {
+                PayRunTypeId = pt.PayRunTypeId,
+                TypeName = pt.TypeName
+            }).ToListAsync().ConfigureAwait(false);
+            return res;
+        }
+
+        public async Task<IEnumerable<PayRunSubTypeDomain>> GetAllPayRunSubTypes()
+        {
+            var res = await _dbContext.PayRunSubTypes.Select(pst => new PayRunSubTypeDomain
+            {
+                PayRunSubTypeId = pst.PayRunSubTypeId,
+                SubTypeName = pst.SubTypeName,
+                PayRunTypeId = pst.PayRunTypeId,
+                PayRunTypeName = pst.PayRunType.TypeName
+            }).ToListAsync().ConfigureAwait(false);
+            return res;
+        }
+
         private async Task<bool> RunPayRunInvoicePayments(Guid payRunId)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
