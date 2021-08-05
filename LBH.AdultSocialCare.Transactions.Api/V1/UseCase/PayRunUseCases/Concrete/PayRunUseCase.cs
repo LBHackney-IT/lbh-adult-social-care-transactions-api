@@ -98,5 +98,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             var res = await _payRunGateway.GetAllPayRunSubTypes().ConfigureAwait(false);
             return res.ToResponse();
         }
+
+        public async Task<IEnumerable<PayRunStatusResponse>> GetAllUniquePayRunStatusesUseCase()
+        {
+            var res = await _payRunGateway.GetAllUniquePayRunStatuses().ConfigureAwait(false);
+            return res.ToResponse();
+        }
     }
 }

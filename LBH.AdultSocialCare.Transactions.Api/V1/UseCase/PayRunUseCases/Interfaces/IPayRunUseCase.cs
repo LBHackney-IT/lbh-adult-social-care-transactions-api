@@ -21,5 +21,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
         Task<IEnumerable<PayRunTypeResponse>> GetAllPayRunTypesUseCase();
 
         Task<IEnumerable<PayRunSubTypeResponse>> GetAllPayRunSubTypesUseCase();
+
+        Task<IEnumerable<PayRunStatusResponse>> GetAllUniquePayRunStatusesUseCase();
     }
 }

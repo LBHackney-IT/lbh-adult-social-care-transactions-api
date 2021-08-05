@@ -104,6 +104,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<PayRunSubTypeResponse>>(payRunSubTypeDomains);
         }
 
+        public static IEnumerable<PayRunStatusResponse> ToResponse(this IEnumerable<PayRunStatusDomain> payRunStatusDomains)
+        {
+            return _mapper.Map<IEnumerable<PayRunStatusResponse>>(payRunStatusDomains);
+        }
+
         #endregion PayRuns
 
         #region Suppliers

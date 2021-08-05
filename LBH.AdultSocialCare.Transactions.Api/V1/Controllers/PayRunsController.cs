@@ -265,5 +265,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             var res = await _payRunUseCase.GetAllPayRunSubTypesUseCase().ConfigureAwait(false);
             return Ok(res);
         }
+
+        [ProducesResponseType(typeof(IEnumerable<PayRunStatusResponse>), StatusCodes.Status200OK)]
+        [HttpGet("unique-pay-run-statuses")]
+        public async Task<ActionResult<IEnumerable<PayRunStatusResponse>>> GetAllUniquePayRunStatuses()
+        {
+            var res = await _payRunUseCase.GetAllUniquePayRunStatusesUseCase().ConfigureAwait(false);
+            return Ok(res);
+        }
     }
 }

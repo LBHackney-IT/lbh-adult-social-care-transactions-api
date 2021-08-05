@@ -98,6 +98,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Profiles
             CreateMap<PayRunDateSummaryDomain, PayRunDateSummaryResponse>();
             CreateMap<PayRunTypeDomain, PayRunTypeResponse>();
             CreateMap<PayRunSubTypeDomain, PayRunSubTypeResponse>();
+            CreateMap<PayRunStatusDomain, PayRunStatusResponse>();
 
             #endregion Payruns
 

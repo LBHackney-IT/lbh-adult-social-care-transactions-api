@@ -583,6 +583,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             return res;
         }
 
+        public async Task<IEnumerable<PayRunStatusDomain>> GetAllUniquePayRunStatuses()
+        {
+            var res = await _dbContext.PayRuns.Select(p => new PayRunStatusDomain
+            {
+                PayRunStatusId = p.PayRunStatus.PayRunStatusId,
+                StatusName = p.PayRunStatus.StatusName
+            }).Distinct().ToListAsync().ConfigureAwait(false);
+            return res;
+        }
+
         private async Task<bool> RunPayRunInvoicePayments(Guid payRunId)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
