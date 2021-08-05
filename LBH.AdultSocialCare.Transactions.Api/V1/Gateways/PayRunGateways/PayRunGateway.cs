@@ -562,23 +562,24 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         public async Task<IEnumerable<PayRunTypeDomain>> GetAllPayRunTypes()
         {
-            var res = await _dbContext.PayRunTypes.Select(pt => new PayRunTypeDomain
-            {
-                PayRunTypeId = pt.PayRunTypeId,
-                TypeName = pt.TypeName
-            }).ToListAsync().ConfigureAwait(false);
+            var res = await _dbContext.PayRunTypes
+                .OrderBy(pt => pt.PayRunTypeId)
+                .Select(pt => new PayRunTypeDomain { PayRunTypeId = pt.PayRunTypeId, TypeName = pt.TypeName })
+                .ToListAsync().ConfigureAwait(false);
             return res;
         }
 
         public async Task<IEnumerable<PayRunSubTypeDomain>> GetAllPayRunSubTypes()
         {
-            var res = await _dbContext.PayRunSubTypes.Select(pst => new PayRunSubTypeDomain
-            {
-                PayRunSubTypeId = pst.PayRunSubTypeId,
-                SubTypeName = pst.SubTypeName,
-                PayRunTypeId = pst.PayRunTypeId,
-                PayRunTypeName = pst.PayRunType.TypeName
-            }).ToListAsync().ConfigureAwait(false);
+            var res = await _dbContext.PayRunSubTypes
+                .OrderBy(pst => pst.PayRunSubTypeId)
+                .Select(pst => new PayRunSubTypeDomain
+                {
+                    PayRunSubTypeId = pst.PayRunSubTypeId,
+                    SubTypeName = pst.SubTypeName,
+                    PayRunTypeId = pst.PayRunTypeId,
+                    PayRunTypeName = pst.PayRunType.TypeName
+                }).ToListAsync().ConfigureAwait(false);
             return res;
         }
 

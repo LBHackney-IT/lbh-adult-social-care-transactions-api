@@ -17,5 +17,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
         Task<bool> DeleteDraftPayRunUseCase(Guid payRunId);
 
         Task<PayRunDateSummaryResponse> GetDateOfLastPayRunUseCase(string payRunType);
+
+        Task<IEnumerable<PayRunTypeResponse>> GetAllPayRunTypesUseCase();
+
+        Task<IEnumerable<PayRunSubTypeResponse>> GetAllPayRunSubTypesUseCase();
     }
 }

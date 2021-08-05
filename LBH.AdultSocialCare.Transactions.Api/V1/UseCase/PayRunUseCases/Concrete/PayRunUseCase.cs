@@ -1,5 +1,9 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
@@ -7,10 +11,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete
 {
@@ -61,25 +61,42 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                     res = await _payRunGateway.GetDateOfLastPayRunSummary((int) PayRunTypeEnum.ResidentialRecurring, null)
                         .ConfigureAwait(false);
                     return res?.ToResponse();
+
                 case nameof(PayRunTypeEnum.DirectPayments):
                     res = await _payRunGateway.GetDateOfLastPayRunSummary((int) PayRunTypeEnum.DirectPayments, null)
                         .ConfigureAwait(false);
                     return res?.ToResponse();
+
                 case nameof(PayRunTypeEnum.HomeCare):
                     res = await _payRunGateway.GetDateOfLastPayRunSummary((int) PayRunTypeEnum.HomeCare, null)
                         .ConfigureAwait(false);
                     return res?.ToResponse();
+
                 case nameof(PayRunSubTypeEnum.ResidentialReleaseHolds):
                     res = await _payRunGateway.GetDateOfLastPayRunSummary((int) PayRunTypeEnum.ResidentialRecurring, (int) PayRunSubTypeEnum.ResidentialReleaseHolds)
                         .ConfigureAwait(false);
                     return res?.ToResponse();
+
                 case nameof(PayRunSubTypeEnum.DirectPaymentsReleaseHolds):
                     res = await _payRunGateway.GetDateOfLastPayRunSummary((int) PayRunTypeEnum.DirectPayments, (int) PayRunSubTypeEnum.DirectPaymentsReleaseHolds)
                         .ConfigureAwait(false);
                     return res?.ToResponse();
+
                 default:
                     return null;
             }
+        }
+
+        public async Task<IEnumerable<PayRunTypeResponse>> GetAllPayRunTypesUseCase()
+        {
+            var res = await _payRunGateway.GetAllPayRunTypes().ConfigureAwait(false);
+            return res.ToResponse();
+        }
+
+        public async Task<IEnumerable<PayRunSubTypeResponse>> GetAllPayRunSubTypesUseCase()
+        {
+            var res = await _payRunGateway.GetAllPayRunSubTypes().ConfigureAwait(false);
+            return res.ToResponse();
         }
     }
 }

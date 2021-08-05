@@ -249,5 +249,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
                 .ConfigureAwait(false);
             return Ok(result);
         }
+
+        [ProducesResponseType(typeof(IEnumerable<PayRunTypeResponse>), StatusCodes.Status200OK)]
+        [HttpGet("pay-run-types")]
+        public async Task<ActionResult<IEnumerable<PayRunTypeResponse>>> GetAllPayRunTypes()
+        {
+            var res = await _payRunUseCase.GetAllPayRunTypesUseCase().ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<PayRunSubTypeResponse>), StatusCodes.Status200OK)]
+        [HttpGet("pay-run-sub-types")]
+        public async Task<ActionResult<IEnumerable<PayRunSubTypeResponse>>> GetAllPayRunSubTypes()
+        {
+            var res = await _payRunUseCase.GetAllPayRunSubTypesUseCase().ConfigureAwait(false);
+            return Ok(res);
+        }
     }
 }
