@@ -21,16 +21,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppli
         /// </summary>
         public int PackageTypeId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Creator Id
-        /// </summary>
-        public Guid CreatorId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Updater Id
-        /// </summary>
-        public Guid? UpdaterId { get; set; }
-
         [ForeignKey(nameof(PackageTypeId))] public PackageType Package { get; set; }
     }
 }

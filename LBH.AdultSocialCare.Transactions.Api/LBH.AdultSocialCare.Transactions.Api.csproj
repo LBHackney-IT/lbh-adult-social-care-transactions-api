@@ -11,6 +11,10 @@
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="V1\Infrastructure\Migrations\20210806141559_SeedSuppliers.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210806141559_SeedSuppliers.Designer.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210806141952_SeedSuppliers.cs" />
+      <Compile Remove="V1\Infrastructure\Migrations\20210806141952_SeedSuppliers.Designer.cs" />
       <Compile Remove="V1\UseCase\SupplierReturnUseCases\Concrete\CreateDisputeChatUseCase.cs" />
       <Compile Remove="V1\UseCase\SupplierReturnUseCases\Concrete\GetDisputeChatUseCase.cs" />
       <Compile Remove="V1\UseCase\SupplierReturnUseCases\Concrete\MarkDisputeChatUseCase.cs" />

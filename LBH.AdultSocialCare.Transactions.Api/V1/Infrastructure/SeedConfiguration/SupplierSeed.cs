@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfiguration
 {
@@ -17,10 +14,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
             builder.HasData(new Supplier
             {
                 SupplierId = 1,
+                PackageTypeId = 1,
                 SupplierName = "ABC Limited"
             }, new Supplier
             {
                 SupplierId = 2,
+                PackageTypeId = 2,
                 SupplierName = "XYZ Ltd"
             });
         }
