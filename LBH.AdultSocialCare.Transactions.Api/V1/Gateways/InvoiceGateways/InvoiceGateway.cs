@@ -100,6 +100,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                             InvoiceNumber = pri.Invoice.InvoiceNumber,
                             SupplierId = pri.Invoice.SupplierId,
                             PackageTypeId = pri.Invoice.PackageTypeId,
+                            PackageTypeName = pri.Invoice.PackageType.PackageTypeName,
                             ServiceUserId = pri.Invoice.ServiceUserId,
                             DateInvoiced = pri.Invoice.DateInvoiced,
                             TotalAmount = pri.Invoice.TotalAmount,

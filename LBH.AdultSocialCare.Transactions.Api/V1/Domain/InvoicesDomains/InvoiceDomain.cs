@@ -9,6 +9,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
         public string InvoiceNumber { get; set; }
         public long SupplierId { get; set; }
         public int PackageTypeId { get; set; }
+        public string PackageTypeName { get; set; }
         public Guid ServiceUserId { get; set; }
         public DateTimeOffset DateInvoiced { get; set; }
         public decimal TotalAmount { get; set; } // Total amount when invoice is being created
