@@ -10,5 +10,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains
         public string Message { get; set; }
         public int? MessageFromId { get; set; }
         public int ActionRequiredFromId { get; set; }
+        public string ActionRequiredFromName { get; set; }
     }
 }

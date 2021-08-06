@@ -134,7 +134,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                                         MessageRead = dic.MessageRead,
                                         Message = dic.Message,
                                         MessageFromId = dic.MessageFromId,
-                                        ActionRequiredFromId = dic.ActionRequiredFromId
+                                        ActionRequiredFromId = dic.ActionRequiredFromId,
+                                        ActionRequiredFromName = dic.ActionRequiredFromDepartment.DepartmentName ?? "",
                                     })
                         })
                 }).ToListAsync()
