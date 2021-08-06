@@ -1,15 +1,4 @@
-using AutoFixture;
-using LBH.AdultSocialCare.Transactions.Api;
-using LBH.AdultSocialCare.Transactions.Api.Tests;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
-using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
-using FluentAssertions;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
-using System.Net;
-using System.Threading.Tasks;
+
 
 //namespace LBH.AdultSocialCare.Transactions.Api.Tests.V1.E2ETests
 //{

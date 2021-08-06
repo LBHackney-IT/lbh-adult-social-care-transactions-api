@@ -1,55 +1,44 @@
-using Amazon.DynamoDBv2.DataModel;
-using AutoFixture;
-using LBH.AdultSocialCare.Transactions.Api.Tests.V1.Helper;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
-
 namespace LBH.AdultSocialCare.Transactions.Api.Tests.V1.Gateways
 {
+
     //TODO: Remove this file if DynamoDb gateway not being used
     //TODO: Rename Tests to match gateway name
     //For instruction on how to run tests please see the wiki: https://github.com/LBHackney-IT/lbh-base-api/wiki/Running-the-test-suite.
-    [TestFixture]
     public class DynamoDbGatewayTests
     {
-        private readonly Fixture _fixture = new Fixture();
-        private Mock<IDynamoDBContext> _dynamoDb;
-        private DynamoDbGateway _classUnderTest;
 
-        [SetUp]
-        public void Setup()
-        {
-            _dynamoDb = new Mock<IDynamoDBContext>();
-            _classUnderTest = new DynamoDbGateway(_dynamoDb.Object);
-        }
+        //private readonly Fixture _fixture = new Fixture();
+        //private Mock<IDynamoDBContext> _dynamoDb;
+        //private DynamoDbGateway _classUnderTest;
 
-        [Test]
-        public void GetEntityByIdReturnsNullIfEntityDoesntExist()
-        {
-            var response = _classUnderTest.GetEntityById(123);
+        //public void Setup()
+        //{
+        //    _dynamoDb = new Mock<IDynamoDBContext>();
+        //    _classUnderTest = new DynamoDbGateway(_dynamoDb.Object);
+        //}
 
-            response.Should().BeNull();
-        }
+        //public void GetEntityByIdReturnsNullIfEntityDoesntExist()
+        //{
+        //    var response = _classUnderTest.GetEntityById(123);
 
-        [Test]
-        public void GetEntityByIdReturnsTheEntityIfItExists()
-        {
-            var entity = _fixture.Create<Entity>();
-            var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
+        //    response.Should().BeNull();
+        //}
 
-            _dynamoDb.Setup(x => x.LoadAsync<DatabaseEntity>(entity.Id, default))
-                     .ReturnsAsync(dbEntity);
+        //public void GetEntityByIdReturnsTheEntityIfItExists()
+        //{
+        //    var entity = _fixture.Create<Entity>();
+        //    var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
-            var response = _classUnderTest.GetEntityById(entity.Id);
+        //    _dynamoDb.Setup(x => x.LoadAsync<DatabaseEntity>(entity.Id, default)).ReturnsAsync(dbEntity);
 
-            _dynamoDb.Verify(x => x.LoadAsync<DatabaseEntity>(entity.Id, default), Times.Once);
+        //    var response = _classUnderTest.GetEntityById(entity.Id);
 
-            entity.Id.Should().Be(response.Id);
-            entity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
-        }
+        //    _dynamoDb.Verify(x => x.LoadAsync<DatabaseEntity>(entity.Id, default), Times.Once);
+
+        //    entity.Id.Should().Be(response.Id);
+        //    entity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
+        //}
+
     }
+
 }
