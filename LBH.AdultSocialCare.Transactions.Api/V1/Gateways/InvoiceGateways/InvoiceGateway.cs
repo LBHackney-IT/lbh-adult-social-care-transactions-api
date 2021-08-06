@@ -92,6 +92,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 {
                     PayRunId = pr.PayRunId,
                     PayRunDate = pr.DateCreated,
+                    DateFrom = pr.DateFrom,
+                    DateTo = pr.DateTo,
                     Invoices = pr.PayRunItems.Where(pri =>
                             pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
                         .Select(pri => new InvoiceDomain
@@ -127,7 +129,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                             DisputedInvoiceChat =
                                 pri.DisputedInvoice.DisputedInvoiceChats.Where(di =>
                                     di.DisputedInvoice.InvoiceId.Equals(pri.InvoiceId) &&
-                                    di.DisputedInvoice.PayRunItemId.Equals(pri.PayRunItemId)).Select(dic =>
+                                    di.DisputedInvoice.PayRunItemId.Equals(pri.PayRunItemId))
+                                    .OrderBy(dic => dic.DateCreated)
+                                    .Select(dic =>
                                     new DisputedInvoiceChatDomain
                                     {
                                         DisputedInvoiceChatId = dic.DisputedInvoiceChatId,

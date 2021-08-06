@@ -46,7 +46,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("BillDueDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("BillPaymentStatusId")
+                    b.Property<int?>("BillPaymentStatusId")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("CreatorId")
@@ -90,6 +90,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasIndex("BillPaymentStatusId");
 
                     b.HasIndex("PackageTypeId");
+
+                    b.HasIndex("SupplierId");
 
                     b.ToTable("Bills");
                 });
@@ -312,6 +314,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
 
                     b.Property<int>("ActionRequiredFromId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DisputedInvoiceId")
                         .HasColumnType("uuid");
@@ -613,39 +621,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.ToTable("Ledgers");
                 });
 
-            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Ledger", b =>
-                {
-                    b.Property<long>("LedgerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<long>("BillPaymentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateEntered")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("MoneyIn")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("MoneyOut")
-                        .HasColumnType("numeric");
-
-                    b.Property<long>("PayRunItemId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("LedgerId");
-
-                    b.ToTable("Ledgers");
-                });
-
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PackageType", b =>
                 {
                     b.Property<int>("PackageTypeId")
@@ -943,6 +918,155 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturn", b =>
+                {
+                    b.Property<Guid>("SupplierReturnId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PackageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PackageTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ServiceUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SuppliersReturnsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("SupplierReturnId");
+
+                    b.HasIndex("SuppliersReturnsId");
+
+                    b.ToTable("SupplierReturns");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturnItem", b =>
+                {
+                    b.Property<Guid>("ItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ActualPricePerUnit")
+                        .HasColumnType("numeric");
+
+                    b.Property<float>("ActualVisits")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<float>("HoursDelivered")
+                        .HasColumnType("real");
+
+                    b.Property<float>("PackageHours")
+                        .HasColumnType("real");
+
+                    b.Property<float>("PackageVisits")
+                        .HasColumnType("real");
+
+                    b.Property<decimal>("PricePerUnit")
+                        .HasColumnType("numeric");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SupplierReturnId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SupplierReturnItemStatusId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ItemId");
+
+                    b.HasIndex("SupplierReturnId");
+
+                    b.HasIndex("SupplierReturnItemStatusId");
+
+                    b.ToTable("SupplierReturnItems");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturnItemDisputeConversation", b =>
+                {
+                    b.Property<Guid>("DisputeItemConversationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("MessageFrom")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("MessageRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PackageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SupplierReturnItemId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("DisputeItemConversationId");
+
+                    b.ToTable("SupplierReturnItemDisputeConversations");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturnItemStatus", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("StatusName")
+                        .HasColumnType("text");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("SupplierReturnItemStatuses");
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SuppliersReturns", b =>
+                {
+                    b.Property<Guid>("SuppliersReturnsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SupplierReturnsStatusesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalAmountWhenCreating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("WeekCommencing")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("SuppliersReturnsId");
+
+                    b.ToTable("SuppliersReturns");
+                });
+
             modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.Supplier", b =>
                 {
                     b.Property<long>("SupplierId")
@@ -1028,13 +1152,17 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 {
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.BillStatus", "BillStatus")
                         .WithMany()
-                        .HasForeignKey("BillPaymentStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BillPaymentStatusId");
 
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PackageType", "PackageType")
                         .WithMany()
                         .HasForeignKey("PackageTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1062,6 +1190,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills.Bill", "BillStatus")
                         .WithMany()
                         .HasForeignKey("BillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.DisputedInvoice", b =>
+                {
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Department", "ActionRequiredFromDepartment")
+                        .WithMany()
+                        .HasForeignKey("ActionRequiredFromId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1223,6 +1366,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                     b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels.PayRunSupplierBill", "PayRunSupplierBill")
                         .WithMany("PayRunSupplierBillItems")
                         .HasForeignKey("PayRunSupplierBillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturn", b =>
+                {
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SuppliersReturns", "SuppliersReturns")
+                        .WithMany()
+                        .HasForeignKey("SuppliersReturnsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturnItem", b =>
+                {
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturn", "SupplierReturn")
+                        .WithMany("SupplierReturnItems")
+                        .HasForeignKey("SupplierReturnId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.SupplierReturns.SupplierReturnItemStatus", "SupplierReturnItemStatus")
+                        .WithMany()
+                        .HasForeignKey("SupplierReturnItemStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

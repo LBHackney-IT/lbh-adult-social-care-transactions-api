@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices
 {
-    public class DisputedInvoiceChat
+    public class DisputedInvoiceChat : BaseEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid DisputedInvoiceChatId { get; set; }
         public Guid DisputedInvoiceId { get; set; }
