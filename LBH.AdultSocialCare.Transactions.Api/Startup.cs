@@ -65,34 +65,19 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
         //TODO update the below to the name of your API
         private const string ApiName = "Adult Social Care Transactions API";
+        private readonly string _policyName = "CorsPolicy";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddScoped<ModelStateValidationFilterAttribute>();
-            services.AddMvc(config =>
-                {
-                    config.ReturnHttpNotAcceptable = true;
-                    config.Filters.Add(typeof(ApiExceptionFilter));
-
-                    // config.Filters.Add(typeof(ModelStateValidationFilterAttribute));
-                })
-                .AddNewtonsoftJson(x
-                    => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
-                .ConfigureApiBehaviorOptions(opt => opt.InvalidModelStateResponseFactory = (context
-                    => throw new InvalidModelStateException(context.ModelState.AllModelStateErrors(),
-                        "There are some validation errors. Please correct and try again")))
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            services.AddApiVersioning(o =>
+            services.AddCors(opt =>
             {
-                o.DefaultApiVersion = new ApiVersion(1, 0);
-
-                o.AssumeDefaultVersionWhenUnspecified =
-                    true; // assume that the caller wants the default version if they don't specify
-
-                o.ApiVersionReader =
-                    new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
+                opt.AddPolicy(name: _policyName, builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
             });
 
             services.AddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
@@ -171,6 +156,32 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
             RegisterGateways(services);
             RegisterUseCases(services);
+
+            // services.AddScoped<ModelStateValidationFilterAttribute>();
+            services.AddMvc(config =>
+                {
+                    config.ReturnHttpNotAcceptable = true;
+                    config.Filters.Add(typeof(ApiExceptionFilter));
+
+                    // config.Filters.Add(typeof(ModelStateValidationFilterAttribute));
+                })
+                .AddNewtonsoftJson(x
+                    => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .ConfigureApiBehaviorOptions(opt => opt.InvalidModelStateResponseFactory = (context
+                    => throw new InvalidModelStateException(context.ModelState.AllModelStateErrors(),
+                        "There are some validation errors. Please correct and try again")))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.AddApiVersioning(o =>
+            {
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+
+                o.AssumeDefaultVersionWhenUnspecified =
+                    true; // assume that the caller wants the default version if they don't specify
+
+                o.ApiVersionReader =
+                    new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
+            });
         }
 
         private void ConfigureDbContext(IServiceCollection services)
@@ -298,7 +309,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext databaseContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext databaseContext)
         {
             // Uncomment next line to delete and recreate DB
             //databaseContext.Database.EnsureDeleted();
@@ -310,7 +321,6 @@ namespace LBH.AdultSocialCare.Transactions.Api
                 databaseContext.Database.Migrate();
             }
 
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
             app.UseCorrelation();
 
             if (env.IsDevelopment())
@@ -349,6 +359,9 @@ namespace LBH.AdultSocialCare.Transactions.Api
             });
             app.UseSwagger();
             app.UseRouting();
+
+            // app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(_policyName);
 
             app.UseEndpoints(endpoints =>
             {
