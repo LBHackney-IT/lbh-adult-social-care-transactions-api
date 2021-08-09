@@ -35,7 +35,7 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
-          private: false
+          private: true
 resources:
   Resources:
     lambdaExecutionRole:
