@@ -301,7 +301,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext databaseContext)
         {
             // Uncomment next line to delete and recreate DB
-            databaseContext.Database.EnsureDeleted();
+            //databaseContext.Database.EnsureDeleted();
 
             // Run pending database migrations
             if (databaseContext.Database.GetPendingMigrations().Any())
