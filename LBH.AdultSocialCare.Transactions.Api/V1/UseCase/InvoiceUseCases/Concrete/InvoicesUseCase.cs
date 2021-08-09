@@ -28,7 +28,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
             _payRunGateway = payRunGateway;
         }
 
-        public async Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(Guid payRunId, Guid payRunItemId, DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain)
+        public async Task<DisputedInvoiceFlatResponse> HoldInvoicePaymentUseCase(Guid payRunId, Guid invoiceId, DisputedInvoiceForCreationDomain disputedInvoiceForCreationDomain)
         {
             // Check pay run exists and has correct status
             var payRun = await _payRunGateway.CheckPayRunExists(payRunId).ConfigureAwait(false);
@@ -41,7 +41,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
                     throw new ApiException($"Pay run with id {payRunId} has already been approved. Invoice status cannot be changed");
             }
 
-            var payRunItem = await _payRunGateway.CheckPayRunItemExists(payRunId, payRunItemId).ConfigureAwait(false);
+            // Get pay run item with invoice id
+            var payRunItem = await _payRunGateway.GetPayRunItemUsingInvoiceId(payRunId, invoiceId).ConfigureAwait(false);
 
             // Get invoice and check has correct status
             var invoice = await _payRunGateway.GetSingleInvoiceInPayRun(payRunId, payRunItem.InvoiceId).ConfigureAwait(false);

@@ -148,6 +148,20 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             return res;
         }
 
+        public async Task<PayRunItem> GetPayRunItemUsingInvoiceId(Guid payRunId, Guid invoiceId)
+        {
+            var res = await _dbContext.PayRunItems
+                .Where(pri => pri.PayRunId.Equals(payRunId) && pri.InvoiceId.Equals(invoiceId))
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+
+            if (res == null)
+            {
+                throw new EntityNotFoundException($"Pay run item for invoice {invoiceId} not found in this pay run");
+            }
+
+            return res;
+        }
+
         public async Task<DisputedInvoice> CheckDisputedInvoiceExists(Guid payRunId, Guid payRunItemId)
         {
             var res = await _dbContext.DisputedInvoices

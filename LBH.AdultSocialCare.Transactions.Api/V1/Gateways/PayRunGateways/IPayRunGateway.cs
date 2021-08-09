@@ -23,6 +23,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         Task<PayRunItem> CheckPayRunItemExists(Guid payRunId, Guid payRunItemId);
 
+        Task<PayRunItem> GetPayRunItemUsingInvoiceId(Guid payRunId, Guid invoiceId);
+
         Task<PayRun> CheckPayRunExists(Guid payRunId);
 
         Task<DisputedInvoice> CheckDisputedInvoiceExists(Guid payRunId, Guid payRunItemId);
