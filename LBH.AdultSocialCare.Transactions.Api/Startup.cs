@@ -48,8 +48,10 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.Utils;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
+
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -68,44 +70,52 @@ namespace LBH.AdultSocialCare.Transactions.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // services.AddScoped<ModelStateValidationFilterAttribute>();
-            services
-                .AddMvc(config =>
+            services.AddMvc(config =>
                 {
                     config.ReturnHttpNotAcceptable = true;
                     config.Filters.Add(typeof(ApiExceptionFilter));
+
                     // config.Filters.Add(typeof(ModelStateValidationFilterAttribute));
                 })
                 .AddNewtonsoftJson(x
                     => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
-                .ConfigureApiBehaviorOptions(opt => opt.InvalidModelStateResponseFactory = (context => throw new InvalidModelStateException(context.ModelState.AllModelStateErrors(),
-                    "There are some validation errors. Please correct and try again")))
+                .ConfigureApiBehaviorOptions(opt => opt.InvalidModelStateResponseFactory = (context
+                    => throw new InvalidModelStateException(context.ModelState.AllModelStateErrors(),
+                        "There are some validation errors. Please correct and try again")))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
-                o.AssumeDefaultVersionWhenUnspecified = true; // assume that the caller wants the default version if they don't specify
-                o.ApiVersionReader = new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
+
+                o.AssumeDefaultVersionWhenUnspecified =
+                    true; // assume that the caller wants the default version if they don't specify
+
+                o.ApiVersionReader =
+                    new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
             });
 
             services.AddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
 
             services.AddSwaggerGen(c =>
             {
-                c.AddSecurityDefinition("Token",
-                    new OpenApiSecurityScheme
-                    {
-                        In = ParameterLocation.Header,
-                        Description = "Your Hackney API Key",
-                        Name = "X-Api-Key",
-                        Type = SecuritySchemeType.ApiKey
-                    });
+                c.AddSecurityDefinition("Token", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Your Hackney API Key",
+                    Name = "X-Api-Key",
+                    Type = SecuritySchemeType.ApiKey
+                });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Token" }
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme, Id = "Token"
+                            }
                         },
                         new List<string>()
                     }
@@ -118,10 +128,10 @@ namespace LBH.AdultSocialCare.Transactions.Api
                 {
                     apiDesc.TryGetMethodInfo(out var methodInfo);
 
-                    var versions = methodInfo?
-                        .DeclaringType?.GetCustomAttributes()
+                    var versions = methodInfo?.DeclaringType?.GetCustomAttributes()
                         .OfType<ApiVersionAttribute>()
-                        .SelectMany(attr => attr.Versions).ToList();
+                        .SelectMany(attr => attr.Versions)
+                        .ToList();
 
                     return versions?.Any(v => $"{v.GetFormattedApiVersion()}" == docName) ?? false;
                 });
@@ -130,18 +140,22 @@ namespace LBH.AdultSocialCare.Transactions.Api
                 foreach (var apiVersion in _apiVersions)
                 {
                     var version = $"v{apiVersion.ApiVersion.ToString()}";
+
                     c.SwaggerDoc(version, new OpenApiInfo
                     {
                         Title = $"{ApiName}-api {version}",
                         Version = version,
-                        Description = $"{ApiName} version {version}. Please check older versions for depreciated endpoints."
+                        Description =
+                            $"{ApiName} version {version}. Please check older versions for depreciated endpoints."
                     });
                 }
 
                 c.CustomSchemaIds(x => x.FullName);
+
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
                 if (File.Exists(xmlPath))
                     c.IncludeXmlComments(xmlPath);
             });
@@ -254,7 +268,10 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IGetReleasedHoldsCountUseCase, GetReleasedHoldsCountUseCase>();
             services.AddScoped<IGetUniquePackageTypesInPayRunUseCase, GetUniquePackageTypesInPayRunUseCase>();
             services.AddScoped<IGetReleasedHoldsUseCase, GetReleasedHoldsUseCase>();
-            services.AddScoped<IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase, GetUniqueInvoiceItemPaymentStatusInPayRunUseCase>();
+
+            services
+                .AddScoped<IGetUniqueInvoiceItemPaymentStatusInPayRunUseCase,
+                    GetUniqueInvoiceItemPaymentStatusInPayRunUseCase>();
             services.AddScoped<IGetSinglePayRunDetailsUseCase, GetSinglePayRunDetailsUseCase>();
             services.AddScoped<IInvoiceStatusUseCase, InvoiceStatusUseCase>();
             services.AddScoped<IChangePayRunStatusUseCase, ChangePayRunStatusUseCase>();
@@ -272,28 +289,25 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.AddScoped<IAcceptAllSupplierReturnPackageItemsUseCase, AcceptAllSupplierReturnPackageItemsUseCase>();
             services.AddScoped<IChangeSupplierReturnPackageValuesUseCase, ChangeSupplierReturnPackageValuesUseCase>();
             services.AddScoped<ICreateDisputeItemChatUseCase, CreateDisputeItemChatUseCase>();
-            services.AddScoped<IDisputeAllSupplierReturnPackageItemsUseCase, DisputeAllSupplierReturnPackageItemsUseCase>();
+
+            services
+                .AddScoped<IDisputeAllSupplierReturnPackageItemsUseCase, DisputeAllSupplierReturnPackageItemsUseCase>();
             services.AddScoped<IGetDisputeItemChatUseCase, GetDisputeItemChatUseCase>();
             services.AddScoped<IGetSingleSupplierReturnInsightsUseCase, GetSingleSupplierReturnInsightsUseCase>();
             services.AddScoped<IMarkDisputeItemChatUseCase, MarkDisputeItemChatUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext databaseContext)
         {
-            using (IServiceScope appScope = app.ApplicationServices.CreateScope())
+            // Uncomment next line to delete and recreate DB
+            //databaseContext.Database.EnsureDeleted();
+
+            // Run pending database migrations
+            if (databaseContext.Database.GetPendingMigrations().Any())
             {
-                DatabaseContext databaseContext = appScope.ServiceProvider.GetRequiredService<DatabaseContext>();
-
-                // Uncomment next line to delete and recreate DB
-                databaseContext.Database.EnsureDeleted();
-
-                // Run pending database migrations
-                if (databaseContext.Database.GetPendingMigrations().Any())
-                {
-                    // Perform migrations
-                    databaseContext.Database.Migrate();
-                }
+                // Perform migrations
+                databaseContext.Database.Migrate();
             }
 
             app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
@@ -342,5 +356,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
     }
+
 }
