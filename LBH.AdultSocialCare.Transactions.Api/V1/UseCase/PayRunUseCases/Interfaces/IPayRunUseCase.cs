@@ -23,5 +23,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
         Task<IEnumerable<PayRunSubTypeResponse>> GetAllPayRunSubTypesUseCase();
 
         Task<IEnumerable<PayRunStatusResponse>> GetAllUniquePayRunStatusesUseCase();
+
+        Task<bool> RejectInvoiceInPayRun(Guid payRunId, Guid invoiceId);
     }
 }

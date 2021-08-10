@@ -189,6 +189,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         }
 
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [HttpPut("{payRunId}/invoices/{invoiceId}/status/reject-invoice")]
+        public async Task<ActionResult<bool>> RejectInvoiceInPayRun(Guid payRunId, Guid invoiceId)
+        {
+            var res = await _payRunUseCase
+                .RejectInvoiceInPayRun(payRunId, invoiceId).ConfigureAwait(false);
+            return Ok(res);
+        }
+
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [HttpPut("release-held-invoice-list")]
         public async Task<ActionResult<bool>> ReleaseHeldInvoiceItemPayment([FromBody] IEnumerable<ReleaseHeldInvoiceItemRequest> releaseHeldInvoiceItemRequests)
         {

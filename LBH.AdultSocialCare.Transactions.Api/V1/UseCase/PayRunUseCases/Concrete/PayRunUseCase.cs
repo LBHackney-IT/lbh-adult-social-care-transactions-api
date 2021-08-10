@@ -104,5 +104,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             var res = await _payRunGateway.GetAllUniquePayRunStatuses().ConfigureAwait(false);
             return res.ToResponse();
         }
+
+        public async Task<bool> RejectInvoiceInPayRun(Guid payRunId, Guid invoiceId)
+        {
+            // Check pay run exists and has correct status
+            var payRun = await _payRunGateway.CheckPayRunExists(payRunId).ConfigureAwait(false);
+
+            switch (payRun.PayRunStatusId)
+            {
+                case (int) PayRunStatusesEnum.SubmittedForApproval:
+                    throw new ApiException($"Pay run with id {payRunId} has already been submitted for approval");
+                case (int) PayRunStatusesEnum.Approved:
+                    throw new ApiException($"Pay run with id {payRunId} has already been approved. Invoice status cannot be changed");
+            }
+
+            return await _payRunGateway.RejectInvoiceInPayRun(payRunId, invoiceId).ConfigureAwait(false);
+        }
     }
 }

@@ -359,6 +359,44 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
             }
         }
 
+        public async Task<bool> RejectInvoiceInPayRun(Guid payRunId, Guid invoiceId)
+        {
+            // Get the invoice
+            var invoice = await _dbContext.PayRunItems
+                .Where(pri =>
+                    pri.PayRunId.Equals(payRunId) && pri.InvoiceId.Equals(invoiceId))
+                .Select(pri => pri.Invoice)
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (invoice == null)
+            {
+                throw new EntityNotFoundException($"Invoice with id {invoiceId} not found in pay run");
+            }
+
+            switch (invoice.InvoiceStatusId)
+            {
+                case (int) InvoiceStatusEnum.Held:
+                    throw new ApiException(
+                        $"Invoice with id {invoiceId} is held and must be released first", StatusCodes.Status422UnprocessableEntity);
+                case (int) InvoiceStatusEnum.Rejected:
+                    throw new ApiException($"Invoice with id {invoiceId} is already marked as rejected", StatusCodes.Status422UnprocessableEntity);
+            }
+
+            invoice.InvoiceStatusId = (int) InvoiceStatusEnum.Rejected;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new DbSaveFailedException("Could not save rejected status to database");
+            }
+        }
+
         public async Task<PayRun> CheckPayRunExists(Guid payRunId)
         {
             var payRun = await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId))
