@@ -128,7 +128,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                     DateFrom = pr.DateFrom,
                     DateTo = pr.DateTo,
                     CreatorId = pr.CreatorId,
-                    UpdaterId = pr.UpdaterId
+                    UpdaterId = pr.UpdaterId,
+                    PayRunStatusName = pr.PayRunStatus.StatusName,
+                    DateCreated = pr.DateCreated
                 })
                 .SingleOrDefaultAsync()
                 .ConfigureAwait(false);

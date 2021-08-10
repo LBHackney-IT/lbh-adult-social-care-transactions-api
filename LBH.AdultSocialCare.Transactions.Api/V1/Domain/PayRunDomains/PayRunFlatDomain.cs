@@ -13,5 +13,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains
         public DateTimeOffset DateTo { get; set; }
         public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
+        public string PayRunStatusName { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
     }
 }
