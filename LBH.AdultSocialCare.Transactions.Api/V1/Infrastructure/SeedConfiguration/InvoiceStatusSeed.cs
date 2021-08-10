@@ -59,6 +59,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.SeedConfigurati
                     StatusName = InvoiceStatusEnum.Paid.ToDescription(),
                     DisplayName = InvoiceStatusEnum.Paid.GetDisplayName(),
                     ApprovalStatus = false
+                },
+                new InvoiceStatus
+                {
+                    Id = (int) InvoiceStatusEnum.Rejected,
+                    StatusName = InvoiceStatusEnum.Rejected.ToDescription(),
+                    DisplayName = InvoiceStatusEnum.Rejected.GetDisplayName(),
+                    ApprovalStatus = true
                 });
         }
     }

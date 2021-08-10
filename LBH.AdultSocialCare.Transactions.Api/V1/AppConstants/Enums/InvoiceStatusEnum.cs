@@ -34,7 +34,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums
         Paid = 7,
 
         [Description("Rejected")]
-        [Display(Name = "Rejected")]
+        [Display(Name = "Reject")]
         Rejected = 8
     }
 }
