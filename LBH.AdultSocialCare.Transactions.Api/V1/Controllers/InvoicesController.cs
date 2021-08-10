@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {
@@ -49,11 +51,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             return Ok(res);
         }
 
-        [ProducesResponseType(typeof(IEnumerable<HeldInvoiceResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedHeldInvoiceResponse), StatusCodes.Status200OK)]
         [HttpGet("held-invoice-payments")]
-        public async Task<ActionResult<IEnumerable<HeldInvoiceResponse>>> GetHeldInvoicePaymentsList()
+        public async Task<ActionResult<PagedHeldInvoiceResponse>> GetHeldInvoicePaymentsList([FromQuery] HeldInvoicePaymentParameters parameters)
         {
-            var res = await _payRunUseCase.GetHeldInvoicePaymentsUseCase().ConfigureAwait(false);
+            var res = await _payRunUseCase.GetHeldInvoicePaymentsUseCase(parameters).ConfigureAwait(false);
             return Ok(res);
         }
 

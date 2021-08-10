@@ -14,7 +14,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 
         Task<IEnumerable<Invoice>> GetInvoicesFlatInPayRunAsync(Guid payRunId);
 
-        Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments();
+        Task<PagedList<HeldInvoiceDomain>> GetHeldInvoicePayments(HeldInvoicePaymentParameters parameters);
 
         Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingInvoiceStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
 

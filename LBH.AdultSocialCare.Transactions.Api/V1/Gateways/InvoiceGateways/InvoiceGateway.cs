@@ -70,10 +70,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             return invoices;
         }
 
-        public async Task<IEnumerable<HeldInvoiceDomain>> GetHeldInvoicePayments()
+        public async Task<PagedList<HeldInvoiceDomain>> GetHeldInvoicePayments(HeldInvoicePaymentParameters parameters)
         {
-            var payRunsWithHeldInvoicesIds = await _dbContext.DisputedInvoices.Where(pr =>
-                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+            var payRunsWithHeldInvoicesIds = await _dbContext.DisputedInvoices
+                .Where(pr =>
+                    pr.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) &&
+                    (parameters.DateFrom.Equals(null) || pr.PayRunItem.PayRun.DateFrom >= parameters.DateFrom) &&
+                    (parameters.DateTo.Equals(null) || pr.PayRunItem.PayRun.DateTo <= parameters.DateTo) &&
+                    (parameters.PackageTypeId.Equals(null) || pr.PayRunItem.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
+                    (parameters.WaitingOnId.Equals(null) || pr.DisputedInvoiceChats.OrderByDescending(c => c.DateCreated).First().ActionRequiredFromId.Equals(parameters.WaitingOnId)) &&
+                    (parameters.ServiceUserId.Equals(null) || pr.PayRunItem.Invoice.ServiceUserId.Equals(parameters.ServiceUserId)) &&
+                    (parameters.SupplierId.Equals(null) || pr.PayRunItem.Invoice.SupplierId.Equals(parameters.SupplierId))
+                    )
+                .OrderByDescending(pr => pr.PayRunItem.PayRun.DateCreated)
                 .Select(pr => pr.PayRunItem.PayRunId)
                 .Distinct()
                 .ToListAsync()
@@ -87,7 +96,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 where payRunsWithHeldInvoicesIds.Contains(pr.PayRunId) && pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held)
                        select pr).ToList();*/
 
-            var heldInvoices = await _dbContext.PayRuns.Where(p => payRunsWithHeldInvoicesIds.Contains(p.PayRunId))
+            var selectedPayRunIds = payRunsWithHeldInvoicesIds
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize);
+
+            var heldInvoices = await _dbContext.PayRuns.Where(p => selectedPayRunIds.Contains(p.PayRunId))
+                .OrderByDescending(pr => pr.DateCreated)
                 .Select(pr => new HeldInvoiceDomain
                 {
                     PayRunId = pr.PayRunId,
@@ -95,7 +109,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                     DateFrom = pr.DateFrom,
                     DateTo = pr.DateTo,
                     Invoices = pr.PayRunItems.Where(pri =>
-                            pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held))
+                            pri.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held) &&
+                            (parameters.PackageTypeId.Equals(null) || pri.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
+                            (parameters.ServiceUserId.Equals(null) || pri.Invoice.ServiceUserId.Equals(parameters.ServiceUserId)) &&
+                            (parameters.SupplierId.Equals(null) || pri.Invoice.SupplierId.Equals(parameters.SupplierId))
+                            )
                         .Select(pri => new InvoiceDomain
                         {
                             InvoiceId = pri.InvoiceId,
@@ -146,7 +164,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 }).ToListAsync()
                 .ConfigureAwait(false);
 
-            return heldInvoices;
+            return PagedList<HeldInvoiceDomain>.ToPagedList(heldInvoices, payRunsWithHeldInvoicesIds.Count, parameters.PageNumber,
+                parameters.PageSize);
         }
 
         public async Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingInvoiceStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)

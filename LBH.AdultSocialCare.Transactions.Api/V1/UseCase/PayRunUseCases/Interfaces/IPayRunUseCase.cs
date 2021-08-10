@@ -3,6 +3,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces
 {
@@ -10,7 +11,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfa
     {
         Task<PayRunInsightsResponse> GetSinglePayRunInsightsUseCase(Guid payRunId);
 
-        Task<IEnumerable<HeldInvoiceResponse>> GetHeldInvoicePaymentsUseCase();
+        Task<PagedHeldInvoiceResponse> GetHeldInvoicePaymentsUseCase(HeldInvoicePaymentParameters parameters);
 
         Task<bool> ApprovePayRunForPaymentUseCase(Guid payRunId);
 

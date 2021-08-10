@@ -7,6 +7,7 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -31,10 +32,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             return res.ToResponse();
         }
 
-        public async Task<IEnumerable<HeldInvoiceResponse>> GetHeldInvoicePaymentsUseCase()
+        public async Task<PagedHeldInvoiceResponse> GetHeldInvoicePaymentsUseCase(
+            HeldInvoicePaymentParameters parameters)
         {
-            var res = await _invoiceGateway.GetHeldInvoicePayments().ConfigureAwait(false);
-            return res.ToResponse();
+            var res = await _invoiceGateway.GetHeldInvoicePayments(parameters).ConfigureAwait(false);
+            return new PagedHeldInvoiceResponse { PagingMetaData = res.PagingMetaData, Data = res.ToResponse() };
         }
 
         public async Task<bool> ApprovePayRunForPaymentUseCase(Guid payRunId)
