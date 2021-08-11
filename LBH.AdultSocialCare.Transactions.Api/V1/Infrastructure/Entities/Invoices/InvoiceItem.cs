@@ -12,7 +12,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         [Required] public Guid InvoiceId { get; set; }
         [Required] public string ItemName { get; set; }
         [Required] public decimal PricePerUnit { get; set; }
-        [Required] public int Quantity { get; set; }
+        [Required] public decimal Quantity { get; set; }
         [Required] public decimal SubTotal { get; set; }
         [Required] public decimal VatAmount { get; set; }
         [Required] public decimal TotalPrice { get; set; }
