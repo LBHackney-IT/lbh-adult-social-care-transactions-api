@@ -10,6 +10,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Req
         [Required] public int? PackageTypeId { get; set; }
         [Required] public Guid? ServiceUserId { get; set; }
         [Required] public Guid? CreatorId { get; set; }
+        [Required] public DateTimeOffset? DateFrom { get; set; }
+        [Required] public DateTimeOffset? DateTo { get; set; }
+        public Guid? PackageId { get; set; }
         public IEnumerable<InvoiceItemForCreationRequest> InvoiceItems { get; set; }
     }
 }

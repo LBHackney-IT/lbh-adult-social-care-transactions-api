@@ -29,14 +29,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                     $"Pay run with id {payRunId} is not in draft", StatusCodes.Status422UnprocessableEntity);
             }
 
-            var validInvoiceIds = new List<int>() { (int) InvoiceStatusEnum.Held, (int) InvoiceStatusEnum.Accepted };
+            var validInvoiceIds = new List<int>() { (int) InvoiceStatusEnum.Held, (int) InvoiceStatusEnum.Accepted, (int) InvoiceStatusEnum.Rejected };
 
             var validInvoiceStatuses = await _payRunGateway.CheckAllInvoicesInPayRunInStatusList(payRunId, validInvoiceIds).ConfigureAwait(false);
 
             if (!validInvoiceStatuses)
             {
                 throw new ApiException(
-                    $"All invoices in pay run must be held or accepted before submitting for approval. Please check and try again");
+                    $"All invoices in pay run must be accepted, held or rejected before submitting for approval. Please check and try again");
             }
 
             return await _payRunGateway.ChangePayRunStatus(payRunId, (int) PayRunStatusesEnum.SubmittedForApproval)

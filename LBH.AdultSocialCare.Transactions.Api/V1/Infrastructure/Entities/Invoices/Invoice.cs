@@ -19,6 +19,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         [Required] public int InvoiceStatusId { get; set; }
         [Required] public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
+        public Guid? PackageId { get; set; }
+        [Required] public DateTimeOffset DateFrom { get; set; }
+        [Required] public DateTimeOffset DateTo { get; set; }
 
         [ForeignKey(nameof(InvoiceStatusId))] public InvoiceStatus InvoiceStatus { get; set; }
         [ForeignKey(nameof(PackageTypeId))] public PackageType PackageType { get; set; }
