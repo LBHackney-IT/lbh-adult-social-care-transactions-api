@@ -17,7 +17,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
     public static class ApiToDomainFactory
     {
-        private static IMapper _mapper { get; set; }
+        private static IMapper _mapper;
 
         public static void Configure(IMapper mapper)
         {
@@ -63,6 +63,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             }
             var res = _mapper.Map<InvoiceForCreationDomain>(invoiceForCreationRequest);
             return res;
+        }
+
+        public static IEnumerable<InvoiceForCreationDomain> ToDomain(this IEnumerable<InvoiceForCreationRequest> invoices)
+        {
+            return _mapper.Map<IEnumerable<InvoiceForCreationDomain>>(invoices);
         }
 
         public static DisputedInvoiceChatForCreationDomain ToDomain(this DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest, Guid payRunId)
