@@ -9,7 +9,14 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete
 {
@@ -80,6 +87,31 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
         public async Task<InvoiceResponse> CreateInvoiceUseCase(InvoiceForCreationDomain invoiceForCreationDomain)
         {
+            await CalculateInvoicePrice(invoiceForCreationDomain).ConfigureAwait(false);
+
+            var res = await _invoiceGateway.CreateInvoice(invoiceForCreationDomain.ToDb()).ConfigureAwait(false);
+
+            return res.ToResponse();
+        }
+
+        public async Task<IEnumerable<InvoiceResponse>> BatchCreateInvoicesUseCase(IEnumerable<InvoiceForCreationDomain> invoicesForCreationDomain)
+        {
+            if (invoicesForCreationDomain.Any(i => i.InvoiceItems.IsNullOrEmpty<InvoiceItemForCreationDomain>()))
+            {
+                throw new ApiException("Invoice cannot be created without invoice items", (int) HttpStatusCode.UnprocessableEntity);
+            }
+
+            foreach (var invoice in invoicesForCreationDomain)
+            {
+                await CalculateInvoicePrice(invoice).ConfigureAwait(false);
+            }
+
+            var invoiceResponses = await _invoiceGateway.BatchCreateInvoices(invoicesForCreationDomain.ToDb()).ConfigureAwait(false);
+            return invoiceResponses.ToResponse();
+        }
+
+        private async Task CalculateInvoicePrice(InvoiceForCreationDomain invoiceForCreationDomain)
+        {
             // Check if package type is valid
             _packageTypeGateway.IsValidPackageType(invoiceForCreationDomain.PackageTypeId);
 
@@ -101,10 +133,6 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
                 invoiceItem.TotalPrice = invoiceItem.SubTotal + invoiceItem.VatAmount;
                 invoiceForCreationDomain.TotalAmount += invoiceItem.TotalPrice;
             }
-
-            var res = await _invoiceGateway.CreateInvoice(invoiceForCreationDomain.ToDb()).ConfigureAwait(false);
-
-            return res.ToResponse();
         }
     }
 }

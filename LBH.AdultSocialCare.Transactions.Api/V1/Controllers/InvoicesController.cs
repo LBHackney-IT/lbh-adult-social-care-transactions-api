@@ -78,5 +78,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
             var result = await _invoicesUseCase.CreateInvoiceUseCase(invoiceForCreationRequest.ToDomain()).ConfigureAwait(false);
             return Ok(result);
         }
+
+        [HttpPost("batch")]
+        [ProducesResponseType(typeof(IEnumerable<InvoiceResponse>), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<IEnumerable<InvoiceResponse>>> BatchCreateInvoice([FromBody] IEnumerable<InvoiceForCreationRequest> invoices)
+        {
+            var result = await _invoicesUseCase.BatchCreateInvoicesUseCase(invoices.ToDomain()).ConfigureAwait(false);
+            return Ok(result);
+        }
     }
 }

@@ -10,7 +10,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRunModels;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Suppliers;
 using System.Collections.Generic;
-using System.Linq;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.LedgerDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
@@ -20,7 +19,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {
     public static class DomainToEntityFactory
     {
-        private static IMapper _mapper { get; set; }
+        private static IMapper _mapper;
 
         public static void Configure(IMapper mapper)
         {
@@ -95,6 +94,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
         {
             var entity = _mapper.Map<Invoice>(invoiceForCreationDomain);
             return entity;
+        }
+
+        public static IEnumerable<Invoice> ToDb(this IEnumerable<InvoiceForCreationDomain> invoiceForCreationDomain)
+        {
+            return _mapper.Map<IEnumerable<Invoice>>(invoiceForCreationDomain);
         }
 
         public static DisputedInvoiceChat ToDb(this DisputedInvoiceChatForCreationDomain disputedInvoiceChatForCreationDomain, Guid disputedInvoiceId)

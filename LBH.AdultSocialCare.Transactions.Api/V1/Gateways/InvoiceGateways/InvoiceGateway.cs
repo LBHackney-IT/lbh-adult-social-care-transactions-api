@@ -255,6 +255,32 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             }
         }
 
+        public async Task<IEnumerable<InvoiceDomain>> BatchCreateInvoices(IEnumerable<Invoice> invoices)
+        {
+            var savedInvoices = new List<InvoiceDomain>();
+
+            await using (var transaction = await _dbContext.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    foreach (var invoice in invoices)
+                    {
+                        var invoiceDomain = await CreateInvoice(invoice).ConfigureAwait(false);
+                        savedInvoices.Add(invoiceDomain);
+                    }
+
+                    await transaction.CommitAsync().ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync().ConfigureAwait(false);
+                    throw;
+                }
+            }
+
+            return savedInvoices;
+        }
+
         public async Task<DisputedInvoiceFlatDomain> CreateDisputedInvoice(DisputedInvoice newDisputedInvoice)
         {
             var entry = await _dbContext.DisputedInvoices.AddAsync(newDisputedInvoice).ConfigureAwait(false);
