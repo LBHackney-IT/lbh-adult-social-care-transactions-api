@@ -49,13 +49,44 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
                 .Include(ii =>
                     ii.InvoiceItems)
-                .OrderBy(i => i.SupplierId)
+                .OrderBy(i => i.SupplierId).ThenByDescending(i => i.DateCreated)
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
+                .Select(i => new InvoiceDomain
+                {
+                    InvoiceId = i.InvoiceId,
+                    InvoiceNumber = i.InvoiceNumber,
+                    SupplierId = i.SupplierId,
+                    PackageTypeId = i.PackageTypeId,
+                    PackageTypeName = i.PackageType.PackageTypeName,
+                    ServiceUserId = i.ServiceUserId,
+                    DateInvoiced = i.DateInvoiced,
+                    TotalAmount = i.TotalAmount,
+                    SupplierVATPercent = i.SupplierVATPercent,
+                    InvoiceStatusId = i.InvoiceStatusId,
+                    CreatorId = i.CreatorId,
+                    UpdaterId = i.UpdaterId,
+                    InvoiceItems = i.InvoiceItems.Where(ii =>
+                        ii.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held)).Select(
+                                ii => new InvoiceItemMinimalDomain
+                                {
+                                    InvoiceItemId = ii.InvoiceItemId,
+                                    InvoiceId = ii.InvoiceId,
+                                    ItemName = ii.ItemName,
+                                    PricePerUnit = ii.PricePerUnit,
+                                    Quantity = ii.Quantity,
+                                    SubTotal = ii.SubTotal,
+                                    VatAmount = ii.VatAmount,
+                                    TotalPrice = ii.TotalPrice,
+                                    SupplierReturnItemId = ii.SupplierReturnItemId,
+                                    CreatorId = ii.CreatorId,
+                                    UpdaterId = ii.UpdaterId
+                                })
+                })
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            return PagedList<InvoiceDomain>.ToPagedList(invoices.ToInvoiceDomain(), invoiceIds.Count, parameters.PageNumber,
+            return PagedList<InvoiceDomain>.ToPagedList(invoices, invoiceIds.Count, parameters.PageNumber,
                 parameters.PageSize);
         }
 
