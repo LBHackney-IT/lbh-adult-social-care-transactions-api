@@ -11,8 +11,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.PayRun
         public Guid PayRunId { get; set; }
         public Guid InvoiceId { get; set; }
         public Guid? InvoiceItemId { get; set; }
-        [Column(TypeName = "decimal(3, 2)")] public decimal PaidAmount { get; set; }
-        [Column(TypeName = "decimal(3, 2)")] public decimal RemainingBalance { get; set; }
+        [Column(TypeName = "decimal(10, 2)")] public decimal PaidAmount { get; set; }
+        [Column(TypeName = "decimal(10, 2)")] public decimal RemainingBalance { get; set; }
         [ForeignKey(nameof(PayRunId))] public PayRun PayRun { get; set; }
         [ForeignKey(nameof(InvoiceId))] public Invoice Invoice { get; set; }
         [ForeignKey(nameof(InvoiceItemId))] public InvoiceItem InvoiceItem { get; set; }

@@ -11,11 +11,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid InvoiceItemId { get; set; }
         [Required] public Guid InvoiceId { get; set; }
         [Required] public string ItemName { get; set; }
-        [Required] [Column(TypeName = "decimal(3, 2)")] public decimal PricePerUnit { get; set; }
-        [Required] [Column(TypeName = "decimal(3, 2)")] public decimal Quantity { get; set; }
-        [Required] [Column(TypeName = "decimal(3, 2)")] public decimal SubTotal { get; set; }
-        [Required] [Column(TypeName = "decimal(3, 2)")] public decimal VatAmount { get; set; }
-        [Required] [Column(TypeName = "decimal(3, 2)")] public decimal TotalPrice { get; set; }
+        [Required] [Column(TypeName = "decimal(10, 2)")] public decimal PricePerUnit { get; set; }
+        [Required] [Column(TypeName = "decimal(10, 2)")] public decimal Quantity { get; set; }
+        [Required] [Column(TypeName = "decimal(10, 2)")] public decimal SubTotal { get; set; }
+        [Required] [Column(TypeName = "decimal(10, 2)")] public decimal VatAmount { get; set; }
+        [Required] [Column(TypeName = "decimal(10, 2)")] public decimal TotalPrice { get; set; }
         public Guid? SupplierReturnItemId { get; set; } // If the invoice is coming from supplier returns, reference the item here
         [Required] public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
