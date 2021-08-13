@@ -38,7 +38,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 dateTo = DateTimeOffset.Now;
             }
 
-            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
+            var validPackageTypeIds = new List<int>
+            {
+                (int) PackageTypeEnum.NursingCarePackage, (int) PackageTypeEnum.ResidentialCarePackage
+            };
+
+            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
             return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
@@ -59,12 +64,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             };
         }
 
-        private async Task<List<InvoiceDomain>> GetInvoicesForPayRun(int invoiceStatusId, DateTimeOffset dateFrom, DateTimeOffset dateTo)
+        private async Task<List<InvoiceDomain>> GetInvoicesForPayRun(List<int> packageTypeIds, int invoiceStatusId, DateTimeOffset dateFrom, DateTimeOffset dateTo)
         {
-            // Get invoices from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
+            // Get invoices from date of last pay run with status new/draft
 
             var invoices = await _invoiceGateway
-                .GetInvoiceListUsingInvoiceStatus(invoiceStatusId, dateFrom, dateTo)
+                .GetInvoiceListUsingPackageTypeAndInvoiceStatus(packageTypeIds, invoiceStatusId, dateFrom, dateTo)
                 .ConfigureAwait(false);
 
             // If no invoices do not create pay run
@@ -90,7 +95,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 dateTo = DateTimeOffset.Now;
             }
 
-            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
+            var validPackageTypeIds = new List<int>
+            {
+                (int) PackageTypeEnum.DayCarePackage
+            };
+
+            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
             return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
@@ -108,7 +118,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 dateTo = DateTimeOffset.Now;
             }
 
-            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
+            var validPackageTypeIds = new List<int>
+            {
+                (int) PackageTypeEnum.HomeCarePackage
+            };
+
+            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
 
             return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
         }
@@ -127,8 +142,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");
             }
+
+            var validPackageTypeIds = new List<int>
+            {
+                (int) PackageTypeEnum.NursingCarePackage, (int) PackageTypeEnum.ResidentialCarePackage
+            };
             // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
+            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
 
             return await CreatePayRun(invoiceDomains, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo, payRunTypeId, payRunSubTypeId).ConfigureAwait(false);
         }
@@ -145,8 +165,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             {
                 throw new EntityNotFoundException("There are no held invoices at this time");
             }
+            var validPackageTypeIds = new List<int>
+            {
+                (int) PackageTypeEnum.HomeCarePackage, (int) PackageTypeEnum.DayCarePackage
+            };
             // Get invoice items from date of last pay run with status new - fresh from supplier returns, never in a pay run before.
-            var invoiceDomains = await GetInvoicesForPayRun((int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
+            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Released, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo).ConfigureAwait(false);
 
             return await CreatePayRun(invoiceDomains, (DateTimeOffset) dateFrom, (DateTimeOffset) dateTo, payRunTypeId, payRunSubTypeId).ConfigureAwait(false);
         }

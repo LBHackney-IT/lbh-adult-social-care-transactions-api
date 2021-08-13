@@ -12,11 +12,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
     {
         Task<PagedList<InvoiceDomain>> GetInvoicesInPayRun(Guid payRunId, InvoiceListParameters parameters);
 
+        Task<PagedList<InvoiceDomain>> GetInvoicesFlatInPayRunAsync(Guid payRunId, InvoiceListParameters parameters);
+
         Task<IEnumerable<Invoice>> GetInvoicesFlatInPayRunAsync(Guid payRunId);
 
         Task<PagedList<HeldInvoiceDomain>> GetHeldInvoicePayments(HeldInvoicePaymentParameters parameters);
 
-        Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingInvoiceStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
+        Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingPackageTypeAndInvoiceStatus(List<int> packageTypeIds, int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
 
         Task<IEnumerable<PayRunItemsPaymentsByTypeDomain>> GetInvoicesCountUsingStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null);
 

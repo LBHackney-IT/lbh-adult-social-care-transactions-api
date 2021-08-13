@@ -20,8 +20,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
 
         public async Task<IEnumerable<InvoiceResponse>> Execute(DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
+            var validPackageTypeIds = new List<int>
+            {
+                (int) PackageTypeEnum.NursingCarePackage, (int) PackageTypeEnum.ResidentialCarePackage, (int) PackageTypeEnum.HomeCarePackage, (int) PackageTypeEnum.DayCarePackage
+            };
             var res = await _invoiceGateway
-                .GetInvoiceListUsingInvoiceStatus((int) InvoiceStatusEnum.Released, fromDate, toDate)
+                .GetInvoiceListUsingPackageTypeAndInvoiceStatus(validPackageTypeIds, (int) InvoiceStatusEnum.Released, fromDate, toDate)
                 .ConfigureAwait(false);
             return res?.ToResponse();
         }

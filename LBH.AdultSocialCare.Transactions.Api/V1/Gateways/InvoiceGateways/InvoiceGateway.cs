@@ -36,14 +36,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                     (parameters.DateTo.Equals(null) || pri.Invoice.DateCreated <= parameters.DateTo) &&
                     (parameters.SupplierId.Equals(null) ||
                      pri.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
+                    (parameters.ServiceUserId.Equals(null) ||
+                     pri.Invoice.ServiceUserId.Equals(parameters.ServiceUserId)) &&
                     (parameters.PackageTypeId.Equals(null) ||
                      pri.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
                     (parameters.InvoiceStatusId.Equals(null) ||
                      pri.Invoice.InvoiceStatusId.Equals(parameters.InvoiceStatusId)) &&
                     pri.PayRunId.Equals(payRunId)
-                    && (parameters.SearchTerm == null || EF.Functions.Like(
+                    && (parameters.InvoiceNumber == null || EF.Functions.Like(
                         pri.Invoice.InvoiceNumber.ToLower(),
-                        $"%{parameters.SearchTerm.Trim().ToLower()}%"))).Select(pri => pri.InvoiceId)
+                        $"%{parameters.InvoiceNumber.Trim().ToLower()}%"))).Select(pri => pri.InvoiceId)
                 .Distinct().ToListAsync().ConfigureAwait(false);
 
             var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
@@ -81,6 +83,61 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                             CreatorId = ii.CreatorId,
                             UpdaterId = ii.UpdaterId
                         })
+                })
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return PagedList<InvoiceDomain>.ToPagedList(invoices, invoiceIds.Count, parameters.PageNumber,
+                parameters.PageSize);
+        }
+
+        /// <summary>
+        /// Get invoices without the invoice items. One use case is get the invoice list for filter using invoice number
+        /// </summary>
+        /// <param name="payRunId"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public async Task<PagedList<InvoiceDomain>> GetInvoicesFlatInPayRunAsync(Guid payRunId, InvoiceListParameters parameters)
+        {
+            // Get unique invoice ids
+            var invoiceIds = await _dbContext.PayRunItems
+                .Where(pri =>
+                    (parameters.DateFrom.Equals(null) || pri.Invoice.DateCreated >= parameters.DateFrom) &&
+                    (parameters.DateTo.Equals(null) || pri.Invoice.DateCreated <= parameters.DateTo) &&
+                    (parameters.SupplierId.Equals(null) ||
+                     pri.Invoice.SupplierId.Equals(parameters.SupplierId)) &&
+                    (parameters.ServiceUserId.Equals(null) ||
+                     pri.Invoice.ServiceUserId.Equals(parameters.ServiceUserId)) &&
+                    (parameters.PackageTypeId.Equals(null) ||
+                     pri.Invoice.PackageTypeId.Equals(parameters.PackageTypeId)) &&
+                    (parameters.InvoiceStatusId.Equals(null) ||
+                     pri.Invoice.InvoiceStatusId.Equals(parameters.InvoiceStatusId)) &&
+                    pri.PayRunId.Equals(payRunId)
+                    && (parameters.InvoiceNumber == null || EF.Functions.Like(
+                        pri.Invoice.InvoiceNumber.ToLower(),
+                        $"%{parameters.InvoiceNumber.Trim().ToLower()}%"))).Select(pri => pri.InvoiceId)
+                .Distinct().ToListAsync().ConfigureAwait(false);
+
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
+                .Include(ii =>
+                    ii.InvoiceItems)
+                .OrderBy(i => i.SupplierId).ThenByDescending(i => i.DateCreated)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .Select(i => new InvoiceDomain
+                {
+                    InvoiceId = i.InvoiceId,
+                    InvoiceNumber = i.InvoiceNumber,
+                    SupplierId = i.SupplierId,
+                    PackageTypeId = i.PackageTypeId,
+                    PackageTypeName = i.PackageType.PackageTypeName,
+                    ServiceUserId = i.ServiceUserId,
+                    DateInvoiced = i.DateInvoiced,
+                    TotalAmount = i.TotalAmount,
+                    SupplierVATPercent = i.SupplierVATPercent,
+                    InvoiceStatusId = i.InvoiceStatusId,
+                    CreatorId = i.CreatorId,
+                    UpdaterId = i.UpdaterId
                 })
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -198,9 +255,10 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                 parameters.PageSize);
         }
 
-        public async Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingInvoiceStatus(int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
+        public async Task<IEnumerable<InvoiceDomain>> GetInvoiceListUsingPackageTypeAndInvoiceStatus(List<int> packageTypeIds, int invoiceStatusId, DateTimeOffset? fromDate = null, DateTimeOffset? toDate = null)
         {
             var invoiceItems = await _dbContext.Invoices.Where(ii =>
+                    (packageTypeIds.Contains(ii.PackageTypeId)) &&
                     (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
                     (toDate.Equals(null) || ii.DateCreated <= toDate) &&
                     ii.InvoiceStatusId.Equals(invoiceStatusId))
