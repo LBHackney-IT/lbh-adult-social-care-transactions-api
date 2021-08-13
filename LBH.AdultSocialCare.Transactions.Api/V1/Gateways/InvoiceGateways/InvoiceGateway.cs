@@ -66,22 +66,21 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                     InvoiceStatusId = i.InvoiceStatusId,
                     CreatorId = i.CreatorId,
                     UpdaterId = i.UpdaterId,
-                    InvoiceItems = i.InvoiceItems.Where(ii =>
-                        ii.Invoice.InvoiceStatusId.Equals((int) InvoiceStatusEnum.Held)).Select(
-                                ii => new InvoiceItemMinimalDomain
-                                {
-                                    InvoiceItemId = ii.InvoiceItemId,
-                                    InvoiceId = ii.InvoiceId,
-                                    ItemName = ii.ItemName,
-                                    PricePerUnit = ii.PricePerUnit,
-                                    Quantity = ii.Quantity,
-                                    SubTotal = ii.SubTotal,
-                                    VatAmount = ii.VatAmount,
-                                    TotalPrice = ii.TotalPrice,
-                                    SupplierReturnItemId = ii.SupplierReturnItemId,
-                                    CreatorId = ii.CreatorId,
-                                    UpdaterId = ii.UpdaterId
-                                })
+                    InvoiceItems = i.InvoiceItems.Select(
+                        ii => new InvoiceItemMinimalDomain
+                        {
+                            InvoiceItemId = ii.InvoiceItemId,
+                            InvoiceId = ii.InvoiceId,
+                            ItemName = ii.ItemName,
+                            PricePerUnit = ii.PricePerUnit,
+                            Quantity = ii.Quantity,
+                            SubTotal = ii.SubTotal,
+                            VatAmount = ii.VatAmount,
+                            TotalPrice = ii.TotalPrice,
+                            SupplierReturnItemId = ii.SupplierReturnItemId,
+                            CreatorId = ii.CreatorId,
+                            UpdaterId = ii.UpdaterId
+                        })
                 })
                 .ToListAsync()
                 .ConfigureAwait(false);
