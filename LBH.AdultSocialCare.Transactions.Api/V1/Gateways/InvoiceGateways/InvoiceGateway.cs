@@ -1,6 +1,7 @@
 using AutoMapper;
+using Common.CustomExceptions;
+using Infrastructure.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
@@ -12,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.CustomExceptions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
 {
@@ -157,6 +157,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             return invoices;
         }
 
+        public async Task<IEnumerable<Invoice>> GetInvoicesInList(IEnumerable<Guid> invoiceIds)
+        {
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId))
+                .Distinct()
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return invoices;
+        }
+
         public async Task<PagedList<HeldInvoiceDomain>> GetHeldInvoicePayments(HeldInvoicePaymentParameters parameters)
         {
             var payRunsWithHeldInvoicesIds = await _dbContext.DisputedInvoices
@@ -259,8 +269,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         {
             var invoiceItems = await _dbContext.Invoices.Where(ii =>
                     (packageTypeIds.Contains(ii.PackageTypeId)) &&
-                    (fromDate.Equals(null) || ii.DateCreated >= fromDate.GetValueOrDefault()) &&
-                    (toDate.Equals(null) || ii.DateCreated < toDate.GetValueOrDefault()) &&
+                    ((fromDate.Equals(null) || ii.DateCreated >= fromDate.GetValueOrDefault())) &&
+                    // ((toDate.Equals(null) || toDate.GetValueOrDefault() > ii.DateCreated)) &&
                     ii.InvoiceStatusId.Equals(invoiceStatusId))
                 .ToListAsync().ConfigureAwait(false);
 
@@ -465,6 +475,35 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
             }
 
             return invoice;
+        }
+
+        public async Task<IEnumerable<InvoiceForResetDomain>> GetInvoicesForReset(Guid payRunId)
+        {
+            var allowedInvoiceStatuses = new List<int>
+            {
+                (int) InvoiceStatusEnum.Draft,
+                (int) InvoiceStatusEnum.Approved,
+                (int) InvoiceStatusEnum.InPayRun,
+                (int) InvoiceStatusEnum.Held,
+                (int) InvoiceStatusEnum.Accepted
+            };
+
+            var invoiceIds = await _dbContext.PayRunItems
+                .Where(pri => pri.PayRunId.Equals(payRunId))
+                .Select(pri => pri.InvoiceId)
+                .Distinct().ToListAsync().ConfigureAwait(false);
+
+            var invoices = await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId) && allowedInvoiceStatuses.Contains(i.InvoiceStatusId))
+                .Select(i => new InvoiceForResetDomain
+                {
+                    InvoiceId = i.InvoiceId,
+                    PackageTypeId = i.PackageTypeId,
+                    ServiceUserId = i.ServiceUserId,
+                    SupplierId = i.SupplierId,
+                    PackageId = i.PackageId
+                }).ToListAsync().ConfigureAwait(false);
+
+            return invoices;
         }
     }
 }

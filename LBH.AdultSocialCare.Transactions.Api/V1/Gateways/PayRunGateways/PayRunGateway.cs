@@ -1,6 +1,5 @@
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PackageTypeDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierDomains;
@@ -21,6 +20,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Common.CustomExceptions;
+using HttpServices.Contracts;
+using Infrastructure.Domain.InvoicesDomains;
 using Z.EntityFramework.Plus;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
@@ -31,13 +32,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         private readonly IMapper _mapper;
         private readonly IInvoiceGateway _invoiceGateway;
         private readonly IIdentifierGenerator _identifierGenerator;
+        private readonly IAdultSocialCareApiService _adultSocialCareApiService;
 
-        public PayRunGateway(DatabaseContext dbContext, IMapper mapper, IInvoiceGateway invoiceGateway, IIdentifierGenerator identifierGenerator)
+        public PayRunGateway(DatabaseContext dbContext, IMapper mapper, IInvoiceGateway invoiceGateway, IIdentifierGenerator identifierGenerator, IAdultSocialCareApiService adultSocialCareApiService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _invoiceGateway = invoiceGateway;
             _identifierGenerator = identifierGenerator;
+            _adultSocialCareApiService = adultSocialCareApiService;
         }
 
         public async Task<DateTimeOffset> GetDateOfLastPayRun(int payRunTypeId, int? payRunSubTypeId = null)
@@ -551,6 +554,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
 
         public async Task<bool> DeleteDraftPayRun(Guid payRunId)
         {
+            var resetInvoicePayRunTypes = new List<int>
+            {
+                (int) PayRunTypeEnum.ResidentialRecurring,
+                (int) PayRunTypeEnum.DirectPayments,
+                (int) PayRunTypeEnum.HomeCare
+            };
+
             await using var transaction = await _dbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
             {
@@ -563,31 +573,68 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                         StatusCodes.Status422UnprocessableEntity);
                 }
 
-                // Get all invoices in pay run
-                var invoices = await _invoiceGateway.GetInvoicesFlatInPayRunAsync(payRunId).ConfigureAwait(false);
-
-                var invoiceStatusId = (int) InvoiceStatusEnum.Draft;
-
-                if (payRun.PayRunSubTypeId != null)
+                if (!resetInvoicePayRunTypes.Contains(payRun.PayRunTypeId))
                 {
-                    invoiceStatusId = (int) InvoiceStatusEnum.Released;
-                }
+                    // Get all invoices in pay run
+                    var invoices = await _invoiceGateway.GetInvoicesFlatInPayRunAsync(payRunId).ConfigureAwait(false);
 
-                var invoiceList = invoices.ToList();
-                foreach (var invoice in invoiceList)
+                    const int invoiceStatusId = (int) InvoiceStatusEnum.Released;
+
+                    var invoiceList = invoices.ToList();
+                    foreach (var invoice in invoiceList)
+                    {
+                        invoice.InvoiceStatusId = invoiceStatusId;
+                    }
+
+                    var uploader = new NpgsqlBulkUploader(_dbContext);
+                    await uploader.UpdateAsync(invoiceList).ConfigureAwait(false);
+
+                    // Delete pay run items
+                    await _dbContext.PayRunItems.Where(pri => pri.PayRunId.Equals(payRunId)).DeleteAsync()
+                        .ConfigureAwait(false);
+
+                    // Delete the pay run itself
+                    await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId)).DeleteAsync().ConfigureAwait(false);
+                }
+                else
                 {
-                    invoice.InvoiceStatusId = invoiceStatusId;
+                    // Send request to reset invoice paid up to date
+                    var invoicesForReset = await _invoiceGateway.GetInvoicesForReset(payRunId).ConfigureAwait(false);
+                    var invoiceForResetDomains = invoicesForReset as InvoiceForResetDomain[] ?? invoicesForReset.ToArray();
+                    var invoiceIds = invoiceForResetDomains.Select(i => i.InvoiceId);
+
+                    var res = await _adultSocialCareApiService.ResetInvoiceCreatedUpTo(invoiceForResetDomains).ConfigureAwait(false);
+
+                    // Delete pay run items
+                    await _dbContext.PayRunItems.Where(pri => pri.PayRunId.Equals(payRunId)).DeleteAsync()
+                        .ConfigureAwait(false);
+
+                    // Delete the pay run itself
+                    await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId)).DeleteAsync().ConfigureAwait(false);
+
+                    if (res.IsSuccess)
+                    {
+                        // Delete the invoices
+                        await _dbContext.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId)).DeleteAsync()
+                            .ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        // Reset invoice status to draft
+                        var invoices = await _invoiceGateway.GetInvoicesInList(invoiceIds).ConfigureAwait(false);
+
+                        const int invoiceStatusId = (int) InvoiceStatusEnum.Draft;
+
+                        var invoiceList = invoices.ToList();
+                        foreach (var invoice in invoiceList)
+                        {
+                            invoice.InvoiceStatusId = invoiceStatusId;
+                        }
+
+                        var uploader = new NpgsqlBulkUploader(_dbContext);
+                        await uploader.UpdateAsync(invoiceList).ConfigureAwait(false);
+                    }
                 }
-
-                var uploader = new NpgsqlBulkUploader(_dbContext);
-                await uploader.UpdateAsync(invoiceList).ConfigureAwait(false);
-
-                // Delete pay run items
-                await _dbContext.PayRunItems.Where(pri => pri.PayRunId.Equals(payRunId)).DeleteAsync()
-                    .ConfigureAwait(false);
-
-                // Delete the pay run itself
-                await _dbContext.PayRuns.Where(pr => pr.PayRunId.Equals(payRunId)).DeleteAsync().ConfigureAwait(false);
 
                 await transaction.CommitAsync().ConfigureAwait(false);
                 return true;

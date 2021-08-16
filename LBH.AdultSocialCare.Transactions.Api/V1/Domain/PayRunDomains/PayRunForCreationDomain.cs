@@ -1,6 +1,6 @@
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using System;
 using System.Collections.Generic;
+using Infrastructure.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains
 {

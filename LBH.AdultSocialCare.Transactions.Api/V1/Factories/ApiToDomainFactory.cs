@@ -4,7 +4,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierReturnBoundary.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
@@ -12,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using Common.CustomExceptions;
+using Infrastructure.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {

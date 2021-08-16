@@ -10,11 +10,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions
 {
     public static class ServiceExtensions
     {
-        public static void ConfigureAdultSocialCareApiService(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureAdultSocialCareApiService(this IServiceCollection services,
+            IConfiguration configuration)
             => services.AddHttpClient<IAdultSocialCareApiService, AdultSocialCareApiService>(client =>
             {
                 client.BaseAddress = new Uri(configuration["HASCHttpClients:AdultSocialCareApiBaseUrl"]);
-                client.DefaultRequestHeaders.Add("x-api-key", configuration["HASCHttpClients:AdultSocialCareApiApiKey"]);
+                client.DefaultRequestHeaders.Add("x-api-key",
+                    configuration["HASCHttpClients:AdultSocialCareApiApiKey"]);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
                 client.DefaultRequestHeaders.Add("User-Agent", "HASC API");
             }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()

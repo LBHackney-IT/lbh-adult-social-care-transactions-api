@@ -163,7 +163,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
             services.Configure<AdultSocialCareApiOptions>(Configuration.GetSection("HASCHttpClients"));
             services.ConfigureAdultSocialCareApiService(Configuration);
 
-            services.AddScoped<IRestClient, JsonRestClient>();
+            services.AddHttpClient<IRestClient, JsonRestClient>();
 
             // services.AddScoped<ModelStateValidationFilterAttribute>();
             services.AddMvc(config =>

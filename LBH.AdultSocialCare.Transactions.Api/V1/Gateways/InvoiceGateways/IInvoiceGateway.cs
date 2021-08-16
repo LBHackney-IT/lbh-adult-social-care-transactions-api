@@ -1,4 +1,4 @@
-using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
+using Infrastructure.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
@@ -15,6 +15,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         Task<PagedList<InvoiceDomain>> GetInvoicesFlatInPayRunAsync(Guid payRunId, InvoiceListParameters parameters);
 
         Task<IEnumerable<Invoice>> GetInvoicesFlatInPayRunAsync(Guid payRunId);
+
+        Task<IEnumerable<Invoice>> GetInvoicesInList(IEnumerable<Guid> invoiceIds);
 
         Task<PagedList<HeldInvoiceDomain>> GetHeldInvoicePayments(HeldInvoicePaymentParameters parameters);
 
@@ -43,5 +45,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         Task<IEnumerable<PendingInvoicesDomain>> GetUserPendingInvoices(Guid serviceUserId);
 
         Task<Invoice> CheckInvoiceExists(Guid invoiceId);
+
+        Task<IEnumerable<InvoiceForResetDomain>> GetInvoicesForReset(Guid payRunId);
     }
 }
