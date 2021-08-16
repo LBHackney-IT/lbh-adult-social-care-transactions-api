@@ -12,7 +12,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "PaidAmount",
@@ -20,7 +20,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "TotalAmount",
@@ -28,7 +28,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "VatAmount",
@@ -36,7 +36,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "TotalPrice",
@@ -44,7 +44,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "SubTotal",
@@ -52,7 +52,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "Quantity",
@@ -60,7 +60,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "PricePerUnit",
@@ -68,7 +68,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
                 type: "decimal(10, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
-                oldType: "decimal(3, 2)");
+                oldType: "decimal(7, 2)");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -76,7 +76,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "RemainingBalance",
                 table: "PayRunItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -84,7 +84,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "PaidAmount",
                 table: "PayRunItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -92,7 +92,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "TotalAmount",
                 table: "Invoices",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -100,7 +100,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "VatAmount",
                 table: "InvoiceItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -108,7 +108,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "TotalPrice",
                 table: "InvoiceItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -116,7 +116,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "SubTotal",
                 table: "InvoiceItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -124,7 +124,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "Quantity",
                 table: "InvoiceItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
@@ -132,7 +132,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Migrations
             migrationBuilder.AlterColumn<decimal>(
                 name: "PricePerUnit",
                 table: "InvoiceItems",
-                type: "decimal(3, 2)",
+                type: "decimal(7, 2)",
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(10, 2)");
