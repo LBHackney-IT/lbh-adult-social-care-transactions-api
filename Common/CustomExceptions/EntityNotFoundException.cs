@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions
+namespace Common.CustomExceptions
 {
     public class EntityNotFoundException : CustomException
     {

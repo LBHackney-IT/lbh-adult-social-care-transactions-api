@@ -7,11 +7,11 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Domain.BillsDomain;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.SupplierReturnDomains;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using Common.CustomExceptions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
 {

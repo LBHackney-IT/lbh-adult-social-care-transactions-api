@@ -4,7 +4,6 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PackageTypeBoundaries.Res
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Request;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.PayRunBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.SupplierBoundaries.Response;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
@@ -15,6 +14,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Common.Models;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
 {

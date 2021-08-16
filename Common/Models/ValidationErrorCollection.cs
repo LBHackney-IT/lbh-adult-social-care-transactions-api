@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Text;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models
+namespace Common.Models
 {
     /// <summary>
     /// A collection of ValidationError objects that is used to collect

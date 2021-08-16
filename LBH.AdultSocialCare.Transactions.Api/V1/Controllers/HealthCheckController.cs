@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
+using Common.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase;
 using Microsoft.AspNetCore.Mvc;
 

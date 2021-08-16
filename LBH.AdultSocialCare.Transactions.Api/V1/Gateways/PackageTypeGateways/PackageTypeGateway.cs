@@ -1,6 +1,6 @@
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using System.Collections.Generic;
+using Common.CustomExceptions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PackageTypeGateways
 {

@@ -5,8 +5,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Common.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete

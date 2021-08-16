@@ -1,4 +1,4 @@
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models
+namespace Common.Models
 {
     /// <summary>
     /// Object that holds a single Validation Error for the business object

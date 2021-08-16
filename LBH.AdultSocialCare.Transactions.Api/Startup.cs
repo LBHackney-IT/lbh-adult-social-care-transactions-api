@@ -1,7 +1,6 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
 using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
@@ -40,6 +39,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Common.CustomExceptions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.LedgerGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Concrete;

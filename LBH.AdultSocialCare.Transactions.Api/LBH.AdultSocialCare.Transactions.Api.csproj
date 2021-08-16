@@ -58,4 +58,8 @@
     <Folder Include="V1\UseCase\Interfaces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HttpServices\HttpServices.csproj" />
+  </ItemGroup>
+
 </Project>

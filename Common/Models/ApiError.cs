@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models
+namespace Common.Models
 {
     public class ApiError
     {

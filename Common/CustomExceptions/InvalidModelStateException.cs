@@ -1,8 +1,8 @@
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using Common.Models;
+using Microsoft.AspNetCore.Http;
 
-namespace LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions
+namespace Common.CustomExceptions
 {
     public class InvalidModelStateException : CustomException
     {

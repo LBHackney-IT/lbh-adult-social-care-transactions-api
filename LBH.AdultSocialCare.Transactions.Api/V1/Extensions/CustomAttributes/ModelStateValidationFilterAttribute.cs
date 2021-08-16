@@ -1,7 +1,7 @@
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
+using Common.CustomExceptions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions.CustomAttributes
 {

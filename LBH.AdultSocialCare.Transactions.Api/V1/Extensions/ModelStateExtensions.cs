@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
+using Common.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions

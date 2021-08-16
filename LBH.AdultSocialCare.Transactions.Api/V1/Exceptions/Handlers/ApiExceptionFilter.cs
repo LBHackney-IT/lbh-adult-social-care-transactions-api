@@ -1,9 +1,9 @@
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Diagnostics;
+using Common.CustomExceptions;
+using Common.Models;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers
 {
