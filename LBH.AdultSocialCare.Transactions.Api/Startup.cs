@@ -1,15 +1,22 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AutoMapper;
+using Common.CustomExceptions;
+using HttpServices.Concrete;
+using HttpServices.Contracts;
+using HttpServices.Models;
 using LBH.AdultSocialCare.Transactions.Api.V1.Controllers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.Handlers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.Utils;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.BillGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.DepartmentGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.LedgerGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PackageTypeGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.BillUseCases.Interfaces;
@@ -19,6 +26,8 @@ using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Interfaces;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Concrete;
+using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Concrete;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierUseCases.Interfaces;
 using LBH.AdultSocialCare.Transactions.Api.Versioning;
@@ -39,19 +48,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Common.CustomExceptions;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.LedgerGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierReturnGateways;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Concrete;
-using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.SupplierReturnUseCases.Interfaces;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions.Utils;
 
 namespace LBH.AdultSocialCare.Transactions.Api
 {
-
     public class Startup
     {
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -65,6 +66,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
         //TODO update the below to the name of your API
         private const string ApiName = "Adult Social Care Transactions API";
+
         private readonly string _policyName = "CorsPolicy";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -156,6 +158,12 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
             RegisterGateways(services);
             RegisterUseCases(services);
+
+            // Configure adult social care API options
+            services.Configure<AdultSocialCareApiOptions>(Configuration.GetSection("HASCHttpClients"));
+            services.ConfigureAdultSocialCareApiService(Configuration);
+
+            services.AddScoped<IRestClient, JsonRestClient>();
 
             // services.AddScoped<ModelStateValidationFilterAttribute>();
             services.AddMvc(config =>
@@ -261,7 +269,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
 
             services.AddScoped<ILedgerGateway, LedgerGateway>();
 
-            #endregion
+            #endregion Ledger
 
             #region SupplierReturn
 
@@ -369,7 +377,5 @@ namespace LBH.AdultSocialCare.Transactions.Api
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
     }
-
 }
