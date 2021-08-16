@@ -2,21 +2,19 @@ using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Exceptions.CustomExceptions;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PackageTypeGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
+using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Request;
-using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete
 {
@@ -108,6 +106,12 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
             var invoiceResponses = await _invoiceGateway.BatchCreateInvoices(invoicesForCreationDomain.ToDb()).ConfigureAwait(false);
             return invoiceResponses.ToResponse();
+        }
+
+        public async Task<IEnumerable<InvoiceResponse>> GetInvoicesFlatInPayRunUseCase(Guid payRunId, InvoiceListParameters parameters)
+        {
+            var res = await _invoiceGateway.GetInvoicesFlatInPayRunAsync(payRunId, parameters).ConfigureAwait(false);
+            return res.ToResponse();
         }
 
         private async Task CalculateInvoicePrice(InvoiceForCreationDomain invoiceForCreationDomain)

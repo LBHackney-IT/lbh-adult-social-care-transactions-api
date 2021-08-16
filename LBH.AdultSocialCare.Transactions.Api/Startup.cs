@@ -311,7 +311,7 @@ namespace LBH.AdultSocialCare.Transactions.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext databaseContext)
         {
-            // Uncomment next line to delete and recreate DB
+            //Uncomment next line to delete and recreate DB
             //databaseContext.Database.EnsureDeleted();
 
             // Run pending database migrations

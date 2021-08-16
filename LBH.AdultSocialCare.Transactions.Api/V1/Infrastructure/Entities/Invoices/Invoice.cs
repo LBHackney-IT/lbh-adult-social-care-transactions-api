@@ -14,7 +14,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         [Required] public int PackageTypeId { get; set; }
         [Required] public Guid ServiceUserId { get; set; }
         [Required] public DateTimeOffset DateInvoiced { get; set; }
-        [Required] public decimal TotalAmount { get; set; } // Total amount when invoice is being created
+        [Required] [Column(TypeName = "decimal(13, 2)")] public decimal TotalAmount { get; set; } // Total amount when invoice is being created
         [Required] public float SupplierVATPercent { get; set; }
         [Required] public int InvoiceStatusId { get; set; }
         [Required] public Guid CreatorId { get; set; }
