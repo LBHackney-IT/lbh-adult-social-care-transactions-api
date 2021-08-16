@@ -70,10 +70,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Factories
             return _mapper.Map<IEnumerable<InvoiceForCreationDomain>>(invoices);
         }
 
-        public static DisputedInvoiceChatForCreationDomain ToDomain(this DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest, Guid payRunId)
+        public static DisputedInvoiceChatForCreationDomain ToDomain(this DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest, Guid payRunId, Guid invoiceId)
         {
             var res = _mapper.Map<DisputedInvoiceChatForCreationDomain>(disputedInvoiceChatForCreationRequest);
             res.PayRunId = payRunId;
+            res.InvoiceId = invoiceId;
             return res;
         }
 

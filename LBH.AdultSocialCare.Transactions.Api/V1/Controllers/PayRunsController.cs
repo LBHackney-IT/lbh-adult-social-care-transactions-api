@@ -246,15 +246,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Controllers
         }
 
         // Create disputed invoice chat
-        [HttpPost("{payRunId}/create-held-chat")]
+        [HttpPost("{payRunId}/invoices/{invoiceId}/create-held-chat")]
         [ProducesResponseType(typeof(DisputedInvoiceChatResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<DisputedInvoiceChatResponse>> CreateDisputedInvoiceChat(Guid payRunId,
+        public async Task<ActionResult<DisputedInvoiceChatResponse>> CreateDisputedInvoiceChat(Guid payRunId, Guid invoiceId,
             [FromBody] DisputedInvoiceChatForCreationRequest disputedInvoiceChatForCreationRequest)
         {
             var result = await _invoicesUseCase
-                .CreateDisputedInvoiceChatUseCase(disputedInvoiceChatForCreationRequest.ToDomain(payRunId))
+                .CreateDisputedInvoiceChatUseCase(disputedInvoiceChatForCreationRequest.ToDomain(payRunId, invoiceId))
                 .ConfigureAwait(false);
             return Ok(result);
         }

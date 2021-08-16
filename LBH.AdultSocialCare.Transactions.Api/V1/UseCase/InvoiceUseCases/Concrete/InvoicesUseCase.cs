@@ -73,7 +73,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
         {
             // Check disputed invoice exists
             var payRun = await _payRunGateway.CheckDisputedInvoiceExists(disputedInvoiceChatForCreationDomain.PayRunId,
-                disputedInvoiceChatForCreationDomain.PayRunItemId).ConfigureAwait(false);
+                disputedInvoiceChatForCreationDomain.InvoiceId).ConfigureAwait(false);
 
             // Create disputed invoice chat
             var res = await _payRunGateway
