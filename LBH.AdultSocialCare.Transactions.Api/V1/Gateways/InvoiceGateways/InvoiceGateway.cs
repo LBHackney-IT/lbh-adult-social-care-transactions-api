@@ -259,8 +259,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
         {
             var invoiceItems = await _dbContext.Invoices.Where(ii =>
                     (packageTypeIds.Contains(ii.PackageTypeId)) &&
-                    (fromDate.Equals(null) || ii.DateCreated >= fromDate) &&
-                    (toDate.Equals(null) || ii.DateCreated <= toDate) &&
+                    (fromDate.Equals(null) || ii.DateCreated >= fromDate.GetValueOrDefault()) &&
+                    (toDate.Equals(null) || ii.DateCreated < toDate.GetValueOrDefault()) &&
                     ii.InvoiceStatusId.Equals(invoiceStatusId))
                 .ToListAsync().ConfigureAwait(false);
 
