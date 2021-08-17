@@ -1,3 +1,5 @@
+using Common.CustomExceptions;
+using Infrastructure.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
@@ -9,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.CustomExceptions;
-using Infrastructure.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concrete
 {
@@ -34,7 +34,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 throw new ApiException($"A Pay Run with draft status for Residential Recurring already exists!");
 
             // Get date of last pay run. If none make it today-28 days
-            var dateFrom = await _payRunGateway.GetDateOfLastPayRun(payRunTypeId).ConfigureAwait(false);
+            var lastPayRunDate = await _payRunGateway.GetDateOfLastPayRun(payRunTypeId).ConfigureAwait(false);
             // var dateTo = dateFrom.AddDays(28);
 
             // If date to is greater than today, make dateTo today's date
@@ -48,9 +48,15 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
                 (int) PackageTypeEnum.NursingCarePackage, (int) PackageTypeEnum.ResidentialCarePackage
             };
 
-            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Draft, dateFrom, dateTo).ConfigureAwait(false);
+            // Date from null to get all invoices before date to
+            var invoiceDomains = await GetInvoicesForPayRun(validPackageTypeIds, (int) InvoiceStatusEnum.Draft, null, dateTo).ConfigureAwait(false);
 
-            return await CreatePayRun(invoiceDomains, dateFrom, dateTo, payRunTypeId).ConfigureAwait(false);
+            // Set date from as the smallest date on invoice
+            var dateFrom = invoiceDomains
+                .OrderBy(i => i.DateInvoiced)
+                .Select(i => i.DateInvoiced).First();
+
+            return await CreatePayRun(invoiceDomains, lastPayRunDate, dateTo, payRunTypeId).ConfigureAwait(false);
         }
 
         private static PayRunForCreationDomain GeneratePayRunForCreationDomain(DateTimeOffset dateFrom,
@@ -69,7 +75,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
             };
         }
 
-        private async Task<List<InvoiceDomain>> GetInvoicesForPayRun(List<int> packageTypeIds, int invoiceStatusId, DateTimeOffset dateFrom, DateTimeOffset dateTo)
+        private async Task<List<InvoiceDomain>> GetInvoicesForPayRun(List<int> packageTypeIds, int invoiceStatusId, DateTimeOffset? dateFrom, DateTimeOffset dateTo)
         {
             // Get invoices from date of last pay run with status new/draft
 
