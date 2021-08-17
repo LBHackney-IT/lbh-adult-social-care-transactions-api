@@ -28,6 +28,11 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.PayRunUseCases.Concret
         public async Task<Guid> CreateResidentialRecurringPayRunUseCase(DateTimeOffset dateTo)
         {
             const int payRunTypeId = (int) PayRunTypeEnum.ResidentialRecurring;
+
+            var draftPayRunCount = await _payRunGateway.GetDraftPayRunCount(payRunTypeId).ConfigureAwait(false);
+            if (draftPayRunCount > 0)
+                throw new ApiException($"A Pay Run with draft status for Residential Recurring already exists!");
+
             // Get date of last pay run. If none make it today-28 days
             var dateFrom = await _payRunGateway.GetDateOfLastPayRun(payRunTypeId).ConfigureAwait(false);
             // var dateTo = dateFrom.AddDays(28);

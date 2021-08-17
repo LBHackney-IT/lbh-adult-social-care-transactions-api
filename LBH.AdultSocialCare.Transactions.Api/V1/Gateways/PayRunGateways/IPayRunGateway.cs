@@ -62,5 +62,7 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
         Task<IEnumerable<PayRunSubTypeDomain>> GetAllPayRunSubTypes();
 
         Task<IEnumerable<PayRunStatusDomain>> GetAllUniquePayRunStatuses();
+
+        Task<int> GetDraftPayRunCount(int payRunTypeId);
     }
 }

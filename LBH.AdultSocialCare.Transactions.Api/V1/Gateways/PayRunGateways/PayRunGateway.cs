@@ -803,5 +803,14 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 throw new ApiException($"Error encountered in pay run approval: {e.InnerException?.Message}");
             }
         }
+
+        public async Task<int> GetDraftPayRunCount(int payRunTypeId)
+        {
+            return await _dbContext.PayRuns.Where(pr =>
+                    pr.PayRunTypeId.Equals(payRunTypeId) &&
+                    pr.PayRunStatusId.Equals((int) PayRunStatusesEnum.Draft))
+                .CountAsync()
+                .ConfigureAwait(false);
+        }
     }
 }
