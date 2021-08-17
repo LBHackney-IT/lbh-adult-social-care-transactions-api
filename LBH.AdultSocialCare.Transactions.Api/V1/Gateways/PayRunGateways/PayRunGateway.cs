@@ -201,7 +201,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 (int) InvoiceStatusEnum.Held,
                 (int) InvoiceStatusEnum.Accepted,
                 (int) InvoiceStatusEnum.Released,
-                (int) InvoiceStatusEnum.Paid
+                (int) InvoiceStatusEnum.Paid,
+                (int) InvoiceStatusEnum.Rejected
             };
 
             foreach (var invoiceStatusId in invoiceStatusIds.Where(invoiceStatusId => !validInvoiceIds.Contains(invoiceStatusId)))
