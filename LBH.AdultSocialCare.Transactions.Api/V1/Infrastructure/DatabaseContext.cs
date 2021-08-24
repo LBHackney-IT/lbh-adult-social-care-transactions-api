@@ -1,3 +1,4 @@
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Bills;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
@@ -77,6 +78,13 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure
             {
                 entity.HasIndex(i => new { i.InvoiceNumber })
                     .IsUnique();
+            });
+
+            modelBuilder.Entity<InvoiceItem>(entity =>
+            {
+                entity.Property(i => i.PriceEffect)
+                    .IsRequired()
+                    .HasDefaultValue(nameof(InvoicePriceEffectEnum.Add));
             });
 
             #endregion Model Config
