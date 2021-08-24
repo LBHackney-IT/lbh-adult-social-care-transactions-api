@@ -10,6 +10,9 @@ namespace Infrastructure.Domain.InvoicesDomains
         public decimal SubTotal { get; set; }
         public decimal VatAmount { get; set; }
         public decimal TotalPrice { get; set; }
+        public string PriceEffect { get; set; }
+        public string ClaimedBy { get; set; }
+        public string ReclaimedFrom { get; set; }
         public Guid? SupplierReturnItemId { get; set; }
         public Guid CreatorId { get; set; }
     }

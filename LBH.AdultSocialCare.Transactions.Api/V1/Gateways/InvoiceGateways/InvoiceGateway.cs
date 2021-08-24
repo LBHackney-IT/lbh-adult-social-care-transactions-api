@@ -3,6 +3,7 @@ using Common.CustomExceptions;
 using Infrastructure.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
 using LBH.AdultSocialCare.Transactions.Api.V1.Domain.PayRunDomains;
+using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoices;
@@ -79,6 +80,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                             SubTotal = ii.SubTotal,
                             VatAmount = ii.VatAmount,
                             TotalPrice = ii.TotalPrice,
+                            PriceEffect = ii.PriceEffect,
+                            ClaimedBy = ii.ClaimedBy,
+                            ReclaimedFrom = ii.ReclaimedFrom,
                             SupplierReturnItemId = ii.SupplierReturnItemId,
                             CreatorId = ii.CreatorId,
                             UpdaterId = ii.UpdaterId
@@ -237,6 +241,9 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.InvoiceGateways
                                     SubTotal = ii.SubTotal,
                                     VatAmount = ii.VatAmount,
                                     TotalPrice = ii.TotalPrice,
+                                    PriceEffect = ii.PriceEffect,
+                                    ClaimedBy = ii.ClaimedBy,
+                                    ReclaimedFrom = ii.ReclaimedFrom,
                                     SupplierReturnItemId = ii.SupplierReturnItemId,
                                     CreatorId = ii.CreatorId,
                                     UpdaterId = ii.UpdaterId

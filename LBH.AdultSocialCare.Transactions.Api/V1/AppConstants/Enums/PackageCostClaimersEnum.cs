@@ -1,9 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums
 {
     public enum PackageCostClaimersEnum
     {
-        None,
-        Hackney,
-        Supplier
+        [Display(Name = "Hackney")] Hackney,
+        [Display(Name = "Supplier")] Supplier
     }
 }
