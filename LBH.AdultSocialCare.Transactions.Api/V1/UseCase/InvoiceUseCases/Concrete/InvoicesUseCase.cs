@@ -1,4 +1,7 @@
+using Common.CustomExceptions;
+using Infrastructure.Domain.InvoicesDomains;
 using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Enums;
+using LBH.AdultSocialCare.Transactions.Api.V1.AppConstants.Helpers;
 using LBH.AdultSocialCare.Transactions.Api.V1.Boundary.InvoiceBoundaries.Response;
 using LBH.AdultSocialCare.Transactions.Api.V1.Extensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.Factories;
@@ -8,13 +11,12 @@ using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Gateways.SupplierGateways;
 using LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.RequestExtensions;
 using LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Common.CustomExceptions;
-using Infrastructure.Domain.InvoicesDomains;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concrete
 {
@@ -85,6 +87,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
         public async Task<InvoiceResponse> CreateInvoiceUseCase(InvoiceForCreationDomain invoiceForCreationDomain)
         {
+            ValidatePriceEffectsAndPackageCostClaimersOnInvoiceItems(invoiceForCreationDomain.InvoiceItems);
+
             await CalculateInvoicePrice(invoiceForCreationDomain).ConfigureAwait(false);
 
             var res = await _invoiceGateway.CreateInvoice(invoiceForCreationDomain.ToDb()).ConfigureAwait(false);
@@ -94,17 +98,19 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
 
         public async Task<IEnumerable<InvoiceResponse>> BatchCreateInvoicesUseCase(IEnumerable<InvoiceForCreationDomain> invoicesForCreationDomain)
         {
-            if (invoicesForCreationDomain.Any(i => i.InvoiceItems.IsNullOrEmpty<InvoiceItemForCreationDomain>()))
+            var invoiceForCreationDomains = invoicesForCreationDomain.ToList();
+            if (invoiceForCreationDomains.Any(i => i.InvoiceItems.IsNullOrEmpty<InvoiceItemForCreationDomain>()))
             {
                 throw new ApiException("Invoice cannot be created without invoice items", (int) HttpStatusCode.UnprocessableEntity);
             }
 
-            foreach (var invoice in invoicesForCreationDomain)
+            foreach (var invoice in invoiceForCreationDomains)
             {
+                ValidatePriceEffectsAndPackageCostClaimersOnInvoiceItems(invoice.InvoiceItems);
                 await CalculateInvoicePrice(invoice).ConfigureAwait(false);
             }
 
-            var invoiceResponses = await _invoiceGateway.BatchCreateInvoices(invoicesForCreationDomain.ToDb()).ConfigureAwait(false);
+            var invoiceResponses = await _invoiceGateway.BatchCreateInvoices(invoiceForCreationDomains.ToDb()).ConfigureAwait(false);
             return invoiceResponses.ToResponse();
         }
 
@@ -132,11 +138,46 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.UseCase.InvoiceUseCases.Concre
             foreach (var invoiceItem in invoiceForCreationDomain.InvoiceItems)
             {
                 invoiceItem.SubTotal = invoiceItem.PricePerUnit * invoiceItem.Quantity;
-                invoiceItem.VatAmount = invoiceItem.SubTotal *
-                                        (decimal) invoiceForCreationDomain.SupplierVATPercent;
+
+                // TODO: With FNC and reclaims being added, we need to reconsider logic on VATable items
+                /*invoiceItem.VatAmount = invoiceItem.SubTotal *
+                                        (decimal) invoiceForCreationDomain.SupplierVATPercent;*/
+                invoiceItem.VatAmount = 0;
                 invoiceItem.TotalPrice = invoiceItem.SubTotal + invoiceItem.VatAmount;
-                invoiceForCreationDomain.TotalAmount += invoiceItem.TotalPrice;
+
+                switch (invoiceItem.PriceEffect)
+                {
+                    case nameof(InvoicePriceEffectEnum.Add):
+                        invoiceForCreationDomain.TotalAmount += invoiceItem.TotalPrice;
+                        break;
+
+                    case nameof(InvoicePriceEffectEnum.Subtract):
+                        invoiceForCreationDomain.TotalAmount -= invoiceItem.TotalPrice;
+                        break;
+                }
             }
+        }
+
+        private static bool ValidatePriceEffectsAndPackageCostClaimersOnInvoiceItems(
+            IEnumerable<InvoiceItemForCreationDomain> invoiceItems)
+        {
+            // Validate price effects and package cost claimers
+            foreach (var invoiceItem in invoiceItems)
+            {
+                // Check for valid price effects
+                if (!EnumHelper.IsValidPriceEffect(invoiceItem.PriceEffect))
+                {
+                    throw new ApiException($"Invalid price effect. Options are Add, Subtract or None", StatusCodes.Status422UnprocessableEntity);
+                }
+
+                // Check for valid package cost claimers
+                if (invoiceItem.ClaimedBy != null && !EnumHelper.IsValidPackageCostClaimer(invoiceItem.ClaimedBy))
+                {
+                    throw new ApiException($"Invalid claimed by. Options are Supplier, Hackney or null", StatusCodes.Status422UnprocessableEntity);
+                }
+            }
+
+            return true;
         }
     }
 }
