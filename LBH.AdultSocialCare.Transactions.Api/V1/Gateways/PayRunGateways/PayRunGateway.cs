@@ -426,8 +426,8 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Gateways.PayRunGateways
                 .Select(pr => pr.Invoice.TotalAmount).SumAsync().ConfigureAwait(false);
 
             // get previous pay run id
-            var previousPayRun = await _dbContext.PayRuns.Where(pr => pr.DateTo < thisPayRun.DateFrom)
-                .OrderByDescending(pr => pr.DateTo).FirstOrDefaultAsync().ConfigureAwait(false);
+            var previousPayRun = await _dbContext.PayRuns.Where(pr => pr.DateCreated < thisPayRun.DateCreated && pr.PayRunTypeId.Equals(thisPayRun.PayRunTypeId))
+                .OrderByDescending(pr => pr.DateCreated).FirstOrDefaultAsync().ConfigureAwait(false);
 
             var previousPayRunAmount = new decimal(0.0);
 

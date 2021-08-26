@@ -12,13 +12,16 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Infrastructure.Entities.Invoic
         [Required] public Guid InvoiceId { get; set; }
         [Required] public string ItemName { get; set; }
         [Required] [Column(TypeName = "decimal(13, 2)")] public decimal PricePerUnit { get; set; }
-        [Required] [Column(TypeName = "decimal(13, 2)")] public decimal Quantity { get; set; }
+        [Required] [Column(TypeName = "decimal(7, 2)")] public decimal Quantity { get; set; }
         [Required] [Column(TypeName = "decimal(13, 2)")] public decimal SubTotal { get; set; }
         [Required] [Column(TypeName = "decimal(13, 2)")] public decimal VatAmount { get; set; }
         [Required] [Column(TypeName = "decimal(13, 2)")] public decimal TotalPrice { get; set; }
         public Guid? SupplierReturnItemId { get; set; } // If the invoice is coming from supplier returns, reference the item here
         [Required] public Guid CreatorId { get; set; }
         public Guid? UpdaterId { get; set; }
+        [Required] public string PriceEffect { get; set; }
+        public string ClaimedBy { get; set; }
+        public string ReclaimedFrom { get; set; }
 
         [ForeignKey((nameof(InvoiceId)))] public Invoice Invoice { get; set; }
         public virtual ICollection<PayRunItem> PayRunItems { get; set; }

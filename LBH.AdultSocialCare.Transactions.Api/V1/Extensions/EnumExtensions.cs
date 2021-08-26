@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 
 namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions
 {
@@ -32,16 +30,30 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions
 
         public static string ToDescription(this Enum enumeration)
         {
-            var attribute = GetText<DescriptionAttribute>(enumeration);
+            try
+            {
+                var attribute = GetText<DescriptionAttribute>(enumeration);
 
-            return attribute.Description;
+                return attribute.Description;
+            }
+            catch (ArgumentException)
+            {
+                return nameof(enumeration);
+            }
         }
 
         public static string GetDisplayName(this Enum enumeration)
         {
-            var attribute = GetText<DisplayAttribute>(enumeration);
+            try
+            {
+                var attribute = GetText<DisplayAttribute>(enumeration);
 
-            return attribute.GetName();
+                return attribute.GetName();
+            }
+            catch (ArgumentException)
+            {
+                return nameof(enumeration);
+            }
         }
 
         public static T GetText<T>(Enum enumeration) where T : Attribute
