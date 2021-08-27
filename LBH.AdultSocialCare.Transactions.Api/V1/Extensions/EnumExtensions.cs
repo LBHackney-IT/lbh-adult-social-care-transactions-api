@@ -73,6 +73,22 @@ namespace LBH.AdultSocialCare.Transactions.Api.V1.Extensions
             return attributes.Single() as T;
         }
 
+        public static TAttribute GetAttribute<TAttribute>(this Enum enumeration) where TAttribute : Attribute
+        {
+            var type = enumeration.GetType();
+            var name = Enum.GetName(type, enumeration);
+
+            if (name == null)
+            {
+                return null;
+            }
+
+            return type.GetField(name)
+                ?.GetCustomAttributes(false)
+                .OfType<TAttribute>()
+                .SingleOrDefault();
+        }
+
         public static string ConvertEnumToString(this Enum enumeration)
         {
             return enumeration.ToString();
